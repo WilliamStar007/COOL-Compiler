@@ -23,14 +23,9 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest glob2
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Build main.py
       run: |
-        python main.py
+        python src/main.py
         
   cgen:
     runs-on: macos-latest
