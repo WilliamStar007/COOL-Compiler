@@ -172,7 +172,7 @@ def read_class():
     num_features = int(get_line())
     feature_list = []
     feature_list.append(num_features)
-    for i in range(num_features):
+    for _ in range(num_features):
         feature_list.append(read_feature())
 
     return ClassObj(class_info, check_inherits, parent, feature_list)
@@ -192,7 +192,7 @@ def read_class_map():
     class_name = get_line()
     num_attrs = get_line()
 
-    for i in range(num_attrs):
+    for _ in range(num_attrs):
         attr = None
         var_name = None
         var_type = None
@@ -218,7 +218,7 @@ def read_implementation_map():
     class_name = get_line()
     num_methods = get_line()
 
-    for i in range(num_methods):
+    for _ in range(num_methods):
         method_name = get_line()
         num_formals = get_line()
 
@@ -240,7 +240,7 @@ def read_parent_map():
     '''
     num_classes = get_line()
 
-    for i in range(num_classes):
+    for _ in range(num_classes):
         class_name = get_line()
         parent_name = get_line()
 
@@ -256,26 +256,26 @@ def read_input():
     _ = get_line()
     num_attrs = get_line()
 
-    for i in range(num_attrs):
+    for _ in range(num_attrs):
         read_class_map()
 
     # Process implementation map
     _ = get_line()
     num_methods = get_line()
 
-    for i in range(num_methods):
+    for _ in range(num_methods):
         read_implementation_map()
 
     # Process parent map
     _ = get_line()
     num_classes = get_line()
 
-    for i in range(num_classes):
+    for _ in range(num_classes):
         read_parent_map()
 
     # Process AAST
     num_classes = get_line()
     config.aast.append(num_classes)
 
-    for i in range(int(num_classes)):
+    for _ in range(int(num_classes)):
         config.aast.append(read_class())
