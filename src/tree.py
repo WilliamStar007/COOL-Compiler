@@ -4,138 +4,293 @@ These are read in from the file
 '''
 
 # *** CLASS ***
-class ClassObj(object):
-    pass
+class Class(object):
+    '''
+    Class object
+    '''
+    def __init__(self, _lineno, _class_info, _check_inherits, _parent, _feature_list):
+        self.lineno = _lineno
+        self.class_info = _class_info
+        self.check_inherits = _check_inherits
+        self.parent = _parent
+        self.feature_list = _feature_list
 
 # *** CLASS FEATURES ***
-
 class Feature(object):
-    def __init__(self, _lineno):
-        self.lineno = _lineno
+    '''
+    Base class for Attribute and Method
+    '''
+    def __init__(self, _identifier):
+        self.identifier = _identifier
 
-#class Attribute(Feature):
-#    def __init__(self, _lineno, _id, _type, _init=None):
-#        Feature.__init__(self, _lineno)
-#        self.id = _id
-#        self.type = _type
-#        self.init = _init
 
-class Method(Feature):
-    def __init__(self, _method_name, _formals, _method_label):
-        self.method_name = _method_name
-        self.formals = _formals
-        self.method_label = _method_label
-
-class MethodImplementation(Method):
-    def __init__(self, _class_name, _method_name, _formals, _method_label, _expr):
-        Method.__init__(self, _method_name, _formals, _method_label)
-        self.class_name = _class_name
+class Attribute(Feature):
+    '''
+    Attribute class. Inherits from feature
+    '''
+    def __init__(self, _identifier, _typename, _expr=None):
+        Feature.__init__(self, _identifier)
+        self.typename = _typename
         self.expr = _expr
 
-class Internal(object):
+
+class Method(Feature):
+    '''
+    Method class. Inherits from feature
+    '''
+    def __init__(self, _identifier, _formals_list, _typename, _body):
+        Feature.__init__(self, _identifier)
+        self.formals_list = _formals_list
+        self.typename = _typename
+        self.body = _body
+
+
+class Internal(object): # TODO: What to do with this
+    '''
+    A class for Internal cool objects
+    This includes Bool, Int, IO, Object, and String
+    '''
     def __init__(self, _method):
         self.method = _method
 
+
 # *** TERMINAL EXPRESSIONS ***
+class Expression(object):
+    '''
+    Expression base class
+    Includes the line number and the type of the node
+    '''
+    def __init__(self, _lineno, _type_of):
+        self.lineno = _lineno
+        self.type_of = _type_of
+
+
 class Identifier(object):
+    '''
+    Identifier object
+    '''
     def __init__(self, _name):
         self.name = _name
 
-class IdentifierExp(object):
-    pass
 
-class Int(object):
-    def __init__(self, _value):
+class IdentifierExp(Expression):
+    '''
+    Identifier expression object
+    '''
+    def __init__(self, _lineno, _type_of, _identifier):
+        Expression.__init__(self, _lineno, _type_of)
+        self.identifier = _identifier
+
+
+class Integer(Expression):
+    '''
+    Integer expression object
+    '''
+    def __init__(self, _lineno, _value):
+        Expression.__init__(self, _lineno, "Int")
         self.value = _value
 
-class String(object):
-    pass
+
+class String(Expression):
+    '''
+    String expression object
+    '''
+    def __init__(self, _lineno, _value):
+        Expression.__init__(self, _lineno, "String")
+        self.value = _value
+
+
+class TrueExp(Expression):
+    '''
+    True expression object
+    '''
+    def __init__(self, _lineno, _value):
+        Expression.__init__(self, _lineno, "Bool")
+        self.value = _value
+
+
+class FalseExp(Expression):
+    '''
+    String expression object
+    '''
+    def __init__(self, _lineno, _value):
+        Expression.__init__(self, _lineno, "Bool")
+        self.value = _value
 
 # *** DISPATCHES ***
 class Dispatch(object):
+    '''
+    Dispatch object
+    Can be of type dynamic, self, or static
+    '''
     def __init__(self, _ro, _method, _formals):
         self.ro = _ro
         self.method = _method
         self.formals = _formals
 
 # *** EXPRESSIONS OPERATIONS ***
-class Expression(object):
-    def __init__(self, _lineno, _type_of):
-        self.lineno = _lineno
-        self.type_of = _type_of
-
-class Unary(object):
-    def __init__(self, _rhs):
+class Unary(Expression):
+    '''
+    Unary operation base class
+    Inherits from Expression
+    '''
+    def __init__(self, _lineno, _type_of, _rhs):
+        Expression.__init__(self, _lineno, _type_of)
         self.rhs = _rhs
 
+
 class Binary(Unary):
-    def __init__(self, _lhs, _rhs):
-        Unary.__init__(self, _rhs)
+    '''
+    Binary operation base class
+    Inherits from unary
+    '''
+    def __init__(self, _lineno, _type_of, _lhs, _rhs):
+        Unary.__init__(self, _lineno, _type_of, _rhs)
         self.lhs = _lhs
+
 
 # *** UNARY EXPRESSIONS ***
 class IsVoid(Unary):
-    def __init__(self, _rhs):
-        Unary.__init__(self, _rhs)
+    '''
+    IsVoid unary expression
+    '''
+    def __init__(self, _lineno, _type_of, _rhs):
+        Unary.__init__(self, _lineno, _type_of, _rhs)
+
 
 class Negate(Unary):
-    def __init__(self, _rhs):
-        Unary.__init__(self, _rhs)
+    '''
+    Negate unary expression
+    '''
+    def __init__(self, _lineno, _type_of, _rhs):
+        Unary.__init__(self, _lineno, _type_of, _rhs)
 
 class NotExpr(Unary):
-    def __init__(self, _rhs):
-        Unary.__init__(self, _rhs)
+    '''
+    Not unary expression
+    '''
+    def __init__(self, _lineno, _type_of, _rhs):
+        Unary.__init__(self, _lineno, _type_of, _rhs)
 
 class New(Unary):
-    def __init__(self, _typename):
-        self.new_type = _typename
+    '''
+    New unary expression
+    '''
+    def __init__(self, _lineno, _type_of, _rhs):
+        Unary.__init__(self, _lineno, _type_of, _rhs)
 
 class Assign(Unary):
-    def __init__(self, _var, _rhs):
-        Unary.__init__(self, _rhs)
-        self.var = _var
+    '''
+    Assign unary expression
+    '''
+    def __init__(self, _lineno, _type_of, _rhs):
+        Unary.__init__(self, _lineno, _type_of, _rhs)
+        self.var = _rhs
 
 # *** BINARY EXPRESSIONS ***
 class Plus(Binary):
-    def __init__(self, _lhs, _rhs):
-        Binary.__init__(self, _lhs, _rhs)
+    '''
+    Plus binary expression
+    '''
+    def __init__(self, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+
 
 class Minus(Binary):
-    def __init__(self, _lhs, _rhs):
-        Binary.__init__(self, _lhs, _rhs)
+    '''
+    Minus binary expression
+    '''
+    def __init__(self, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+
 
 class Times(Binary):
-    def __init__(self, _lhs, _rhs):
-        Binary.__init__(self, _lhs, _rhs)
+    '''
+    Times binary expression
+    '''
+    def __init__(self, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+
 
 class Divide(Binary):
-    def __init__(self, _lhs, _rhs):
-        Binary.__init__(self, _lhs, _rhs)
+    '''
+    Divide binary expression
+    '''
+    def __init__(self, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+
 
 class Less(Binary):
-    def __init__(self, _lhs, _rhs):
-        Binary.__init__(self, _lhs, _rhs)
+    '''
+    Less binary expression
+    '''
+    def __init__(self, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+
 
 class LessOrEqual(Binary):
-    def __init__(self, _lhs, _rhs):
-        Binary.__init__(self, _lhs, _rhs)
+    '''
+    Le binary expression
+    '''
+    def __init__(self, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+
 
 class Equals(Binary):
-    def __init__(self, _lhs, _rhs):
-        Binary.__init__(self, _lhs, _rhs)
+    '''
+    Equals binary expression
+    '''
+    def __init__(self, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+
 
 # *** BLOCK STATEMENTS ***
-class IfBlock(object):
-    pass
+class IfBlock(Expression):
+    '''
+    If block statement
+    '''
+    def __init__(self, _lineno, _type_of, _predicate, _then_body, _else_body):
+        Expression.__init__(self, _lineno, _type_of)
+        self.predicate = _predicate
+        self.then_body = _then_body
+        self.else_body = _else_body
 
-class CaseBlock(object):
-    pass
 
-class LoopBlock(object):
-    pass
+class CaseBlock(Expression):
+    '''
+    Case block statement
+    '''
+    def __init__(self, _lineno, _type_of, _case_exp, _exps):
+        Expression.__init__(self, _lineno, _type_of)
+        self.case_exp = _case_exp
+        self.exps = _exps
 
-class Block(object):
-    pass
 
-class Let(object):
-    pass
+class LoopBlock(Expression):
+    '''
+    Loop block statement
+    '''
+    def __init__(self, _lineno, _type_of, _predicate, _body):
+        Expression.__init__(self, _lineno, _type_of)
+        self.predicate = _predicate
+        self.body = _body
+
+
+class Block(Expression):
+    '''
+    Block expression
+    '''
+    def __init__(self, _lineno, _type_of, _num_exps, _exps):
+        Expression.__init__(self, _lineno, _type_of)
+        self.num_exps = _num_exps
+        self.exps = _exps
+
+
+class Let(Expression):
+    '''
+    Let expression
+    '''
+    def __init__(self, _lineno, _type_of, _let_list, _let_body):
+        Expression.__init__(self, _lineno, _type_of)
+        self.let_list = _let_list
+        self.let_body = _let_body
