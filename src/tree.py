@@ -4,16 +4,16 @@ These are read in from the file
 '''
 
 # *** CLASS ***
-class Class(object):
+class ClassObj(object):
     '''
     Class object
     '''
-    def __init__(self, _lineno, _class_info, _check_inherits, _parent, _feature_list):
-        self.lineno = _lineno
+    def __init__(self, _class_info, _check_inherits, _parent, _feature_list):
         self.class_info = _class_info
         self.check_inherits = _check_inherits
         self.parent = _parent
         self.feature_list = _feature_list
+
 
 # *** CLASS FEATURES ***
 class Feature(object):
@@ -69,7 +69,8 @@ class Identifier(object):
     '''
     Identifier object
     '''
-    def __init__(self, _name):
+    def __init__(self, _lineno, _name):
+        self.lineno = _lineno
         self.name = _name
 
 
@@ -86,17 +87,17 @@ class Integer(Expression):
     '''
     Integer expression object
     '''
-    def __init__(self, _lineno, _value):
-        Expression.__init__(self, _lineno, "Int")
+    def __init__(self, _lineno, _type_of, _value):
+        Expression.__init__(self, _lineno, _type_of)
         self.value = _value
 
 
-class String(Expression):
+class StringObj(Expression):
     '''
     String expression object
     '''
-    def __init__(self, _lineno, _value):
-        Expression.__init__(self, _lineno, "String")
+    def __init__(self, _lineno, _type_of, _value):
+        Expression.__init__(self, _lineno, _type_of)
         self.value = _value
 
 
@@ -104,29 +105,57 @@ class TrueExp(Expression):
     '''
     True expression object
     '''
-    def __init__(self, _lineno, _value):
+    def __init__(self, _lineno):
         Expression.__init__(self, _lineno, "Bool")
-        self.value = _value
+        self.value = "true"
 
 
 class FalseExp(Expression):
     '''
     String expression object
     '''
-    def __init__(self, _lineno, _value):
+    def __init__(self, _lineno):
         Expression.__init__(self, _lineno, "Bool")
-        self.value = _value
+        self.value = "false"
+
 
 # *** DISPATCHES ***
-class Dispatch(object):
-    '''
-    Dispatch object
-    Can be of type dynamic, self, or static
-    '''
-    def __init__(self, _ro, _method, _formals):
-        self.ro = _ro
-        self.method = _method
+class Dispatch(Expression):
+    def __init__(self, _lineno, _type_of, _method_name, _formals):
+        Expression.__init__(self, _lineno, _type_of)
+        self.methodPname = _method_name
         self.formals = _formals
+
+
+class DynamicDispatch(Dispatch):
+    '''
+    Dynamic dispatch object
+    Inherits from Dispatch
+    '''
+    def __init__(self, _lineno, _type_of, _obj_name, _method_name, _formals):
+        Dispatch.__init__(self, _lineno, _type_of, _method_name, _formals)
+        self.obj_name = _obj_name
+
+
+class StaticDispatch(Dispatch):
+    '''
+    Static dispatch object
+    Inherits from Dispatch
+    '''
+    def __init__(self, _lineno, _type_of, _obj_name, _typename, _method_name, _formals):
+        Dispatch.__init__(self, _lineno, _type_of, _method_name, _formals)
+        self.obj_name = _obj_name
+        self.typename = _typename
+
+
+class SelfDispatch(Dispatch):
+    '''
+    Self dispatch object
+    Inherits from Dispatch
+    '''
+    def __init__(self, _lineno, _type_of, _method_name, _formals):
+        Dispatch.__init__(self, _lineno, _type_of, _method_name, _formals)
+
 
 # *** EXPRESSIONS OPERATIONS ***
 class Unary(Expression):
@@ -172,7 +201,7 @@ class NotExpr(Unary):
     def __init__(self, _lineno, _type_of, _rhs):
         Unary.__init__(self, _lineno, _type_of, _rhs)
 
-class New(Unary):
+class NewExp(Unary):
     '''
     New unary expression
     '''
@@ -183,9 +212,10 @@ class Assign(Unary):
     '''
     Assign unary expression
     '''
-    def __init__(self, _lineno, _type_of, _rhs):
+    def __init__(self, _lineno, _type_of, _var, _rhs):
         Unary.__init__(self, _lineno, _type_of, _rhs)
-        self.var = _rhs
+        self.var = _var
+        self.rhs = _rhs
 
 # *** BINARY EXPRESSIONS ***
 class Plus(Binary):

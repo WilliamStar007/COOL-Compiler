@@ -26,13 +26,6 @@ class MapMethod(object):
         self.method_label = _method_label
 
 
-class MapParent(object):
-    '''
-    Parent object for parent map
-    '''
-    pass
-
-
 class Mapping(object):
     '''
     Base class for mappings
