@@ -7,10 +7,12 @@ TODO:
 - Class map
 - Implementation map
 - AAST
-3. Symbol table logic
-4. Review architecture
-5. Plan
-6. Write
+3. Print out vtables
+4. Print out constructors
+5. Symbol table logic
+6. Review architecture
+7. Plan
+8. Write
 
 
 

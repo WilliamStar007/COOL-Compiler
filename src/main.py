@@ -1,47 +1,12 @@
-class Attribute(object):
-    def __init__(self, _id, _type, _init = None):
-        self.id = _id
-        self.type = _type
-        self.init = _init
+'''
+Main file
+'''
 
-class Method(object):
-    def __init__(self, _method_name, _formals, _method_label):
-        self.method_name = _method_name
-        self.formals = _formals
-        self.method_label = _method_label
-
-class MethodImplementation(Method):
-    def __init__(self, _class_name, _method_name, _formals, _method_label, _expr):
-        Method.__init__(self, _method_name, _formals, _method_label)
-        self.class_name = _class_name
-        self.expr = _expr
-
-class Variable(object):
-    def __init__(self, _name):
-        self.name = _name
-
-class Plus(object):
-    def __init__(self, _lhs, _rhs):
-        self.lhs = _lhs
-        self.rhs = _rhs
-
-class Internal(object):
-    def __init__(self, _method):
-        self.method = _method
-
-class Dispatch(object):
-    def __init__(self, _ro, _method, _formals):
-        self.ro = _ro
-        self.method = _method
-        self.formals = _formals
-
-class New(object):
-    def __init__(self, _typename):
-        self.new_type = _typename
-
-class Int(object):
-    def __init__(self, _value):
-        self.value = _value
+# Imports
+import sys
+import config
+from reader import read_input
+from tree import *
 
  # ALL OF THIS WILL BE DIFFERENT WITH X86
 class Register(object):
@@ -52,7 +17,7 @@ class FP(Register):
         self.offset = _offset
     def __repr__(self):
         if self.offset:
-            return "fp[%d]" % self.offset
+            return f"fp[{self.offset}]"
         else:
             return "fp"
 
@@ -61,7 +26,7 @@ class SP(Register):
         self.offset = _offset
     def __repr__(self):
         if self.offset:
-            return "sp[%d]" % self.offset
+            return f"sp[{self.offset}]"
         else:
             return "sp"
 
@@ -69,15 +34,15 @@ class R(Register):
     def __init__(self, _which, _offset=None):
         self.which = _which
         self.offset = _offset
-    
+
     def off(self, offset):
         return R(self.which, offset)
-    
+
     def __repr__(self):
         if self.offset:
-            return "r%d[%d]" % (self.which, self.offset)
+            return f"r{self.which}[{self.offset}]"
         else:
-            return "r%d" % self.which
+            return f"r{self.which}"
 
 class_map = {
     'Main' : [
@@ -247,6 +212,34 @@ def cgen(exp):
 
 
 def main():
+    '''
+    Main method
+    Reads in input
+    Assembles all mappings
+    Calls all functions to begin code generation
+    '''
+
+    if len(sys.argv) < 2:
+        print("Specify .cl-type input file")
+        exit(1)
+    with open(sys.argv[1]) as f:
+        config.lines = [l.rstrip() for l in f.readlines()]
+
+    # Assembles the maps and the AAST
+    config.aast = read_input()
+
+    # Output logic
+    output_str = ""
+
+    # Output file logic
+    output_filename = sys.argv[1]
+    output_filename = output_filename[:-7] + ".s"
+
+    outfile = open(output_filename, 'w')
+    outfile.write(output_str)
+    outfile.close()
+
+
     # Print vtables: need vtable for every class in the program
     # Print constructors
     # Print methods
