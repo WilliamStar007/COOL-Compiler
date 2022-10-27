@@ -45,7 +45,7 @@ class Method(Feature):
         self.body = _body
 
 
-class Internal(object): # TODO: What to do with this
+class Internal(object):
     '''
     A class for Internal cool objects
     This includes Bool, Int, IO, Object, and String
@@ -121,9 +121,13 @@ class FalseExp(Expression):
 
 # *** DISPATCHES ***
 class Dispatch(Expression):
+    '''
+    Dispatch base class
+    Inherited by DynamicDispatch, SelfDispatch, and StaticDispatch
+    '''
     def __init__(self, _lineno, _type_of, _method_name, _formals):
         Expression.__init__(self, _lineno, _type_of)
-        self.methodPname = _method_name
+        self.method_name = _method_name
         self.formals = _formals
 
 

@@ -1,3 +1,7 @@
+'''
+This file deserializes an annotated abstract syntax tree
+'''
+
 from mappings import MapAttr, MapMethod
 from tree import *
 import config
@@ -34,7 +38,7 @@ def read_exp():
         return (lineno, type_of, exp_name, method_name)
 
     ### ASSIGNMENT
-    if exp_name == 'assign': 
+    if exp_name == 'assign':
         var = read_identifier()
         rhs = read_exp()
         return Assign(lineno, type_of, var, rhs)
@@ -54,9 +58,9 @@ def read_exp():
         type_name = read_identifier()
         method_name = read_identifier()
         num_args = int(get_line())
-        args = [] 
+        args = []
         for _ in range(num_args):
-            args.append(read_exp()) 
+            args.append(read_exp())
         return StaticDispatch(lineno, type_of, obj_name, type_name, method_name, args)
 
     elif exp_name == 'self_dispatch':
@@ -90,7 +94,7 @@ def read_exp():
     elif exp_name == 'new':
         return NewExp(lineno, type_of, read_identifier())
     elif exp_name == 'isvoid':
-        return IsVoid(lineno, type_of, exp_name, read_exp())
+        return IsVoid(lineno, type_of, read_exp())
     elif exp_name == 'plus':
         return Plus(lineno, type_of, read_exp(), read_exp())
     elif exp_name == 'minus':
