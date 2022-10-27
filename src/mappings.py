@@ -9,22 +9,27 @@ from collections import defaultdict
 
 class MapAttr(object):
     '''
-    Attrs for class map
+    Attribute object for the class map
     '''
     def __init__(self, _id, _type, _init=None):
         self.id = _id
         self.type = _type
         self.init = _init
 
+
 class MapMethod(object):
     '''
-    Methods for an implementation map
+    Method object for the implementation map
     '''
-    pass
+    def __init__(self, _method_name, _formals, _method_label):
+        self.method_name = _method_name
+        self.formals = _formals
+        self.method_label = _method_label
+
 
 class MapParent(object):
     '''
-    Parents for class parent map
+    Parent object for parent map
     '''
     pass
 

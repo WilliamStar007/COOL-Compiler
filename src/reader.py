@@ -193,60 +193,87 @@ def read_class_map():
     num_attrs = get_line()
 
     for i in range(num_attrs):
-        # TODO: Will only work for basic things (int, str, etc)
-        # TODO: Need to make sure it works for dispatch, etc
-        initializer = get_line()
         attr = None
         var_name = None
         var_type = None
         val = None
-        if initializer == "initializer":
+
+        attr_type = get_line()
+        if attr_type == "initializer":
             var_name = get_line()
             var_type = get_line()
             val = read_exp
-        elif initializer == "no_initializer":
+        elif attr_type == "no_initializer":
             var_name = get_line()
             var_type = get_line()
             _ = get_line() # TODO: Don't know what to do with this
         attr = MapAttr(var_name, var_type, val)
         config.class_map.append_obj(class_name, attr)
 
+
 def read_implementation_map():
     '''
     Reads in the implementation map
     '''
-    pass
+    class_name = get_line()
+    num_methods = get_line()
+
+    for i in range(num_methods):
+        method_name = get_line()
+        num_formals = get_line()
+
+        formals = []
+        for i in range(num_formals):
+            formal = get_line()
+            formals.append(formal)
+
+        _ = get_line()
+        _ = read_exp()
+
+        method = MapMethod(method_name, formals, method_name) # TODO: Wrong
+        config.impl_map.append_obj(class_name, method)
 
 
 def read_parent_map():
     '''
     Reads in the parent map
     '''
-    pass
+    num_classes = get_line()
+
+    for i in range(num_classes):
+        class_name = get_line()
+        parent_name = get_line()
+
+        config.parent_map.append_obj(class_name, parent_name)
 
 
 def read_input():
     '''
     Reads all input
     '''
+
+    # Process class map
     _ = get_line()
     num_attrs = get_line()
 
     for i in range(num_attrs):
         read_class_map()
 
+    # Process implementation map
     _ = get_line()
     num_methods = get_line()
 
     for i in range(num_methods):
         read_implementation_map()
 
+    # Process parent map
     _ = get_line()
     num_classes = get_line()
 
     for i in range(num_classes):
         read_parent_map()
 
+    # Process AAST
     num_classes = get_line()
     config.aast.append(num_classes)
 

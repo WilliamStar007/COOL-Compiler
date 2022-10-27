@@ -8,7 +8,8 @@ import config
 from reader import read_input
 from tree import *
 
- # ALL OF THIS WILL BE DIFFERENT WITH X86
+'''
+# ALL OF THIS WILL BE DIFFERENT WITH X86
 class Register(object):
     pass
 
@@ -44,62 +45,6 @@ class R(Register):
         else:
             return f"r{self.which}"
 
-class_map = {
-    'Main' : [
-        Attribute("a", "Int", Int(222)),
-        Attribute("b", "Int", Int(333))
-    ],
-    'IO': [],
-    'Bool': [Attribute("contents", "unboxed_bool", False)],
-    'Int': [Attribute("contents", "unboxed_int", 0)],
-    'Object': [],
-}
-
-implementation_map = {
-    'Main':
-    [
-        Method(
-            'out_int',
-            ["x"],
-            'IO.out_int'
-        ),
-        Method(
-            'main',
-            [],
-            'Main.main'
-        )
-    ],
-    'IO':
-    [
-        Method(
-            'out_int',
-            ["x"],
-            'IO.out_int'
-        ),
-    ]
-}
-
-ast = [
-    MethodImplementation(
-        'IO',
-        'out_int',
-        ['x'],
-        'IO.out_int',
-        Internal("IO.out_int")
-    ),
-    MethodImplementation(
-        'Main',
-        'main',
-        [],
-        'Main.main',
-        Dispatch(
-            Variable("self"),
-            "out_int",
-            [Plus(Variable("a"), Variable("b"))]
-        )
-    ),
-
-]
 
 classes = ['Object', 'IO', 'Main', 'Int', 'Bool']
 
@@ -209,7 +154,7 @@ def cgen(exp):
         print(f"\t\tst {acc_reg}[{int_constant_offset}] <- {tmp_reg}")
 
         return acc_reg
-
+'''
 
 def main():
     '''
@@ -226,7 +171,7 @@ def main():
         config.lines = [l.rstrip() for l in f.readlines()]
 
     # Assembles the maps and the AAST
-    config.aast = read_input()
+    read_input()
 
     # Output logic
     output_str = ""
@@ -240,6 +185,7 @@ def main():
     outfile.close()
 
 
+    '''
     # Print vtables: need vtable for every class in the program
     # Print constructors
     # Print methods
@@ -312,6 +258,7 @@ def main():
 
         print("\t\tpop ra")
         print("\t\treturn")
+    '''
 
 
 if __name__ == '__main__':

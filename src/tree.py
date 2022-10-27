@@ -21,8 +21,7 @@ class Feature(object):
 #        self.init = _init
 
 class Method(Feature):
-    def __init__(self, _lineno, _method_name, _formals, _method_label):
-        Feature.__init__(self, _lineno)
+    def __init__(self, _method_name, _formals, _method_label):
         self.method_name = _method_name
         self.formals = _formals
         self.method_label = _method_label
