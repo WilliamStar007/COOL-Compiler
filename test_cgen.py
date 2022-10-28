@@ -18,13 +18,15 @@ correct_f = "*.s-correct"
 cool_list = itertools.chain(glob.glob("tests/*.cl"))
 
 
+# pytest function to test code generation
 @pytest.mark.parametrize("cool_f", cool_list)
 def test_cgen(cool_f):
     set_globals(cool_f)
-    is_valid()
+    if not is_valid():
+        assert False
 
 
-# check output consistency
+# check output consistency (x86 assembly)
 def is_valid():
     global test_name, test_f, output_f, correct_f
 
@@ -62,7 +64,7 @@ def is_valid():
         os.remove("tests/our.stderr")
         os.remove("tests/correct.stdout")
         os.remove("tests/correct.stderr")
-        assert False
+        return False
 
     if not file_created:
         if os.path.isfile(output_f):
@@ -72,12 +74,12 @@ def is_valid():
             assert False
         # If the file wasn't created, there's nothing else to check
         print("PASS:", test_name)
-        assert True
+        return True
 
     if not os.path.isfile(output_f):
         print("FAIL:", test_name)
         print(f"Output file: {output_f} was not created")
-        assert False
+        return False
 
     with open(output_f) as f:
         our_answer = f.read().strip()
@@ -86,11 +88,11 @@ def is_valid():
         print("FAIL:", test_name)
         if local_debug:
             subprocess.run(["icdiff", output_f, correct_f])
-        assert False
+        return False
     else:
         print("PASS:", test_name)
 
-    assert True
+    return True
 
 
 # set filenames
