@@ -16,159 +16,14 @@ correct_f = "*.s-correct"
 local_debug = False
 
 
-def test_arith():
-    cool_f = "tests/arith.cl"
-    set_globals(cool_f)
-
-    # terminate program if error found
-    if not is_valid():
-        assert False
-
-
-def test_arithmetic():
-    for cool_f in itertools.chain(glob.glob("tests/arithmetic*.cl")):
+# pytest function
+def test_cgen():
+    for cool_f in itertools.chain(glob.glob("tests/*.cl")):
         set_globals(cool_f)
-
-        # terminate program if error found
-        if not is_valid():
-            assert False
+        is_valid()
 
 
-def test_assignment():
-    for cool_f in itertools.chain(glob.glob("tests/assignment*.cl")):
-        set_globals(cool_f)
-
-        # terminate program if error found
-        if not is_valid():
-            assert False
-
-
-def test_atoi():
-    for cool_f in itertools.chain(glob.glob("tests/atoi*.cl")):
-        set_globals(cool_f)
-
-        # terminate program if error found
-        if not is_valid():
-            assert False
-
-
-def test_attributes():
-    for cool_f in itertools.chain(glob.glob("tests/attributes*.cl")):
-        set_globals(cool_f)
-
-        # terminate program if error found
-        if not is_valid():
-            assert False
-
-
-def test_basic():
-    for cool_f in itertools.chain(glob.glob("tests/basic*.cl")):
-        set_globals(cool_f)
-
-        # terminate program if error found
-        if not is_valid():
-            assert False
-
-
-def test_block():
-    for cool_f in itertools.chain(glob.glob("tests/block*.cl")):
-        set_globals(cool_f)
-
-        # terminate program if error found
-        if not is_valid():
-            assert False
-
-
-def test_case():
-    for cool_f in itertools.chain(glob.glob("tests/case*.cl")):
-        set_globals(cool_f)
-
-        # terminate program if error found
-        if not is_valid():
-            assert False
-
-
-def test_cell():
-    cool_f = "tests/cell.cl"
-    set_globals(cool_f)
-
-    # terminate program if error found
-    if not is_valid():
-        assert False
-
-
-def test_class():
-    for cool_f in itertools.chain(glob.glob("tests/class*.cl")):
-        set_globals(cool_f)
-
-        # terminate program if error found
-        if not is_valid():
-            assert False
-
-
-def test_compare():
-    cool_f = "tests/compare.cl"
-    set_globals(cool_f)
-
-    # terminate program if error found
-    if not is_valid():
-        assert False
-
-
-def test_conditional():
-    for cool_f in itertools.chain(glob.glob("tests/conditionals*.cl")):
-        set_globals(cool_f)
-
-        # terminate program if error found
-        if not is_valid():
-            assert False
-
-
-def test_dispatch():
-    for cool_f in itertools.chain(glob.glob("tests/dispatch*.cl")):
-        set_globals(cool_f)
-
-        # terminate program if error found
-        if not is_valid():
-            assert False
-
-
-def test_eq():
-    for cool_f in itertools.chain(glob.glob("tests/eq*.cl")):
-        set_globals(cool_f)
-
-        # terminate program if error found
-        if not is_valid():
-            assert False
-
-
-def test_features():
-    for cool_f in itertools.chain(glob.glob("tests/features*.cl")):
-        set_globals(cool_f)
-
-        # terminate program if error found
-        if not is_valid():
-            assert False
-
-
-def test_fib():
-    cool_f = "tests/fib.cl"
-    set_globals(cool_f)
-
-    # terminate program if error found
-    if not is_valid():
-        assert False
-
-
-def test_graph():
-    cool_f = "tests/graph.cl"
-    set_globals(cool_f)
-
-    # terminate program if error found
-    if not is_valid():
-        assert False
-
-
+# check output consistency
 def is_valid():
     global test_name, test_f, output_f, correct_f
 
@@ -206,22 +61,22 @@ def is_valid():
         os.remove("tests/our.stderr")
         os.remove("tests/correct.stdout")
         os.remove("tests/correct.stderr")
-        return False
+        assert False
 
     if not file_created:
         if os.path.isfile(output_f):
             os.remove(output_f)
             print("FAIL:", test_name)
             print(f"Output file: {output_f} should not have been created")
-            return False
+            assert False
         # If the file wasn't created, there's nothing else to check
         print("PASS:", test_name)
-        return True
+        assert True
 
     if not os.path.isfile(output_f):
         print("FAIL:", test_name)
         print(f"Output file: {output_f} was not created")
-        return False
+        assert False
 
     with open(output_f) as f:
         our_answer = f.read().strip()
@@ -230,13 +85,14 @@ def is_valid():
         print("FAIL:", test_name)
         if local_debug:
             subprocess.run(["icdiff", output_f, correct_f])
-        return False
+        assert False
     else:
         print("PASS:", test_name)
 
-    return True
+    assert True
 
 
+# set filenames
 def set_globals(cool_f):
     global test_name, test_f, output_f, correct_f
 
