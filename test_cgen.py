@@ -170,8 +170,7 @@ def test_graph():
 
 
 def test_test():
-    if False:
-        assert False
+    assert True
 
 
 def is_valid():
