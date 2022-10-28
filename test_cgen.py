@@ -6,16 +6,14 @@ import sys
 
 
 # set executable permission
-subprocess.run(["chmod", "a+x", "./cool-osx"])
+subprocess.run("chmod a+x ./cool-osx")
 
 # global variables for testing
 test_name = "*.cl"
 test_f = "*.cl-type"
 output_f = "*.s"
 correct_f = "*.s-correct"
-correct_result = ""
-our_result = ""
-file_created = False
+local_debug = False
 
 
 def test_arith():
@@ -172,7 +170,7 @@ def test_graph():
 
 
 def is_valid():
-    global test_name, test_f, output_f, correct_f, correct_result, our_result, file_created
+    global test_name, test_f, output_f, correct_f
 
     # use compiler to generate correct output
     correct_result = subprocess.run(["./cool-osx", "--x86", test_f], capture_output=True, text=True)
@@ -228,7 +226,8 @@ def is_valid():
 
     if our_answer != correct_answer:
         print("FAIL:", test_name)
-        subprocess.run(["icdiff", output_f, correct_f])
+        if local_debug:
+            subprocess.run(["icdiff", output_f, correct_f])
         return False
     else:
         print("PASS:", test_name)
@@ -237,7 +236,7 @@ def is_valid():
 
 
 def set_globals(cool_f):
-    global test_name, test_f, output_f, correct_f, correct_result, our_result, file_created
+    global test_name, test_f, output_f, correct_f
 
     test_name = os.path.basename(cool_f)
     test_f = cool_f + "-type"
