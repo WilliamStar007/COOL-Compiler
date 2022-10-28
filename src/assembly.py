@@ -2,6 +2,8 @@
 This file has all assembly logic
 '''
 
+class 
+
     # Print vtables: need vtable for every class in the program
     # Print constructors
     # Print methods

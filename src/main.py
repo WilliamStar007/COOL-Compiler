@@ -33,9 +33,15 @@ def main():
     # Output logic
     output_str = ""
 
+    # Print vtables
+    # Print constructors
+    # Print globals
+    # Print program start
+    # Print rest. Need to explore this part
+
     # Output file logic
     output_filename = sys.argv[1]
-    output_filename = output_filename[:-7] + ".s"
+    output_filename = output_filename[:-7] + "s"
 
     outfile = open(output_filename, 'w', encoding="utf-8")
     outfile.write(output_str)
