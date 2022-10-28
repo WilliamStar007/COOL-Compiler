@@ -169,11 +169,6 @@ def test_graph():
         assert False
 
 
-def test_test():
-    if False:
-        assert False
-
-
 def is_valid():
     global test_name, test_f, output_f, correct_f
 
