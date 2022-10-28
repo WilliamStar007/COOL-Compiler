@@ -169,6 +169,11 @@ def test_graph():
         assert False
 
 
+def test_test():
+    if False:
+        assert False
+
+
 def is_valid():
     global test_name, test_f, output_f, correct_f
 
@@ -196,11 +201,11 @@ def is_valid():
         with open("tests/correct.stderr", "w") as f:
             f.write(correct_result.stderr)
 
-        print("Stdout:")
         if local_debug:
+            print("Stdout:")
             subprocess.run(["icdiff", "tests/our.stdout", "tests/correct.stdout"])
-        print("Stderr:")
         if local_debug:
+            print("Stderr:")
             subprocess.run(["icdiff", "tests/our.stderr", "tests/correct.stderr"])
         os.remove("tests/our.stdout")
         os.remove("tests/our.stderr")
