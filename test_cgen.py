@@ -197,9 +197,11 @@ def is_valid():
             f.write(correct_result.stderr)
 
         print("Stdout:")
-        subprocess.run(["icdiff", "tests/our.stdout", "tests/correct.stdout"])
+        if local_debug:
+            subprocess.run(["icdiff", "tests/our.stdout", "tests/correct.stdout"])
         print("Stderr:")
-        subprocess.run(["icdiff", "tests/our.stderr", "tests/correct.stderr"])
+        if local_debug:
+            subprocess.run(["icdiff", "tests/our.stderr", "tests/correct.stderr"])
         os.remove("tests/our.stdout")
         os.remove("tests/our.stderr")
         os.remove("tests/correct.stdout")
