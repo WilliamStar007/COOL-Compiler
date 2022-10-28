@@ -5,6 +5,9 @@ import os
 import sys
 
 
+# set executable permission
+subprocess.run("chmod a+x ./cool-osx")
+
 # global variables for testing
 test_name = "*.cl"
 test_f = "*.cl-type"
