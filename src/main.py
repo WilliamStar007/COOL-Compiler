@@ -37,12 +37,12 @@ def main():
             case 'class_map':
                 test_str = f"{config.class_map}"
             case 'impl_map':
-                print('tmp')
+                test_str = f"{config.impl_map}"
             case 'aast':
-                print('tmp')
+                test_str = f"{config.class_map}\n{config.impl_map}\n{config.aast}"
             case _:
                 print("INVALID")
-        
+
         outfile = open(output_filename, 'w', encoding="utf-8")
         outfile.write(test_str)
         outfile.close()

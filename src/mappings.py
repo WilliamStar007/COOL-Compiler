@@ -20,10 +20,12 @@ class MapMethod(object):
     '''
     Method object for the implementation map
     '''
-    def __init__(self, _method_name, _formals, _method_label):
+    def __init__(self, _method_name, _num_formals, _formals, _method_class, _method_body):
         self.method_name = _method_name
+        self.num_formals = _num_formals
         self.formals = _formals
-        self.method_label = _method_label
+        self.method_class = _method_class
+        self.method_body = _method_body
 
 
 class Mapping(object):
@@ -33,7 +35,7 @@ class Mapping(object):
     def __init__(self, _amt=0):
         self.dict = defaultdict(list)
         self.amt = _amt
-    
+
     def init_obj(self, class_name):
         '''
         Ensures that an object will appear in the dictionary
@@ -88,19 +90,18 @@ class ImplementationMap(Mapping):
         Mapping.__init__(self)
 
     def __repr__(self):
-        out_str = f"implementation_map\n{len(self.dict)}" # TODO: DOES NOT HAVE LEN
+        out_str = f"implementation_map\n{self.amt}\n"
 
         for class_name, methods in self.dict.items():
             out_str += f"{class_name}\n{len(methods)}\n"
 
             for method in methods:
-                out_str += f"{method.method_name}\n"
+                out_str += f"{method.method_name}\n{method.num_formals}\n"
 
                 for formal in method.formals:
                     out_str += f"{formal}\n"
 
-                # TODO: SHOULD BE METHOD BODY TO MATCH
-                out_str += f"{class_name}\n{method.method_label}\n"
+                out_str += f"{method.method_class}\n{method.method_body}\n"
 
         return out_str
 

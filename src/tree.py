@@ -58,11 +58,14 @@ class Internal(object):
     A class for Internal cool objects
     This includes Bool, Int, IO, Object, and String
     '''
-    def __init__(self, _method):
-        self.method = _method
+    def __init__(self, _lineno, _type_of, _exp_name, _method_name):
+        self.lineno = _lineno
+        self.type_of = _type_of
+        self.exp_name = _exp_name
+        self.method_name = _method_name
 
     def __repr__(self):
-        ret = "INTERNAL: IMPL"
+        ret = f"{self.lineno}\n{self.type_of}\n{self.exp_name}\n{self.method_name}"
         return ret
 
 
@@ -97,7 +100,8 @@ class IdentifierExp(Expression):
         self.identifier = _identifier
 
     def __repr__(self):
-        ret = f"{self.lineno}\n{self.type_of}\n{self.identifier}"
+        ret = f"{self.lineno}\n{self.type_of}\nidentifier\n"
+        ret += f"{self.identifier.lineno}\n{self.identifier}"
         return ret
 
 class Integer(Expression):
@@ -240,12 +244,13 @@ class Binary(Unary):
     Binary operation base class
     Inherits from unary
     '''
-    def __init__(self, _lineno, _type_of, _lhs, _rhs):
+    def __init__(self, _lineno, _type_of, _operation, _lhs, _rhs):
         Unary.__init__(self, _lineno, _type_of, _rhs)
+        self.operation = _operation
         self.lhs = _lhs
 
     def print(self):
-        ret = f"{self.lineno}\n{self.type_of}\n{self.lhs}\n{self.rhs}"
+        ret = f"{self.lineno}\n{self.type_of}\n{self.operation}\n{self.lhs}\n{self.rhs}"
         return ret
 
 # *** UNARY EXPRESSIONS ***
@@ -299,7 +304,8 @@ class Assign(Unary):
         self.rhs = _rhs
 
     def __repr__(self):
-        return self.print()
+        ret = f"{self.lineno}\n{self.type_of}\nassign\n{self.var.lineno}\n{self.var}\n{self.rhs}"
+        return ret
 
 # *** BINARY EXPRESSIONS ***
 class Plus(Binary):
@@ -307,7 +313,7 @@ class Plus(Binary):
     Plus binary expression
     '''
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+        Binary.__init__(self, _lineno, _type_of, "plus", _lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -317,7 +323,7 @@ class Minus(Binary):
     Minus binary expression
     '''
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+        Binary.__init__(self, _lineno, _type_of, "minus", _lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -327,7 +333,7 @@ class Times(Binary):
     Times binary expression
     '''
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+        Binary.__init__(self, _lineno, _type_of, "times", _lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -337,7 +343,7 @@ class Divide(Binary):
     Divide binary expression
     '''
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+        Binary.__init__(self, _lineno, _type_of, "divide", _lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -347,7 +353,7 @@ class Less(Binary):
     Less binary expression
     '''
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+        Binary.__init__(self, _lineno, _type_of, "lt", _lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -357,7 +363,7 @@ class LessOrEqual(Binary):
     Le binary expression
     '''
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+        Binary.__init__(self, _lineno, _type_of, "le", _lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -367,7 +373,7 @@ class Equals(Binary):
     Equals binary expression
     '''
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
+        Binary.__init__(self, _lineno, _type_of, "equal",_lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -423,7 +429,7 @@ class Block(Expression):
         self.exps = _exps
 
     def __repr__(self):
-        ret = f"{self.lineno}\nblock\n{self.num_exps}\n"
+        ret = f"{self.lineno}\n{self.type_of}\nblock\n{self.num_exps}\n"
         for i, exp in enumerate(self.exps):
             ret += f"{exp}"
             if i != self.num_exps - 1:
@@ -440,5 +446,20 @@ class Let(Expression):
         self.let_body = _let_body
 
     def __repr__(self):
-        ret = "TEMP"
+        ret = f"{self.lineno}\n{self.type_of}\nlet\n{len(self.let_list)}\n"
+
+        for formal in self.let_list:
+            binding_type = formal[0]
+            identifier = formal[1]
+            id_type = formal[2]
+            expr_type = formal[3]
+
+            ret += f"{binding_type}\n{identifier.lineno}\n{identifier}\n"
+            ret += f"{id_type.lineno}\n{id_type}\n"
+
+            if expr_type:
+                ret += f"{expr_type}\n"
+
+        ret += f"{self.let_body}"
+
         return ret

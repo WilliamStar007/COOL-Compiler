@@ -33,9 +33,16 @@ def read_exp():
     exp_name = get_line()
 
     ### INTERNALS
-    if exp_name == "internal":
-        method_name = get_line()
-        return (lineno, type_of, exp_name, method_name)
+    #if exp_name == "internal":
+        # line no
+        # Class name
+        # Line no
+        # Ret type
+        # Internal
+        # method name
+
+    #    method_name = get_line()
+    #    return Internal(lineno, type_of, exp_name, method_name)
 
     ### ASSIGNMENT
     if exp_name == 'assign':
@@ -121,6 +128,9 @@ def read_exp():
         return StringObj(lineno, type_of, get_line())
     elif exp_name == 'identifier':
         return IdentifierExp(lineno, type_of, read_identifier())
+    elif exp_name == 'internal':
+        desc = get_line()
+        return Internal(lineno, type_of, exp_name, desc)
     elif exp_name == 'true':
         return TrueExp(lineno)
     elif exp_name == 'false':
@@ -250,10 +260,11 @@ def read_implementation_map():
             formal = get_line()
             formals.append(formal)
 
-        _ = get_line()
-        _ = read_exp()
+        method_class_name = get_line()
 
-        method = MapMethod(method_name, formals, method_name)
+        body = read_exp()
+
+        method = MapMethod(method_name, num_formals, formals, method_class_name, body)
         config.impl_map.append_obj(class_name, method)
 
 
@@ -284,6 +295,8 @@ def read_input():
     # Process implementation map
     _ = get_line()
     num_methods = int(get_line())
+
+    config.impl_map.set_num(num_methods)
 
     for _ in range(num_methods):
         read_implementation_map()
