@@ -18,7 +18,6 @@ def main():
     Constructs vtables
     Calls all functions to begin code generation
     '''
-
     if len(sys.argv) < 2:
         print("Specify .cl-type input file")
         sys.exit(1)
@@ -28,9 +27,33 @@ def main():
     # Assembles the maps and the AAST
     read_input()
 
+    if len(sys.argv) == 3:
+        print("TESTING SUITE")
+
+        output_filename = "test.cl-type"
+
+        test_str = ""
+        match sys.argv[2]:
+            case 'class_map':
+                test_str = f"{config.class_map}"
+            case 'impl_map':
+                print('tmp')
+            case 'aast':
+                print('tmp')
+            case _:
+                print("INVALID")
+        
+        outfile = open(output_filename, 'w', encoding="utf-8")
+        outfile.write(test_str)
+        outfile.close()
+
+        exit(0)
+
     # Assemble symbol table
 
     # Assemble vtable
+
+
 
     # Output logic
     output_str = ""

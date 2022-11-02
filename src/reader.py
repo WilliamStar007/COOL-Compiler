@@ -217,6 +217,8 @@ def read_class_map():
     class_name = get_line()
     num_attrs = int(get_line())
 
+    config.class_map.init_obj(class_name)
+
     for _ in range(num_attrs):
         attr = None
         var_name = None
@@ -224,14 +226,10 @@ def read_class_map():
         val = None
 
         attr_type = get_line()
+        var_name = get_line()
+        var_type = get_line()
         if attr_type == "initializer":
-            var_name = get_line()
-            var_type = get_line()
-            _ = read_exp()
-            val = read_exp
-        elif attr_type == "no_initializer":
-            var_name = get_line()
-            var_type = get_line()
+            val = read_exp()
         attr = MapAttr(var_name, var_type, val)
         config.class_map.append_obj(class_name, attr)
 
@@ -277,6 +275,8 @@ def read_input():
     # Process class map
     _ = get_line()
     num_attrs = int(get_line())
+
+    config.class_map.set_num(num_attrs)
 
     for _ in range(num_attrs):
         read_class_map()

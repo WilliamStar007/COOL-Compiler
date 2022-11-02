@@ -30,14 +30,28 @@ class Mapping(object):
     '''
     Base class for mappings
     '''
-    def __init__(self):
+    def __init__(self, _amt=0):
         self.dict = defaultdict(list)
+        self.amt = _amt
+    
+    def init_obj(self, class_name):
+        '''
+        Ensures that an object will appear in the dictionary
+        '''
+        if class_name not in self.dict:
+            self.dict[class_name] = []
 
     def append_obj(self, class_name, obj):
         '''
         Append an object to the mapping's list
         '''
         self.dict[class_name].append(obj)
+
+    def set_num(self, _new_amt):
+        '''
+        Set the new amount
+        '''
+        self.amt = _new_amt
 
 
 class ClassMap(Mapping):
@@ -49,17 +63,18 @@ class ClassMap(Mapping):
         Mapping.__init__(self)
 
     def __repr__(self):
-        out_str = ""
+        out_str = f"class_map\n{self.amt}\n"
 
         for class_name, attributes in self.dict.items():
             out_str += f"{class_name}\n{len(attributes)}\n"
-            if attributes.init:
-                out_str += "initializer\n"
-            else:
-                out_str += "no_initializer\n"
-            out_str += f"{attributes.id}\n{attributes.type}\n"
-            if attributes.init:
-                out_str += f"{attributes.init}\n"
+            for attr in attributes:
+                if attr.init:
+                    out_str += "initializer\n"
+                else:
+                    out_str += "no_initializer\n"
+                out_str += f"{attr.id}\n{attr.type}\n"
+                if attr.init:
+                    out_str += f"{attr.init}\n"
 
         return out_str
 

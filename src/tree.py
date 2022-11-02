@@ -14,6 +14,9 @@ class ClassObj(object):
         self.parent = _parent
         self.feature_list = _feature_list
 
+    def __repr__(self):
+        ret = "CLASS: IMPL"
+        return ret
 
 # *** CLASS FEATURES ***
 class Feature(object):
@@ -22,7 +25,6 @@ class Feature(object):
     '''
     def __init__(self, _identifier):
         self.identifier = _identifier
-
 
 class Attribute(Feature):
     '''
@@ -33,6 +35,9 @@ class Attribute(Feature):
         self.typename = _typename
         self.expr = _expr
 
+    def __repr__(self):
+        ret = "TEMP"
+        return ret
 
 class Method(Feature):
     '''
@@ -44,6 +49,9 @@ class Method(Feature):
         self.typename = _typename
         self.body = _body
 
+    def __repr__(self):
+        ret = "METHOD: IMPL"
+        return ret
 
 class Internal(object):
     '''
@@ -52,6 +60,10 @@ class Internal(object):
     '''
     def __init__(self, _method):
         self.method = _method
+
+    def __repr__(self):
+        ret = "INTERNAL: IMPL"
+        return ret
 
 
 # *** TERMINAL EXPRESSIONS ***
@@ -64,7 +76,6 @@ class Expression(object):
         self.lineno = _lineno
         self.type_of = _type_of
 
-
 class Identifier(object):
     '''
     Identifier object
@@ -73,6 +84,9 @@ class Identifier(object):
         self.lineno = _lineno
         self.name = _name
 
+    def __repr__(self):
+        ret = f"{self.name}"
+        return ret
 
 class IdentifierExp(Expression):
     '''
@@ -82,15 +96,21 @@ class IdentifierExp(Expression):
         Expression.__init__(self, _lineno, _type_of)
         self.identifier = _identifier
 
+    def __repr__(self):
+        ret = f"{self.lineno}\n{self.type_of}\n{self.identifier}"
+        return ret
 
 class Integer(Expression):
     '''
     Integer expression object
     '''
     def __init__(self, _lineno, _type_of, _value):
-        Expression.__init__(self, _lineno, _type_of)
+        Expression.__init__(self, _lineno, "integer")
         self.value = _value
 
+    def __repr__(self):
+        ret = f"{self.lineno}\n{self.type_of}\n{self.value}"
+        return ret
 
 class StringObj(Expression):
     '''
@@ -100,6 +120,9 @@ class StringObj(Expression):
         Expression.__init__(self, _lineno, _type_of)
         self.value = _value
 
+    def __repr__(self):
+        ret = f"{self.lineno}\n{self.type_of}\n{self.value}"
+        return ret
 
 class TrueExp(Expression):
     '''
@@ -109,6 +132,9 @@ class TrueExp(Expression):
         Expression.__init__(self, _lineno, "Bool")
         self.value = "true"
 
+    def __repr__(self):
+        ret = f"{self.lineno}\n{self.value}"
+        return ret
 
 class FalseExp(Expression):
     '''
@@ -118,6 +144,9 @@ class FalseExp(Expression):
         Expression.__init__(self, _lineno, "Bool")
         self.value = "false"
 
+    def __repr__(self):
+        ret = f"{self.lineno}\n{self.value}"
+        return ret
 
 # *** DISPATCHES ***
 class Dispatch(Expression):
@@ -130,7 +159,6 @@ class Dispatch(Expression):
         self.method_name = _method_name
         self.formals = _formals
 
-
 class DynamicDispatch(Dispatch):
     '''
     Dynamic dispatch object
@@ -140,6 +168,16 @@ class DynamicDispatch(Dispatch):
         Dispatch.__init__(self, _lineno, _type_of, _method_name, _formals)
         self.obj_name = _obj_name
 
+    def __repr__(self):
+        ret = f"{self.lineno}\ndynamic_dispatch\n{self.type_of}\n"
+        ret += f"{self.obj_name}\n{self.method_name}\n"
+
+        for i, formal in enumerate(self.formals):
+            ret += f"{formal}"
+            if i != len(self.formals) - 1:
+                ret += "\n"
+
+        return ret
 
 class StaticDispatch(Dispatch):
     '''
@@ -151,6 +189,16 @@ class StaticDispatch(Dispatch):
         self.obj_name = _obj_name
         self.typename = _typename
 
+    def __repr__(self):
+        ret = f"{self.lineno}\nstatic_dispatch\n{self.type_of}\n{self.obj_name}\n"
+        ret += f"{self.typename}\n{self.method_name}\n"
+
+        for i, formal in enumerate(self.formals):
+            ret += f"{formal}"
+            if i != len(self.formals) - 1:
+                ret += "\n"
+
+        return ret
 
 class SelfDispatch(Dispatch):
     '''
@@ -160,6 +208,15 @@ class SelfDispatch(Dispatch):
     def __init__(self, _lineno, _type_of, _method_name, _formals):
         Dispatch.__init__(self, _lineno, _type_of, _method_name, _formals)
 
+    def __repr__(self):
+        ret = f"{self.lineno}\nstatic_dispatch\n{self.type_of}\n{self.method_name}\n"
+
+        for i, formal in enumerate(self.formals):
+            ret += f"{formal}"
+            if i != len(self.formals) - 1:
+                ret += "\n"
+
+        return ret
 
 # *** EXPRESSIONS OPERATIONS ***
 class Unary(Expression):
@@ -171,6 +228,12 @@ class Unary(Expression):
         Expression.__init__(self, _lineno, _type_of)
         self.rhs = _rhs
 
+    def print(self):
+        '''
+        Base print for unary nodes
+        '''
+        ret = f"{self.lineno}\n{self.type_of}\n{self.rhs}"
+        return ret
 
 class Binary(Unary):
     '''
@@ -181,6 +244,9 @@ class Binary(Unary):
         Unary.__init__(self, _lineno, _type_of, _rhs)
         self.lhs = _lhs
 
+    def print(self):
+        ret = f"{self.lineno}\n{self.type_of}\n{self.lhs}\n{self.rhs}"
+        return ret
 
 # *** UNARY EXPRESSIONS ***
 class IsVoid(Unary):
@@ -190,6 +256,8 @@ class IsVoid(Unary):
     def __init__(self, _lineno, _type_of, _rhs):
         Unary.__init__(self, _lineno, _type_of, _rhs)
 
+    def __repr__(self):
+        return self.print()
 
 class Negate(Unary):
     '''
@@ -198,6 +266,9 @@ class Negate(Unary):
     def __init__(self, _lineno, _type_of, _rhs):
         Unary.__init__(self, _lineno, _type_of, _rhs)
 
+    def __repr__(self):
+        return self.print()
+
 class NotExpr(Unary):
     '''
     Not unary expression
@@ -205,12 +276,18 @@ class NotExpr(Unary):
     def __init__(self, _lineno, _type_of, _rhs):
         Unary.__init__(self, _lineno, _type_of, _rhs)
 
+    def __repr__(self):
+        return self.print()
+
 class NewExp(Unary):
     '''
     New unary expression
     '''
     def __init__(self, _lineno, _type_of, _rhs):
         Unary.__init__(self, _lineno, _type_of, _rhs)
+
+    def __repr__(self):
+        return self.print()
 
 class Assign(Unary):
     '''
@@ -221,6 +298,9 @@ class Assign(Unary):
         self.var = _var
         self.rhs = _rhs
 
+    def __repr__(self):
+        return self.print()
+
 # *** BINARY EXPRESSIONS ***
 class Plus(Binary):
     '''
@@ -229,6 +309,8 @@ class Plus(Binary):
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
         Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
 
+    def __repr__(self):
+        return self.print()
 
 class Minus(Binary):
     '''
@@ -237,6 +319,8 @@ class Minus(Binary):
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
         Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
 
+    def __repr__(self):
+        return self.print()
 
 class Times(Binary):
     '''
@@ -245,6 +329,8 @@ class Times(Binary):
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
         Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
 
+    def __repr__(self):
+        return self.print()
 
 class Divide(Binary):
     '''
@@ -253,6 +339,8 @@ class Divide(Binary):
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
         Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
 
+    def __repr__(self):
+        return self.print()
 
 class Less(Binary):
     '''
@@ -261,6 +349,8 @@ class Less(Binary):
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
         Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
 
+    def __repr__(self):
+        return self.print()
 
 class LessOrEqual(Binary):
     '''
@@ -269,6 +359,8 @@ class LessOrEqual(Binary):
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
         Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
 
+    def __repr__(self):
+        return self.print()
 
 class Equals(Binary):
     '''
@@ -277,6 +369,8 @@ class Equals(Binary):
     def __init__(self, _lineno, _type_of, _lhs, _rhs):
         Binary.__init__(self, _lineno, _type_of, _lhs, _rhs)
 
+    def __repr__(self):
+        return self.print()
 
 # *** BLOCK STATEMENTS ***
 class IfBlock(Expression):
@@ -289,6 +383,9 @@ class IfBlock(Expression):
         self.then_body = _then_body
         self.else_body = _else_body
 
+    def __repr__(self):
+        ret = f"if\n{self.predicate}\n{self.then_body}\n{self.else_body}"
+        return ret
 
 class CaseBlock(Expression):
     '''
@@ -299,6 +396,9 @@ class CaseBlock(Expression):
         self.case_exp = _case_exp
         self.exps = _exps
 
+    def __repr__(self):
+        ret = "TEMP"
+        return ret
 
 class LoopBlock(Expression):
     '''
@@ -309,6 +409,9 @@ class LoopBlock(Expression):
         self.predicate = _predicate
         self.body = _body
 
+    def __repr__(self):
+        ret = f"{self.lineno}\nwhile{self.type_of}\n{self.predicate}\n{self.body}"
+        return ret
 
 class Block(Expression):
     '''
@@ -319,6 +422,13 @@ class Block(Expression):
         self.num_exps = _num_exps
         self.exps = _exps
 
+    def __repr__(self):
+        ret = f"{self.lineno}\nblock\n{self.num_exps}\n"
+        for i, exp in enumerate(self.exps):
+            ret += f"{exp}"
+            if i != self.num_exps - 1:
+                ret += "\n"
+        return ret
 
 class Let(Expression):
     '''
@@ -328,3 +438,7 @@ class Let(Expression):
         Expression.__init__(self, _lineno, _type_of)
         self.let_list = _let_list
         self.let_body = _let_body
+
+    def __repr__(self):
+        ret = "TEMP"
+        return ret
