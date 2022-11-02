@@ -55,6 +55,11 @@ class Mapping(object):
         '''
         self.amt = _new_amt
 
+    def iterables(self):
+        '''
+        Return iterables
+        '''
+        return self.dict.items()
 
 class ClassMap(Mapping):
     '''

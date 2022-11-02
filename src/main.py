@@ -8,6 +8,7 @@ Main file
 import sys
 import config
 from reader import read_input
+from assembly import print_vtables, print_ctors
 
 def main():
     '''
@@ -58,11 +59,14 @@ def main():
     # Output logic
     output_str = ""
 
-    # Print vtables
-    # Print constructors
     # Print globals
-    # Print program start
-    # Print rest. Need to explore this part
+        # Vtables
+        # Constructors
+        # Method bodies
+    # Explore rest
+
+    output_str += print_vtables()
+    output_str += print_ctors()
 
     # Output file logic
     output_filename = sys.argv[1]
