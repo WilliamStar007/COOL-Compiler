@@ -36,7 +36,7 @@ class Attribute(Feature):
         self.expr = _expr
 
     def __repr__(self):
-        ret = "TEMP"
+        ret = f"{self.identifier.lineno}\n{self.identifier}\n{self.typename.lineno}\n{self.typename.name}\n"
         return ret
 
 class Method(Feature):
@@ -416,7 +416,7 @@ class CaseBlock(Expression):
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\ncase\n{self.case_exp}\n{len(self.exps)}\n"
-        
+
         for i, exp in enumerate(self.exps):
             identifier = exp[0]
             id_type = exp[1]

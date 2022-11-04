@@ -2,7 +2,7 @@
 This file deserializes an annotated abstract syntax tree
 '''
 
-from mappings import MapAttr, MapMethod
+from mappings import MapMethod
 from tree import *
 import config
 
@@ -229,7 +229,9 @@ def read_class_map():
         var_type = get_line()
         if attr_type == "initializer":
             val = read_exp()
-        attr = MapAttr(var_name, var_type, val)
+        var_name = Identifier(0, var_name)
+        var_type = Identifier(0, var_type)
+        attr = Attribute(var_name, var_type, val)
         config.class_map.append_obj(class_name, attr)
 
 
@@ -267,12 +269,11 @@ def read_parent_map():
     config.parent_map.append_obj(class_name, parent_name)
 
 
-def read_input():
+def get_class_map():
     '''
-    Reads all input
+    Deserializes the class map
     '''
 
-    # Process class map
     _ = get_line()
     num_attrs = int(get_line())
 
@@ -280,6 +281,22 @@ def read_input():
 
     for _ in range(num_attrs):
         read_class_map()
+
+    raw_bool = Attribute(Identifier(0, "(raw content)"), Identifier(0, "Int"), None)
+    raw_int = Attribute(Identifier(0, "(raw content)"), Identifier(0, "Int"), None)
+    raw_string = Attribute(Identifier(0, "(raw content)"), Identifier(0, "String"), None)
+    config.class_map.append_obj('Bool', raw_bool)
+    config.class_map.append_obj('Int', raw_int)
+    config.class_map.append_obj('String', raw_string)
+
+
+def read_input():
+    '''
+    Reads all input
+    '''
+
+    # Process class ma
+    get_class_map()
 
     # Process implementation map
     _ = get_line()

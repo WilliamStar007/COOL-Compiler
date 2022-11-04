@@ -5,17 +5,6 @@ Mappings
 # Imports
 from collections import defaultdict
 
-# *** MAP NODES ***
-class MapAttr(object):
-    '''
-    Attribute object for the class map
-    '''
-    def __init__(self, _id, _type, _init=None):
-        self.id = _id
-        self.type = _type
-        self.init = _init
-
-
 class MapMethod(object):
     '''
     Method object for the implementation map
@@ -126,3 +115,55 @@ class ParentMap(Mapping):
             out_str += f"{class_name}\n{parents[0]}\n"
 
         return out_str
+
+
+class ClassTag(Mapping):
+    '''
+    Class tag
+    Has map of class name to class tag and vice versa
+    '''
+    def __init__(self):
+        Mapping.__init__(self)
+        self.rev_dict = defaultdict(str)
+
+    def assemble_dicts(self, class_names):
+        '''
+        Creates all dictionaries
+        '''
+        class_names.sort()
+
+        num = 10
+
+        for cls in class_names:
+            if cls not in ["Bool", "Int", "String"]:
+                self.dict[cls] = num
+                self.rev_dict[num] = cls
+                num += 1
+
+        self.dict["Bool"] = 0
+        self.rev_dict[0] = "Bool"
+
+        self.dict["Int"] = 1
+        self.rev_dict[1] = "Int"
+
+        self.dict["String"] = 3
+        self.rev_dict[3] = "String"
+
+    def get_tag(self, class_name):
+        '''
+        Gets tag from class
+        '''
+        if class_name in self.dict:
+            return self.dict[class_name]
+        else:
+            exit(1) # TODO: ERROR
+
+    def get_name(self, tag):
+        '''
+        Gets class name from tag
+        '''
+        if tag in self.rev_dict:
+            return self.rev_dict[tag]
+        else:
+            exit(1) # TODO: ERROR
+    

@@ -4,7 +4,6 @@ This file has all assembly logic
 
 import config
 from memory import RSP, RBP, RSI, RDI, RNum, RXX
-from mappings import MapAttr, MapMethod
 from tree import *
 
 rsp = RSP()
@@ -26,23 +25,22 @@ def cgen(exp):
 
     ret = ""
 
-    # ***** GLOBALS *****
+    # ***** ATTRIBUTES *****
+    if isinstance(exp, Attribute):
+        if exp.identifier.name == "(raw content)": #i.e. is internal
+            obj = "0" if exp.typename.name == "Int" else "the.empty.string"
 
-    # Generate constructor
-    if isinstance(exp, MapAttr):
-        pass
-
-
-    # Generate method constructor
-    elif isinstance(exp, MapMethod):
-        pass
-
+            ret += f"movq ${obj}, {r13}\n"
+        else:
+            if exp.typename.name in ["Bool", "Int", "String"]:
+                # TODO
+                return cgen(Integer(0, "Int", 0))
 
     # ***** EXPRESSION TERMINALS *****
 
     # Integer
     elif isinstance(exp, Integer):
-        ret += "##new Int\n"
+        ret += "## new Int\n"
         ret += f"pushq {rbp}\n"
         ret += f"pushq {r12}\n"
         ret += f"movq $Int..new, {r14}\n"
@@ -53,11 +51,6 @@ def cgen(exp):
 
     # String
     elif isinstance(exp, StringObj):
-        pass
-
-
-    # Identifier
-    elif isinstance(exp, Identifier):
         pass
 
 
@@ -73,6 +66,11 @@ def cgen(exp):
 
     # Identifier exp
     elif isinstance(exp, IdentifierExp):
+        pass
+
+
+    # Identifier
+    elif isinstance(exp, Identifier):
         pass
 
 
@@ -126,7 +124,12 @@ def print_ctors():
     '''
     ret = ""
 
-    # TODO: SPACING
+    class_names = []
+    for key, _ in config.class_map.iterables():
+        class_names.append(key)
+    config.class_tags.assemble_dicts(class_names)
+
+
     for key, val in config.class_map.iterables():
         tmp = f"{key}..new:"
         tmp_len = len(tmp)
@@ -150,12 +153,10 @@ def print_ctors():
         ret += "call calloc\n"
         ret += f"movq {rax}, {r12}\n"
 
-        class_tag = -100000 #TODO: TEMPORARY
-
         ret += "## store class tag, object size and vtable pointer\n"
         # Class tag
         r12.update_offset(0)
-        ret += f"movq ${class_tag}, {r14}\n"
+        ret += f"movq ${config.class_tags.get_tag(key)}, {r14}\n"
         ret += f"movq {r14}, {r12.pwo()}\n"
         r12.update_offset(8)
 
@@ -174,25 +175,22 @@ def print_ctors():
             ret += "## initialize attributes\n"
             self_offset = 3
             for attr in val:
-                ret += f"## self[{self_offset}] holds field {attr.id} ({attr.type})\n"
+                ret += f"## self[{self_offset}] holds field {attr.identifier} ({attr.typename})\n"
 
                 ret += cgen(attr)
-                if key == "A":
-                    print(attr)
 
-                #ret += f"movq {r13}, {r12}\n"
+                ret += f"movq {r13}, {r12.pwo()}\n"
                 r12.update_offset(r12.offset + 8)
                 self_offset += 1
 
 
         self_offset = 3
         for attr in val:
-            ret += f"## self[{self_offset}] {attr.id} initializer -- "
-            if not attr.init:
+            ret += f"## self[{self_offset}] {attr.identifier} initializer -- "
+            if not attr.expr:
                 ret += "none\n"
             else:
-                # ret += attr.init
-                ret += f"{cgen(attr.init)}\n"
+                ret += f"{cgen(attr.expr)}\n"
                 ret += f"movq {r12}, {r13}\n"
             self_offset += 1
 

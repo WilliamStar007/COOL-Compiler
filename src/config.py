@@ -4,7 +4,7 @@ All global variables
 
 # Imports
 from collections import defaultdict
-from mappings import ClassMap, ImplementationMap, ParentMap
+from mappings import ClassMap, ImplementationMap, ParentMap, ClassTag
 
 # Lines from file
 lines = []
@@ -15,6 +15,7 @@ aast = []
 class_map = ClassMap()
 impl_map = ImplementationMap()
 parent_map = ParentMap()
+class_tags = ClassTag()
 
 # Map of class -> list of accessible methods
 vtable = defaultdict(lambda: defaultdict(dict))
