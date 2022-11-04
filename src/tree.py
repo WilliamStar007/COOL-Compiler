@@ -78,7 +78,7 @@ class Expression(object):
     def __init__(self, _lineno, _type_of):
         self.lineno = _lineno
         self.type_of = _type_of
-
+    
 class Identifier(object):
     '''
     Identifier object
@@ -122,31 +122,19 @@ class StringObj(Expression):
     '''
     def __init__(self, _lineno, _type_of, _value):
         Expression.__init__(self, _lineno, _type_of)
-        self.value = _value
+        self.value = "\"" + _value + "\""
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nstring\n{self.value}"
         return ret
 
-class TrueExp(Expression):
+class Bool(Expression):
     '''
-    True expression object
+    Bool base class
     '''
-    def __init__(self, _lineno):
+    def __init__(self, _lineno, _value):
         Expression.__init__(self, _lineno, "Bool")
-        self.value = "true"
-
-    def __repr__(self):
-        ret = f"{self.lineno}\n{self.type_of}\n{self.value}"
-        return ret
-
-class FalseExp(Expression):
-    '''
-    String expression object
-    '''
-    def __init__(self, _lineno):
-        Expression.__init__(self, _lineno, "Bool")
-        self.value = "false"
+        self.value = _value
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\n{self.value}"

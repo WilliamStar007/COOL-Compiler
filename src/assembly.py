@@ -27,41 +27,37 @@ def cgen(exp):
 
     # ***** ATTRIBUTES *****
     if isinstance(exp, Attribute):
-        if exp.identifier.name == "(raw content)": #i.e. is internal
+        if exp.identifier.name == "(raw content)":
             obj = "0" if exp.typename.name == "Int" else "the.empty.string"
+            ret += f"movq ${obj}, {r13}"
 
-            ret += f"movq ${obj}, {r13}\n"
         else:
             if exp.typename.name in ["Bool", "Int", "String"]:
-                # TODO
-                return cgen(Integer(0, "Int", 0))
+                return cgen(Expression(0, exp.typename.name))
+            else: # i.e. is an identifier
+                ret += f"movq $0, {r13}"
 
     # ***** EXPRESSION TERMINALS *****
 
-    # Integer
+    # Int
     elif isinstance(exp, Integer):
-        ret += "## new Int\n"
-        ret += f"pushq {rbp}\n"
-        ret += f"pushq {r12}\n"
-        ret += f"movq $Int..new, {r14}\n"
-        ret += f"call *{r14}\n"
-        ret += f"popq {r12}\n"
-        ret += f"popq {rbp}\n"
+        ret += f"{cgen(Expression(0, 'Int'))}\n"
+        ret += f"movq ${exp.value}, {r14}\n"
 
+        # TODO: Find offset for the last line
+        ret += f"movq {r14}, 24({r13})\n"
+        ret += f"movq {r13}, ({r12})"
 
     # String
     elif isinstance(exp, StringObj):
-        pass
+        ret += f"{cgen(Expression(0, 'String'))}\n"
+        ret += "FIXIXIFSFJONFD" # TODO: FIX
 
 
     # True exp
-    elif isinstance(exp, TrueExp):
-        pass
-
-
-    # False exp
-    elif isinstance(exp, FalseExp):
-        pass
+    elif isinstance(exp, Bool):
+        ret += f"{cgen(Expression(0, 'Bool'))}\n"
+        ret += "FINISH" # TODO FINISH
 
 
     # Identifier exp
@@ -86,6 +82,18 @@ def cgen(exp):
     # ***** EXPRESSION DISPATCHES *****
 
 
+    # ***** EXPRESSION BASE CLASS *****
+        # Expression base class
+    elif isinstance(exp, Expression):
+        if exp.type_of in ["Bool", "Int", "String"]:
+            ret += f"## new {exp.type_of}\n"
+            ret += f"pushq {rbp}\n"
+            ret += f"pushq {r12}\n"
+            ret += f"movq ${exp.type_of}..new, {r14}\n"
+            ret += f"call *{r14}\n"
+            ret += f"popq {r12}\n"
+            ret += f"popq {rbp}"
+
     return ret
 
 
@@ -101,14 +109,9 @@ def print_vtables():
 
         # TODO: Def a better way to do this
         tmp = f"{key}..vtable:"
-        tmp_len = len(tmp)
-        num_spaces = 24 - tmp_len
-        spaces = num_spaces * ' '
-
-        ret += f"{tmp}{spaces}## virtual function table for {key}\n"
+        ret += f"{tmp:24}## virtual function table for {key}\n"
         ret += f"\t\t\t.quad string{str_num}\n"
         ret += f"\t\t\t.quad {key}..new\n"
-
 
         for method in val:
             ret += f"\t\t\t.quad {method.method_class}.{method.method_name}\n"
@@ -131,13 +134,9 @@ def print_ctors():
 
 
     for key, val in config.class_map.iterables():
-        tmp = f"{key}..new:"
-        tmp_len = len(tmp)
-        num_spaces = 24 - tmp_len
-        spaces = num_spaces * ' '
-
         ret += f".globl {key}..new\n"
-        ret += f"{tmp}{spaces}## constructor for {key}\n"
+        tmp = f"{key}..new:"
+        ret += f"{tmp:24}## constructor for {key}\n"
 
         ret += f"pushq {rbp}\n"
         ret += f"movq {rsp}, {rbp}\n"
@@ -158,6 +157,7 @@ def print_ctors():
         r12.update_offset(0)
         ret += f"movq ${config.class_tags.get_tag(key)}, {r14}\n"
         ret += f"movq {r14}, {r12.pwo()}\n"
+
         r12.update_offset(8)
 
         # Object size
@@ -177,21 +177,23 @@ def print_ctors():
             for attr in val:
                 ret += f"## self[{self_offset}] holds field {attr.identifier} ({attr.typename})\n"
 
-                ret += cgen(attr)
+                ret += f"{cgen(attr)}\n"
 
                 ret += f"movq {r13}, {r12.pwo()}\n"
+                config.offset_map.set_offset(key, attr.identifier.name, r12.offset)
+
                 r12.update_offset(r12.offset + 8)
                 self_offset += 1
 
 
         self_offset = 3
         for attr in val:
-            ret += f"## self[{self_offset}] {attr.identifier} initializer -- "
+            ret += f"## self[{self_offset}] {attr.identifier} initializer "
             if not attr.expr:
-                ret += "none\n"
+                ret += "-- none\n"
             else:
+                ret += f"<- {attr.expr.value}\n"
                 ret += f"{cgen(attr.expr)}\n"
-                ret += f"movq {r12}, {r13}\n"
             self_offset += 1
 
             r12.update_offset()

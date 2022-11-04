@@ -166,4 +166,27 @@ class ClassTag(Mapping):
             return self.rev_dict[tag]
         else:
             exit(1) # TODO: ERROR
-    
+
+
+class OffsetMap(object):
+    '''
+    Map attr offset to class
+    '''
+    def __init__(self):
+        self.dict = defaultdict(lambda : defaultdict(dict))
+
+    def set_offset(self, class_name, var, offset):
+        '''''''''
+        Sets offset
+        '''
+        self.dict[class_name][var] = offset
+
+    def get_offset(self, class_name, var):
+        '''
+        Returns the offset
+        '''
+        if class_name in self.dict and var in self.dict[class_name]:
+            return self.dict[class_name][var]
+        else:
+            print("ERROR @ OFFSETMAP")
+            exit(1) # TODO : ERROR

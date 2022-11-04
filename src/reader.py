@@ -120,9 +120,9 @@ def read_exp():
         desc = get_line()
         return Internal(lineno, type_of, exp_name, desc)
     elif exp_name == 'true':
-        return TrueExp(lineno)
+        return Bool(lineno, "tru")
     elif exp_name == 'false':
-        return FalseExp(lineno)
+        return Bool(lineno, "false")
 
     ### LET EXPRESSIONS
     if exp_name == 'let':
