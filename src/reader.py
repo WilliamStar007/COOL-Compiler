@@ -14,7 +14,7 @@ def read_identifier():
     ident_name = get_line()
     return Identifier(lineno, ident_name)
 
-# following structure of formal output in .cl-ast file
+
 def read_formal():
     '''
     Reads in formals
@@ -23,26 +23,14 @@ def read_formal():
     formal_type = read_identifier()
     return (formal_name, formal_type)
 
-# method for reading all the different types of expressions
+
 def read_exp():
     '''
     Reads in expressions
     '''
-    lineno = get_line() # all expressions start with a line number and name
+    lineno = get_line()
     type_of = get_line()
     exp_name = get_line()
-
-    ### INTERNALS
-    #if exp_name == "internal":
-        # line no
-        # Class name
-        # Line no
-        # Ret type
-        # Internal
-        # method name
-
-    #    method_name = get_line()
-    #    return Internal(lineno, type_of, exp_name, method_name)
 
     ### ASSIGNMENT
     if exp_name == 'assign':
@@ -162,6 +150,7 @@ def read_exp():
             case_ele_body = read_exp()
             case_list.append((case_ele_var, case_ele_type, case_ele_body))
         return CaseBlock(lineno, type_of, case_exp, case_list)
+
 
 def read_feature():
     '''

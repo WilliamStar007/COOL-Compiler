@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 '''
 Main file
 '''
@@ -40,15 +38,17 @@ def main():
             case 'impl_map':
                 test_str = f"{config.impl_map}"
             case 'aast':
-                test_str = f"{config.class_map}\n{config.impl_map}\n{config.aast}"
+                test_str = f"{config.class_map}\n{config.impl_map}\n{config.parent_map}\n"
+                test_str += f"{config.aast}"
             case _:
                 print("INVALID")
+                sys.exit(1)
 
         outfile = open(output_filename, 'w', encoding="utf-8")
         outfile.write(test_str)
         outfile.close()
 
-        exit(0)
+        sys.exit(0)
 
     # Assemble symbol table
 
