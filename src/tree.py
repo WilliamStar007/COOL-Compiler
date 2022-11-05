@@ -23,15 +23,16 @@ class Feature(object):
     '''
     Base class for Attribute and Method
     '''
-    def __init__(self, _identifier):
+    def __init__(self, _in_class, _identifier):
+        self.in_class = _in_class
         self.identifier = _identifier
 
 class Attribute(Feature):
     '''
     Attribute class. Inherits from feature
     '''
-    def __init__(self, _identifier, _typename, _expr=None):
-        Feature.__init__(self, _identifier)
+    def __init__(self, _in_class, _identifier, _typename, _expr=None):
+        Feature.__init__(self, _in_class, _identifier)
         self.typename = _typename
         self.expr = _expr
 
@@ -43,8 +44,8 @@ class Method(Feature):
     '''
     Method class. Inherits from feature
     '''
-    def __init__(self, _identifier, _formals_list, _typename, _body):
-        Feature.__init__(self, _identifier)
+    def __init__(self, _in_class, _identifier, _formals_list, _typename, _body):
+        Feature.__init__(self, _in_class, _identifier)
         self.formals_list = _formals_list
         self.typename = _typename
         self.body = _body
@@ -58,7 +59,8 @@ class Internal(object):
     A class for Internal cool objects
     This includes Bool, Int, IO, Object, and String
     '''
-    def __init__(self, _lineno, _type_of, _exp_name, _method_name):
+    def __init__(self, _in_class, _lineno, _type_of, _exp_name, _method_name):
+        self.in_class = _in_class
         self.lineno = _lineno
         self.type_of = _type_of
         self.exp_name = _exp_name
@@ -75,15 +77,17 @@ class Expression(object):
     Expression base class
     Includes the line number and the type of the node
     '''
-    def __init__(self, _lineno, _type_of):
+    def __init__(self, _in_class, _lineno, _type_of):
+        self.in_class = _in_class
         self.lineno = _lineno
         self.type_of = _type_of
-    
+
 class Identifier(object):
     '''
     Identifier object
     '''
-    def __init__(self, _lineno, _name):
+    def __init__(self, _in_class, _lineno, _name):
+        self.in_class = _in_class
         self.lineno = _lineno
         self.name = _name
 
@@ -95,8 +99,8 @@ class IdentifierExp(Expression):
     '''
     Identifier expression object
     '''
-    def __init__(self, _lineno, _type_of, _identifier):
-        Expression.__init__(self, _lineno, _type_of)
+    def __init__(self, _in_class, _lineno, _type_of, _identifier):
+        Expression.__init__(self, _in_class, _lineno, _type_of)
         self.identifier = _identifier
 
     def __repr__(self):
@@ -108,8 +112,8 @@ class Integer(Expression):
     '''
     Integer expression object
     '''
-    def __init__(self, _lineno, _type_of, _value):
-        Expression.__init__(self, _lineno, _type_of)
+    def __init__(self, _in_class, _lineno, _type_of, _value):
+        Expression.__init__(self, _in_class, _lineno, _type_of)
         self.value = _value
 
     def __repr__(self):
@@ -120,8 +124,8 @@ class StringObj(Expression):
     '''
     String expression object
     '''
-    def __init__(self, _lineno, _type_of, _value):
-        Expression.__init__(self, _lineno, _type_of)
+    def __init__(self, _in_class, _lineno, _type_of, _value):
+        Expression.__init__(self,_in_class, _lineno, _type_of)
         self.value = "\"" + _value + "\""
 
     def __repr__(self):
@@ -132,8 +136,8 @@ class Bool(Expression):
     '''
     Bool base class
     '''
-    def __init__(self, _lineno, _value):
-        Expression.__init__(self, _lineno, "Bool")
+    def __init__(self, _in_class, _lineno, _value):
+        Expression.__init__(self, _in_class, _lineno, "Bool")
         self.value = _value
 
     def __repr__(self):
@@ -146,8 +150,8 @@ class Dispatch(Expression):
     Dispatch base class
     Inherited by DynamicDispatch, SelfDispatch, and StaticDispatch
     '''
-    def __init__(self, _lineno, _type_of, _method_name, _formals):
-        Expression.__init__(self, _lineno, _type_of)
+    def __init__(self, _in_class, _lineno, _type_of, _method_name, _formals):
+        Expression.__init__(self, _in_class, _lineno, _type_of)
         self.method_name = _method_name
         self.formals = _formals
 
@@ -156,8 +160,8 @@ class DynamicDispatch(Dispatch):
     Dynamic dispatch object
     Inherits from Dispatch
     '''
-    def __init__(self, _lineno, _type_of, _obj_name, _method_name, _formals):
-        Dispatch.__init__(self, _lineno, _type_of, _method_name, _formals)
+    def __init__(self, _in_class, _lineno, _type_of, _obj_name, _method_name, _formals):
+        Dispatch.__init__(self, _in_class, _lineno, _type_of, _method_name, _formals)
         self.obj_name = _obj_name
 
     def __repr__(self):
@@ -179,8 +183,8 @@ class StaticDispatch(Dispatch):
     Static dispatch object
     Inherits from Dispatch
     '''
-    def __init__(self, _lineno, _type_of, _obj_name, _typename, _method_name, _formals):
-        Dispatch.__init__(self, _lineno, _type_of, _method_name, _formals)
+    def __init__(self, _in_class, _lineno, _type_of, _obj_name, _typename, _method_name, _formals):
+        Dispatch.__init__(self, _in_class, _lineno, _type_of, _method_name, _formals)
         self.obj_name = _obj_name
         self.typename = _typename
 
@@ -204,8 +208,8 @@ class SelfDispatch(Dispatch):
     Self dispatch object
     Inherits from Dispatch
     '''
-    def __init__(self, _lineno, _type_of, _method_name, _formals):
-        Dispatch.__init__(self, _lineno, _type_of, _method_name, _formals)
+    def __init__(self, _in_class, _lineno, _type_of, _method_name, _formals):
+        Dispatch.__init__(self, _in_class, _lineno, _type_of, _method_name, _formals)
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nself_dispatch\n"
@@ -226,8 +230,8 @@ class Unary(Expression):
     Unary operation base class
     Inherits from Expression
     '''
-    def __init__(self, _lineno, _type_of, _rhs):
-        Expression.__init__(self, _lineno, _type_of)
+    def __init__(self, _in_class, _lineno, _type_of, _rhs):
+        Expression.__init__(self, _in_class, _lineno, _type_of)
         self.rhs = _rhs
 
     def print(self):
@@ -242,8 +246,8 @@ class Binary(Unary):
     Binary operation base class
     Inherits from unary
     '''
-    def __init__(self, _lineno, _type_of, _operation, _lhs, _rhs):
-        Unary.__init__(self, _lineno, _type_of, _rhs)
+    def __init__(self, _in_class, _lineno, _type_of, _operation, _lhs, _rhs):
+        Unary.__init__(self, _in_class, _lineno, _type_of, _rhs)
         self.operation = _operation
         self.lhs = _lhs
 
@@ -256,8 +260,8 @@ class IsVoid(Unary):
     '''
     IsVoid unary expression
     '''
-    def __init__(self, _lineno, _type_of, _rhs):
-        Unary.__init__(self, _lineno, _type_of, _rhs)
+    def __init__(self, _in_class, _lineno, _type_of, _rhs):
+        Unary.__init__(self, _in_class, _lineno, _type_of, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -266,8 +270,8 @@ class Negate(Unary):
     '''
     Negate unary expression
     '''
-    def __init__(self, _lineno, _type_of, _rhs):
-        Unary.__init__(self, _lineno, _type_of, _rhs)
+    def __init__(self, _in_class, _lineno, _type_of, _rhs):
+        Unary.__init__(self, _in_class, _lineno, _type_of, _rhs)
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nnegate\n{self.rhs}"
@@ -277,8 +281,8 @@ class NotExpr(Unary):
     '''
     Not unary expression
     '''
-    def __init__(self, _lineno, _type_of, _rhs):
-        Unary.__init__(self, _lineno, _type_of, _rhs)
+    def __init__(self, _in_class, _lineno, _type_of, _rhs):
+        Unary.__init__(self, _in_class, _lineno, _type_of, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -287,8 +291,8 @@ class NewExp(Unary):
     '''
     New unary expression
     '''
-    def __init__(self, _lineno, _type_of, _rhs):
-        Unary.__init__(self, _lineno, _type_of, _rhs)
+    def __init__(self, _in_class, _lineno, _type_of, _rhs):
+        Unary.__init__(self, _in_class, _lineno, _type_of, _rhs)
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nnew\n{self.rhs.lineno}\n{self.rhs}"
@@ -298,8 +302,8 @@ class Assign(Unary):
     '''
     Assign unary expression
     '''
-    def __init__(self, _lineno, _type_of, _var, _rhs):
-        Unary.__init__(self, _lineno, _type_of, _rhs)
+    def __init__(self, _in_class, _lineno, _type_of, _var, _rhs):
+        Unary.__init__(self, _in_class, _lineno, _type_of, _rhs)
         self.var = _var
         self.rhs = _rhs
 
@@ -312,8 +316,8 @@ class Plus(Binary):
     '''
     Plus binary expression
     '''
-    def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, "plus", _lhs, _rhs)
+    def __init__(self, _in_class, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _in_class, _lineno, _type_of, "plus", _lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -322,8 +326,8 @@ class Minus(Binary):
     '''
     Minus binary expression
     '''
-    def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, "minus", _lhs, _rhs)
+    def __init__(self, _in_class, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _in_class, _lineno, _type_of, "minus", _lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -332,8 +336,8 @@ class Times(Binary):
     '''
     Times binary expression
     '''
-    def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, "times", _lhs, _rhs)
+    def __init__(self, _in_class, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _in_class, _lineno, _type_of, "times", _lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -342,8 +346,8 @@ class Divide(Binary):
     '''
     Divide binary expression
     '''
-    def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, "divide", _lhs, _rhs)
+    def __init__(self, _in_class, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _in_class, _lineno, _type_of, "divide", _lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -352,8 +356,8 @@ class Less(Binary):
     '''
     Less binary expression
     '''
-    def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, "lt", _lhs, _rhs)
+    def __init__(self, _in_class, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _in_class, _lineno, _type_of, "lt", _lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -362,8 +366,8 @@ class LessOrEqual(Binary):
     '''
     Le binary expression
     '''
-    def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, "le", _lhs, _rhs)
+    def __init__(self, _in_class, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _in_class, _lineno, _type_of, "le", _lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -372,8 +376,8 @@ class Equals(Binary):
     '''
     Equals binary expression
     '''
-    def __init__(self, _lineno, _type_of, _lhs, _rhs):
-        Binary.__init__(self, _lineno, _type_of, "eq",_lhs, _rhs)
+    def __init__(self, _in_class, _lineno, _type_of, _lhs, _rhs):
+        Binary.__init__(self, _in_class, _lineno, _type_of, "eq",_lhs, _rhs)
 
     def __repr__(self):
         return self.print()
@@ -383,8 +387,8 @@ class IfBlock(Expression):
     '''
     If block statement
     '''
-    def __init__(self, _lineno, _type_of, _predicate, _then_body, _else_body):
-        Expression.__init__(self, _lineno, _type_of)
+    def __init__(self, _in_class, _lineno, _type_of, _predicate, _then_body, _else_body):
+        Expression.__init__(self, _in_class, _lineno, _type_of)
         self.predicate = _predicate
         self.then_body = _then_body
         self.else_body = _else_body
@@ -397,8 +401,8 @@ class CaseBlock(Expression):
     '''
     Case block statement
     '''
-    def __init__(self, _lineno, _type_of, _case_exp, _exps):
-        Expression.__init__(self, _lineno, _type_of)
+    def __init__(self, _in_class, _lineno, _type_of, _case_exp, _exps):
+        Expression.__init__(self, _in_class, _lineno, _type_of)
         self.case_exp = _case_exp
         self.exps = _exps
 
@@ -422,8 +426,8 @@ class LoopBlock(Expression):
     '''
     Loop block statement
     '''
-    def __init__(self, _lineno, _type_of, _predicate, _body):
-        Expression.__init__(self, _lineno, _type_of)
+    def __init__(self, _in_class, _lineno, _type_of, _predicate, _body):
+        Expression.__init__(self, _in_class, _lineno, _type_of)
         self.predicate = _predicate
         self.body = _body
 
@@ -435,8 +439,8 @@ class Block(Expression):
     '''
     Block expression
     '''
-    def __init__(self, _lineno, _type_of, _num_exps, _exps):
-        Expression.__init__(self, _lineno, _type_of)
+    def __init__(self, _in_class,  _lineno, _type_of, _num_exps, _exps):
+        Expression.__init__(self, _in_class, _lineno, _type_of)
         self.num_exps = _num_exps
         self.exps = _exps
 
@@ -452,8 +456,8 @@ class Let(Expression):
     '''
     Let expression
     '''
-    def __init__(self, _lineno, _type_of, _let_list, _let_body):
-        Expression.__init__(self, _lineno, _type_of)
+    def __init__(self, _in_class, _lineno, _type_of, _let_list, _let_body):
+        Expression.__init__(self, _in_class, _lineno, _type_of)
         self.let_list = _let_list
         self.let_body = _let_body
 

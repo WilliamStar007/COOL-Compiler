@@ -48,7 +48,7 @@ def cgen(exp):
 
         else:
             if exp.typename.name in ["Bool", "Int", "String"]:
-                return cgen(Expression(0, exp.typename.name))
+                return cgen(Expression(exp.in_class, 0, exp.typename.name))
             else: # i.e. is an identifier
                 ret += f"movq $0, {r13}"
 
@@ -56,7 +56,7 @@ def cgen(exp):
 
     # Int
     elif isinstance(exp, Integer):
-        ret += f"{cgen(Expression(0, 'Int'))}\n"
+        ret += f"{cgen(Expression(exp.in_class, 0, 'Int'))}\n"
         ret += f"movq ${exp.value}, {r14}\n"
 
         # TODO: Find offset for the last line
@@ -65,13 +65,13 @@ def cgen(exp):
 
     # String
     elif isinstance(exp, StringObj):
-        ret += f"{cgen(Expression(0, 'String'))}\n"
+        ret += f"{cgen(Expression(exp.in_class, 0, 'String'))}\n"
         ret += "FIXIXIFSFJONFD" # TODO: FIX
 
 
     # True exp
     elif isinstance(exp, Bool):
-        ret += f"{cgen(Expression(0, 'Bool'))}\n"
+        ret += f"{cgen(Expression(exp.in_class, 0, 'Bool'))}\n"
         ret += "FINISH" # TODO FINISH
 
 

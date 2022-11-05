@@ -6,13 +6,15 @@ from mappings import MapMethod
 from tree import *
 import config
 
+cur_class = ""
+
 def read_identifier():
     '''
     Reads identifiers
     '''
     lineno = get_line()
     ident_name = get_line()
-    return Identifier(lineno, ident_name)
+    return Identifier(cur_class, lineno, ident_name)
 
 
 def read_formal():
@@ -36,7 +38,7 @@ def read_exp():
     if exp_name == 'assign':
         var = read_identifier()
         rhs = read_exp()
-        return Assign(lineno, type_of, var, rhs)
+        return Assign(cur_class, lineno, type_of, var, rhs)
 
     ### DISPATCH EXPRESSIONS
     elif exp_name == 'dynamic_dispatch':
@@ -46,7 +48,7 @@ def read_exp():
         args = [] # list for building up the arguments in the method call
         for _ in range(num_args):
             args.append(read_exp())
-        return DynamicDispatch(lineno, type_of, obj_name, method_name, args)
+        return DynamicDispatch(cur_class, lineno, type_of, obj_name, method_name, args)
 
     elif exp_name == 'static_dispatch':
         obj_name = read_exp()
@@ -56,7 +58,7 @@ def read_exp():
         args = []
         for _ in range(num_args):
             args.append(read_exp())
-        return StaticDispatch(lineno, type_of, obj_name, type_name, method_name, args)
+        return StaticDispatch(cur_class, lineno, type_of, obj_name, type_name, method_name, args)
 
     elif exp_name == 'self_dispatch':
         method_name = read_identifier()
@@ -64,65 +66,65 @@ def read_exp():
         args = []
         for _ in range(num_args):
             args.append(read_exp())
-        return SelfDispatch(lineno, type_of, method_name, args)
+        return SelfDispatch(cur_class, lineno, type_of, method_name, args)
 
     ### IF, WHILE, BLOCK
     elif exp_name == 'if':
         predicate = read_exp()
         then_body = read_exp()
         else_body = read_exp()
-        return IfBlock(lineno, type_of, predicate, then_body, else_body)
+        return IfBlock(cur_class, lineno, type_of, predicate, then_body, else_body)
 
     elif exp_name == 'while':
         predicate = read_exp()
         body_exp = read_exp()
-        return LoopBlock(lineno, type_of, predicate, body_exp)
+        return LoopBlock(cur_class, lineno, type_of, predicate, body_exp)
 
     elif exp_name == 'block':
         num_exps = int(get_line())
         exps = []
         for _ in range(num_exps):
             exps.append(read_exp())
-        return Block(lineno, type_of, num_exps, exps)
+        return Block(cur_class, lineno, type_of, num_exps, exps)
 
     ### UNARY AND BINARY OPERATIONS
     elif exp_name == 'new':
-        return NewExp(lineno, type_of, read_identifier())
+        return NewExp(cur_class, lineno, type_of, read_identifier())
     elif exp_name == 'isvoid':
-        return IsVoid(lineno, type_of, read_exp())
+        return IsVoid(cur_class, lineno, type_of, read_exp())
     elif exp_name == 'plus':
-        return Plus(lineno, type_of, read_exp(), read_exp())
+        return Plus(cur_class, lineno, type_of, read_exp(), read_exp())
     elif exp_name == 'minus':
-        return Minus(lineno, type_of, read_exp(), read_exp())
+        return Minus(cur_class, lineno, type_of, read_exp(), read_exp())
     elif exp_name == 'times':
-        return Times(lineno, type_of, read_exp(), read_exp())
+        return Times(cur_class, lineno, type_of, read_exp(), read_exp())
     elif exp_name == 'divide':
-        return Divide(lineno, type_of, read_exp(), read_exp())
+        return Divide(cur_class, lineno, type_of, read_exp(), read_exp())
     elif exp_name == 'lt':
-        return Less(lineno, type_of, read_exp(), read_exp())
+        return Less(cur_class, lineno, type_of, read_exp(), read_exp())
     elif exp_name == 'le':
-        return LessOrEqual(lineno, type_of, read_exp(), read_exp())
+        return LessOrEqual(cur_class, lineno, type_of, read_exp(), read_exp())
     elif exp_name == 'eq':
-        return Equals(lineno, type_of, read_exp(), read_exp())
+        return Equals(cur_class, lineno, type_of, read_exp(), read_exp())
     elif exp_name == 'not':
-        return NotExpr(lineno, type_of, read_exp())
+        return NotExpr(cur_class, lineno, type_of, read_exp())
     elif exp_name == 'negate':
-        return Negate(lineno, type_of, read_exp())
+        return Negate(cur_class, lineno, type_of, read_exp())
 
     ### TYPES and identifier
     elif exp_name == 'integer':
-        return Integer(lineno, type_of, int(get_line()))
+        return Integer(cur_class, lineno, type_of, int(get_line()))
     elif exp_name == 'string':
-        return StringObj(lineno, type_of, get_line())
+        return StringObj(cur_class, lineno, type_of, get_line())
     elif exp_name == 'identifier':
-        return IdentifierExp(lineno, type_of, read_identifier())
+        return IdentifierExp(cur_class, lineno, type_of, read_identifier())
     elif exp_name == 'internal':
         desc = get_line()
-        return Internal(lineno, type_of, exp_name, desc)
+        return Internal(cur_class, lineno, type_of, exp_name, desc)
     elif exp_name == 'true':
-        return Bool(lineno, "tru")
+        return Bool(cur_class, lineno, "tru")
     elif exp_name == 'false':
-        return Bool(lineno, "false")
+        return Bool(cur_class, lineno, "false")
 
     ### LET EXPRESSIONS
     if exp_name == 'let':
@@ -137,7 +139,7 @@ def read_exp():
                 binding_list.append((binding_type, ident_name, ident_type, ident_val))
             elif binding_type == 'let_binding_no_init':
                 binding_list.append((binding_type, ident_name, ident_type, None))
-        return Let(lineno, type_of, binding_list, read_exp())
+        return Let(cur_class, lineno, type_of, binding_list, read_exp())
 
     ### CASE EXPRESSIONS
     elif exp_name =='case':
@@ -149,7 +151,7 @@ def read_exp():
             case_ele_type = read_identifier()
             case_ele_body = read_exp()
             case_list.append((case_ele_var, case_ele_type, case_ele_body))
-        return CaseBlock(lineno, type_of, case_exp, case_list)
+        return CaseBlock(cur_class, lineno, type_of, case_exp, case_list)
 
 
 def read_feature():
@@ -161,13 +163,13 @@ def read_feature():
     if feature_kind == 'attribute_no_init':
         feature_name = read_identifier()
         feature_type = read_identifier()
-        return Attribute(feature_name, feature_type)
+        return Attribute(cur_class, feature_name, feature_type)
 
     elif feature_kind == 'attribute_init':
         feature_name = read_identifier()
         feature_type = read_identifier()
         feature_init = read_exp()
-        return Attribute(feature_name, feature_type, feature_init)
+        return Attribute(cur_class, feature_name, feature_type, feature_init)
 
     elif feature_kind == 'method':
         feature_name = read_identifier()
@@ -180,14 +182,16 @@ def read_feature():
 
         feature_type = read_identifier()
         feature_body = read_exp()
-        return Method(feature_name, formals_list, feature_type, feature_body)
+        return Method(cur_class, feature_name, formals_list, feature_type, feature_body)
 
 
 def read_class():
     '''
     Reads in classes
     '''
+    global cur_class
     class_info = read_identifier()
+    cur_class = class_info.name
     check_inherits = get_line()
     parent = None
     if check_inherits == 'inherits':
@@ -229,9 +233,9 @@ def read_class_map():
         var_type = get_line()
         if attr_type == "initializer":
             val = read_exp()
-        var_name = Identifier(0, var_name)
-        var_type = Identifier(0, var_type)
-        attr = Attribute(var_name, var_type, val)
+        var_name = Identifier(cur_class, 0, var_name)
+        var_type = Identifier(cur_class, 0, var_type)
+        attr = Attribute(cur_class, var_name, var_type, val)
         config.class_map.append_obj(class_name, attr)
 
 
@@ -282,9 +286,9 @@ def get_class_map():
     for _ in range(num_attrs):
         read_class_map()
 
-    raw_bool = Attribute(Identifier(0, "(raw content)"), Identifier(0, "Int"), None)
-    raw_int = Attribute(Identifier(0, "(raw content)"), Identifier(0, "Int"), None)
-    raw_string = Attribute(Identifier(0, "(raw content)"), Identifier(0, "String"), None)
+    raw_bool = Attribute("Bool", Identifier("Bool", 0, "(raw content)"), Identifier("Bool", 0, "Int"), None)
+    raw_int = Attribute("Int", Identifier("Int", 0, "(raw content)"), Identifier("Int", 0, "Int"), None)
+    raw_string = Attribute("String", Identifier("String", 0, "(raw content)"), Identifier("String", 0, "String"), None)
     config.class_map.append_obj('Bool', raw_bool)
     config.class_map.append_obj('Int', raw_int)
     config.class_map.append_obj('String', raw_string)
