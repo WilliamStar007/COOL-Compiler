@@ -1,5 +1,19 @@
 '''
 This file has all assembly logic
+
+
+Class names
+Class attributes
+Reassigned strings
+Free strings
+
+str_num = 1
+class -> identifier -> [string number]
+string number -> contents
+
+
+
+
 '''
 
 import config
@@ -16,6 +30,7 @@ rax = RXX('a')
 r12 = RNum(12)
 r13 = RNum(13)
 r14 = RNum(14)
+
 
 def cgen(exp):
     '''
@@ -130,6 +145,8 @@ def print_ctors():
     class_names = []
     for key, _ in config.class_map.iterables():
         class_names.append(key)
+        config.str_num_contents[len(config.str_num_contents) + 1] = key
+
     config.class_tags.assemble_dicts(class_names)
 
 

@@ -180,6 +180,7 @@ class OffsetMap(object):
         Sets offset
         '''
         self.dict[class_name][var] = offset
+        self.dict[class_name][offset] = var
 
     def get_offset(self, class_name, var):
         '''
@@ -190,3 +191,13 @@ class OffsetMap(object):
         else:
             print("ERROR @ OFFSETMAP")
             exit(1) # TODO : ERROR
+
+    def get_var(self, class_name, offset):
+        '''
+        Gets the var at the offset
+        '''
+        if class_name in self.dict and offset in self.dict[class_name]:
+            return self.dict[class_name][offset]
+        else:
+            print("ERROR")
+            exit(1)

@@ -19,3 +19,6 @@ parent_map = ParentMap()
 # Map of class -> list of accessible methods
 class_tags = ClassTag()
 offset_map = OffsetMap()
+
+symbol_table = defaultdict(lambda: defaultdict(list))
+str_num_contents = defaultdict(str)
