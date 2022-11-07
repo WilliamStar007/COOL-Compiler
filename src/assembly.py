@@ -128,7 +128,7 @@ def print_vtables():
         cur_offset = 2
 
         for method in val:
-            ret += f"\t\t\t.quad {method.method_class}.{method.method_name}\n"
+            ret += f"\t\t\t.quad {method.in_class}.{method.identifier}\n"
             config.vtable_map.set_offset(key, method, cur_offset)
             cur_offset += 1
 
@@ -232,9 +232,17 @@ def print_methods():
     '''
     Prints global methods
     '''
+    ordering = config.aast.copy()
+    ordering.pop(0)
+    ordering.sort(key=lambda x : x.class_info.name)
+    # TODO: WANT TO DO A TOP SORT: 
+    # TODO: Need to include object
+    print(ordering)
+
     ret = ""
 
-
+    for cls in ordering:
+        class_name = cls.class_info.name
 
     return ret
 
