@@ -1,19 +1,5 @@
 '''
 This file has all assembly logic
-
-
-Class names
-Class attributes
-Reassigned strings
-Free strings
-
-str_num = 1
-class -> identifier -> [string number]
-string number -> contents
-
-
-
-
 '''
 
 import config
@@ -32,7 +18,7 @@ r13 = RNum(13)
 r14 = RNum(14)
 
 
-def cgen(exp):
+def cgen(exp, ident=None):
     '''
     Code generation
     Recursively defined
@@ -41,7 +27,7 @@ def cgen(exp):
     ret = ""
 
     # ***** ATTRIBUTES *****
-    if isinstance(exp, Attribute):
+    if isinstance(exp, Attribute): # TODO: Def a better way to do this
         if exp.identifier.name == "(raw content)":
             obj = "0" if exp.typename.name == "Int" else "the.empty.string"
             ret += f"movq ${obj}, {r13}"
@@ -60,8 +46,20 @@ def cgen(exp):
         ret += f"movq ${exp.value}, {r14}\n"
 
         # TODO: Find offset for the last line
+
+        offset = None
+        reg = None
+
+        if ident: # TODO: Hardcode this less
+            tpl = config.symbol_table.top(exp.in_class, ident)
+            offset = tpl[0] * config.OFFSET_AMT
+            reg = tpl[1]
+        else:
+            offset = 24
+            reg = r12
+
         ret += f"movq {r14}, 24({r13})\n"
-        ret += f"movq {r13}, ({r12})"
+        ret += f"movq {r13}, {offset}({reg})"
 
     # String
     elif isinstance(exp, StringObj):
@@ -122,14 +120,17 @@ def print_vtables():
     for key, val in config.impl_map.iterables():
         ret += f".globl {key}..vtable\n"
 
-        # TODO: Def a better way to do this
         tmp = f"{key}..vtable:"
         ret += f"{tmp:24}## virtual function table for {key}\n"
         ret += f"\t\t\t.quad string{str_num}\n"
         ret += f"\t\t\t.quad {key}..new\n"
 
+        cur_offset = 2
+
         for method in val:
             ret += f"\t\t\t.quad {method.method_class}.{method.method_name}\n"
+            config.vtable_map.set_offset(key, method, cur_offset)
+            cur_offset += 1
 
         ret += "\t\t\t## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
         str_num += 1
@@ -170,6 +171,7 @@ def print_ctors():
         ret += f"movq {rax}, {r12}\n"
 
         ret += "## store class tag, object size and vtable pointer\n"
+
         # Class tag
         r12.update_offset(0)
         ret += f"movq ${config.class_tags.get_tag(key)}, {r14}\n"
@@ -190,17 +192,18 @@ def print_ctors():
 
         if len(val) != 0:
             ret += "## initialize attributes\n"
-            self_offset = 3
+            cur_offset = 3
             for attr in val:
-                ret += f"## self[{self_offset}] holds field {attr.identifier} ({attr.typename})\n"
+                ret += f"## self[{cur_offset}] holds field {attr.identifier} ({attr.typename})\n"
 
                 ret += f"{cgen(attr)}\n"
 
                 ret += f"movq {r13}, {r12.pwo()}\n"
-                config.offset_map.set_offset(key, attr.identifier.name, r12.offset)
+                config.attr_map.set_offset(key, attr, cur_offset) # TODO: Not needed. Is a bit redundant
+                config.symbol_table.add(key, attr.identifier.name, cur_offset, r12)
 
                 r12.update_offset(r12.offset + 8)
-                self_offset += 1
+                cur_offset += 1
 
 
         self_offset = 3
@@ -210,7 +213,7 @@ def print_ctors():
                 ret += "-- none\n"
             else:
                 ret += f"<- {attr.expr.value}\n"
-                ret += f"{cgen(attr.expr)}\n"
+                ret += f"{cgen(attr.expr, attr.identifier.name)}\n"
             self_offset += 1
 
             r12.update_offset()
@@ -230,6 +233,8 @@ def print_methods():
     Prints global methods
     '''
     ret = ""
+
+
 
     return ret
 

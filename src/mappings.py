@@ -3,6 +3,7 @@ Mappings
 '''
 
 # Imports
+import sys
 from collections import defaultdict
 
 class MapMethod(object):
@@ -38,6 +39,12 @@ class Mapping(object):
         '''
         self.dict[class_name].append(obj)
 
+    def pop_obj(self, class_name):
+        '''
+        Remove an object from the mapping's list
+        '''
+        self.dict[class_name].pop()
+
     def set_num(self, _new_amt):
         '''
         Set the new amount
@@ -49,6 +56,7 @@ class Mapping(object):
         Return iterables
         '''
         return self.dict.items()
+
 
 class ClassMap(Mapping):
     '''
@@ -173,31 +181,65 @@ class OffsetMap(object):
     Map attr offset to class
     '''
     def __init__(self):
-        self.dict = defaultdict(lambda : defaultdict(dict))
+        self.fwd_dict = defaultdict(lambda : defaultdict(dict))
+        self.rev_dict = defaultdict(lambda : defaultdict(dict))
 
     def set_offset(self, class_name, var, offset):
-        '''''''''
+        '''
         Sets offset
         '''
-        self.dict[class_name][var] = offset
-        self.dict[class_name][offset] = var
+        var_name = var.method_name if (isinstance(var, MapMethod)) else var.identifier.name
 
-    def get_offset(self, class_name, var):
-        '''
-        Returns the offset
-        '''
-        if class_name in self.dict and var in self.dict[class_name]:
-            return self.dict[class_name][var]
-        else:
-            print("ERROR @ OFFSETMAP")
-            exit(1) # TODO : ERROR
+        self.fwd_dict[class_name][var_name] = offset
+        self.rev_dict[class_name][offset] = var
 
-    def get_var(self, class_name, offset):
+    def get_offset(self, class_name, var_name):
         '''
-        Gets the var at the offset
+        Returns offset
         '''
-        if class_name in self.dict and offset in self.dict[class_name]:
-            return self.dict[class_name][offset]
+        if class_name in self.fwd_dict and var_name in self.fwd_dict[class_name]:
+            return self.fwd_dict[var_name]
+        print("ERROR")
+        sys.exit(1)
+
+    def get_obj(self, class_name, offset):
+        '''
+        Returns the object
+        '''
+        if class_name in self.rev_dict and offset in self.rev_dict[class_name]:
+            return self.rev_dict[offset]
+
+        print("ERROR")
+        sys.exit(1)
+
+class SymbolTable(object):
+    '''
+    Symbol table maps
+    '''
+    def __init__(self):
+        self.dict = defaultdict(lambda : defaultdict(list))
+
+    def add(self, class_name, var_name, offset, register):
+        '''
+        Adds (offset, register) tuple to the end of the symbol table
+        '''
+        self.dict[class_name][var_name].append((offset, register))
+
+    def pop(self, class_name, var_name):
+        '''
+        Pops off back
+        '''
+        if class_name in self.dict and var_name in self.dict[class_name]:
+            self.dict[class_name][var_name].pop()
         else:
             print("ERROR")
-            exit(1)
+            sys.exit(1)
+
+    def top(self, class_name, var_name):
+        '''
+        Gets data
+        '''
+        if class_name in self.dict and var_name in self.dict[class_name]:
+            return self.dict[class_name][var_name][-1]
+        print("ERROR")
+        sys.exit(1)

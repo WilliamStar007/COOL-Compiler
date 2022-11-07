@@ -189,8 +189,8 @@ def read_class():
     '''
     Reads in classes
     '''
-    global cur_class
     class_info = read_identifier()
+    global cur_class
     cur_class = class_info.name
     check_inherits = get_line()
     parent = None
@@ -218,6 +218,8 @@ def read_class_map():
     Reads in the class map
     '''
     class_name = get_line()
+    global cur_class
+    cur_class = class_name
     num_attrs = int(get_line())
 
     config.class_map.init_obj(class_name)
@@ -244,6 +246,8 @@ def read_implementation_map():
     Reads in the implementation map
     '''
     class_name = get_line()
+    global cur_class
+    cur_class = class_name
     num_methods = int(get_line())
 
     for _ in range(num_methods):

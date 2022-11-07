@@ -4,7 +4,7 @@ All global variables
 
 # Imports
 from collections import defaultdict
-from mappings import ClassMap, ClassTag, ImplementationMap, OffsetMap, ParentMap
+from mappings import ClassMap, ClassTag, ImplementationMap, OffsetMap, ParentMap, SymbolTable
 
 # Lines from file
 lines = []
@@ -18,7 +18,10 @@ parent_map = ParentMap()
 
 # Map of class -> list of accessible methods
 class_tags = ClassTag()
-offset_map = OffsetMap()
+vtable_map = OffsetMap()
+attr_map = OffsetMap()
+symbol_table = SymbolTable()
 
-symbol_table = defaultdict(lambda: defaultdict(list))
 str_num_contents = defaultdict(str)
+
+OFFSET_AMT = 8
