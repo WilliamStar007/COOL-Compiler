@@ -3,11 +3,11 @@ This file has all assembly logic
 '''
 
 from collections import defaultdict
+import heapq as hq
 import config
 from memory import RSP, RBP, RSI, RDI, RNum, RXX
 from tree import *
 from collections import defaultdict
-import heapq as hq
 import constant_prints
 
 rsp = RSP()
@@ -77,16 +77,17 @@ def cgen(exp, ident=None):
         else:
             offset = 24
             reg = r12
-        
-        # find string number
-        for num, value in config.str_num_contents.items():
-            if value == exp.value:
-                str_num = num
-        
+
+        if exp.value not in config.string_tag.vals():
+            config.string_tag.add(exp.value)
+
+        str_num = config.string_tag.get_num(exp.value)
+
         ret += f"## string{str_num} holds {exp.value}\n"
         ret += f"movq $string{str_num}, {r14}\n"
         ret += f"movq {r14}, 24({r13})\n"
         ret += f"movq {r13}, {offset}({reg})"
+
 
 
     # True exp
@@ -187,32 +188,12 @@ def print_ctors():
     '''
     Print program constructors
     '''
-
-    # reconstruct the str_num_contents dictionary
-    new_str_num_contents = defaultdict(str)
-    num_classes = len(config.class_map.iterables())
-    for num, value in config.str_num_contents.items():
-        new_str_num_contents[num+num_classes] = value
-    config.str_num_contents = new_str_num_contents
-
     ret = ""
 
     class_names = []
-    class_str_num = 1
     for key, _ in config.class_map.iterables():
         class_names.append(key)
-
-        # delete existing class name string (if any)
-        if key in config.str_num_contents.values():
-            for num, value in config.str_num_contents:
-                if value == key:
-                    pop_num = num
-                    break
-            config.str_num_contents.pop(pop_num)
-        
-        # add class name string to str_num_contents
-        config.str_num_contents[class_str_num] = key
-        class_str_num += 1
+        config.string_tag.add(key)
 
     config.class_tags.assemble_dicts(class_names)
 
@@ -251,7 +232,7 @@ def print_ctors():
         r12.update_offset(16)
 
         # Vtable
-        # TODO: Don't include vtable if DNE
+        # TODO: Don't include vtable if DNE?
         ret += f"movq ${key}..vtable, {r14}\n"
         ret += f"movq {r14}, {r12.pwo()}\n"
         r12.update_offset(24)
@@ -312,6 +293,7 @@ def print_methods():
         elif class_name == "Object":
             ret += f"{constant_prints.OBJ_ABORT}\n{constant_prints.OBJ_COPY}\n"
             ret += f"{constant_prints.OBJ_TYPE_NAME}\n"
+            config.string_tag.add(constant_prints.ABORT_STR)
             continue
         elif class_name == "String":
             ret += f"{constant_prints.STR_CONCAT}\n{constant_prints.STR_LENGTH}\n"
@@ -364,7 +346,6 @@ def print_methods():
             ret += "ret\n"
             ret += "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
 
-
     return ret
 
 
@@ -372,7 +353,24 @@ def print_cool_globals():
     '''
     Prints cool globals
     '''
+
+    config.string_tag.add(constant_prints.VOID_ERROR)
+    config.string_tag.add(constant_prints.SUBSTR_ERROR) # TODO: In wrong place?
+
     ret = ""
+    ret += "## global string constants\n"
+    ret += f"{constant_prints.STR_START}\n"
+
+    sorted_strs = config.string_tag.pairs()
+
+    for str in sorted_strs:
+        ret += f".globl {str[0]}\n"
+        ret += f"{str[0]}:\t\t\t# \"{str[1]}\"\n"
+        for ch in str[1]:
+            ret += f".byte  {ord(ch)} # '{ch}'\n"
+        ret += ".byte 0\n\n"
+
+    ret += f"{constant_prints.PROGRAM_INFO}\n"
 
     return ret
 
