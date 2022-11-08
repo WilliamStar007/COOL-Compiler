@@ -5,18 +5,7 @@ Mappings
 # Imports
 import sys
 from collections import defaultdict
-
-class MapMethod(object):
-    '''
-    Method object for the implementation map
-    '''
-    def __init__(self, _method_name, _num_formals, _formals, _method_class, _method_body):
-        self.method_name = _method_name
-        self.num_formals = _num_formals
-        self.formals = _formals
-        self.method_class = _method_class
-        self.method_body = _method_body
-
+from tree import Method
 
 class Mapping(object):
     '''
@@ -56,6 +45,24 @@ class Mapping(object):
         Return iterables
         '''
         return self.dict.items()
+
+    def keys(self):
+        '''
+        Returns map keys
+        '''
+        return self.dict.keys()
+
+    def class_iterables(self, class_name):
+        '''
+        Return iterables of a class
+        '''
+        return self.dict[class_name]
+
+    def size(self, class_name):
+        '''
+        Returns number of feature in list
+        '''
+        return len(self.dict[class_name])
 
 
 class ClassMap(Mapping):
@@ -188,7 +195,7 @@ class OffsetMap(object):
         '''
         Sets offset
         '''
-        var_name = var.method_name if (isinstance(var, MapMethod)) else var.identifier.name
+        var_name = var.identifier.name
 
         self.fwd_dict[class_name][var_name] = offset
         self.rev_dict[class_name][offset] = var
@@ -198,7 +205,7 @@ class OffsetMap(object):
         Returns offset
         '''
         if class_name in self.fwd_dict and var_name in self.fwd_dict[class_name]:
-            return self.fwd_dict[var_name]
+            return self.fwd_dict[class_name][var_name]
         print("ERROR")
         sys.exit(1)
 

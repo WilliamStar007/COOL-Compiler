@@ -15,7 +15,7 @@ class ClassObj(object):
         self.feature_list = _feature_list
 
     def __repr__(self):
-        ret = "CLASS: IMPL"
+        ret = f"CLASS: {self.class_info.name}"
         return ret
 
 # *** CLASS FEATURES ***
@@ -51,7 +51,7 @@ class Method(Feature):
         self.body = _body
 
     def __repr__(self):
-        ret = "METHOD: IMPL"
+        ret = f"{self.identifier}\n{self.formals_list}\n{self.typename}\n{self.body}\n"
         return ret
 
 class Internal(object):
