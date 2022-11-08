@@ -5,7 +5,6 @@ Mappings
 # Imports
 import sys
 from collections import defaultdict
-from tree import Method
 
 class Mapping(object):
     '''
@@ -183,6 +182,67 @@ class ClassTag(Mapping):
             exit(1) # TODO: ERROR
 
 
+class StringTag(object):
+    '''
+    Mapping for string num
+    '''
+    def __init__(self):
+        self.fwd_dict = defaultdict(int)
+        self.rev_dict = defaultdict(int)
+
+    def add(self, cur_str):
+        '''
+        Add string to dicts
+        '''
+        num = len(self.fwd_dict) + 1
+
+        self.fwd_dict[num] = f"{cur_str}"
+        self.rev_dict[f"{cur_str}"] = num
+
+    def get_str(self, num):
+        '''
+        Get str of certain num
+        '''
+        return self.fwd_dict[num]
+
+    def get_num(self, cur_str):
+        '''
+        Get num of certain str
+        '''
+        return self.rev_dict[cur_str]
+
+    def fwd_iterables(self):
+        '''
+        Gets fwd dict iterables
+        '''
+        return self.fwd_dict.items()
+
+    def rev_iterables(self):
+        '''
+        Get rev dict iterables
+        '''
+        return self.rev_dict.items()
+
+    def vals(self):
+        '''
+        Returns map vals
+        '''
+        return self.fwd_dict.values()
+
+    def pairs(self):
+        '''
+        Returns a list of tuples of (string num, string val)
+        '''
+        contents = []
+        for i in range(len(self)):
+            contents.append((f"string{i + 1}", self.get_str(i + 1)))
+
+        return contents
+
+    def __len__(self):
+        return len(self.fwd_dict)
+
+
 class OffsetMap(object):
     '''
     Map attr offset to class
@@ -218,6 +278,7 @@ class OffsetMap(object):
 
         print("ERROR")
         sys.exit(1)
+
 
 class SymbolTable(object):
     '''

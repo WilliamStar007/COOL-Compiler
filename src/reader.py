@@ -115,9 +115,6 @@ def read_exp():
         return Integer(cur_class, lineno, type_of, int(get_line()))
     elif exp_name == 'string':
         obj = StringObj(cur_class, lineno, type_of, get_line())
-        # Add the string to the string_num table if the string is not already in the table
-        if obj.value not in config.str_num_contents.values():
-            config.str_num_contents[len(config.str_num_contents)+1] = obj.value
         return obj
     elif exp_name == 'identifier':
         return IdentifierExp(cur_class, lineno, type_of, read_identifier())
