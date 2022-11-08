@@ -371,11 +371,16 @@ def print_cool_globals():
     for str in sorted_strs:
         ret += f".globl {str[0]}\n"
         temp = str[0] + ":"
-        ret += f"{temp:24}# \"{str[1]}\"\n"
+        if "\\n" in str[1]:
+            tmp_str = str[1][:len(str[1])-2] + "\\\\n"
+            ret += f"{temp:24}# \"{tmp_str}\"\n"
+        else:
+            ret += f"{temp:24}# \"{str[1]}\"\n"
         for ch in str[1]:
-            if ch == "\\":
+            if ch == "\"":
+                continue
+            elif ch == "\\":
                 ret += f".byte {ord(ch):>3} # '{ch}{ch}'\n"
-                print(ret)
             else:
                 ret += f".byte {ord(ch):>3} # '{ch}'\n"
         ret += ".byte 0\n\n"
