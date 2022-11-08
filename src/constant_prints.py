@@ -256,8 +256,8 @@ String.concat.end:      ## method body ends
                         ret
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
 
-STR_CONCAT = """.globl String.substr
-String.substr:          ## method definition
+STR_CONCAT = """.globl String.concat
+String.concat:          ## method definition
                         pushq %rbp
                         movq %rsp, %rbp
                         movq 16(%rbp), %r12
@@ -265,8 +265,7 @@ String.substr:          ## method definition
                         movq $8, %r14
                         subq %r14, %rsp
                         ## return address handling
-                        ## fp[4] holds argument i (Int)
-                        ## fp[3] holds argument l (Int)
+                        ## fp[3] holds argument s (String)
                         ## method body begins
                         ## new String
                         pushq %rbp
@@ -278,26 +277,15 @@ String.substr:          ## method definition
                         movq %r13, %r15
                         movq 24(%rbp), %r14
                         movq 24(%r14), %r14
-                        movq 32(%rbp), %r13
-                        movq 24(%r13), %r13
-                        movq 24(%r12), %r12
-                        movq %r12, %rdi
-			movq %r13, %rsi
-			movq %r14, %rdx
-			call coolsubstr
-			movq %rax, %r13
-                        cmpq $0, %r13
-			jne l4
-                        movq $string18, %r13
+                        movq 24(%r12), %r13
                         movq %r13, %rdi
-			call cooloutstr
-                        movl $0, %edi
-			call exit
-.globl l4
-l4:                     movq %r13, 24(%r15)
+			movq %r14, %rsi
+			call coolstrcat
+			movq %rax, %r13
+                        movq %r13, 24(%r15)
                         movq %r15, %r13
-.globl String.substr.end
-String.substr.end:      ## method body ends
+.globl String.concat.end
+String.concat.end:      ## method body ends
                         ## return address handling
                         movq %rbp, %rsp
                         popq %rbp
