@@ -235,14 +235,53 @@ def print_methods():
     ordering = config.aast.copy()
     ordering.pop(0)
     ordering.sort(key=lambda x : x.class_info.name)
-    # TODO: WANT TO DO A TOP SORT: 
-    # TODO: Need to include object
+    # TODO: WANT TO DO A TOP SORT:
+    # TODO: Need to include object, IO, String, Int, Bool
     print(ordering)
 
     ret = ""
 
     for cls in ordering:
         class_name = cls.class_info.name
+        for feature in cls.feature_list:
+            if not isinstance(feature, Method):
+                continue
+            method_info = f"{class_name}.{feature.identifier.name}"
+
+            ret += f".global {method_info}\n"
+            ret += f"{method_info}:\t\t\t## method definition\n" #TODO SPACING
+            ret += f"pushq {rbp}\n"
+            ret += f"movq {rsp}, {rbp}\n"
+            # TODO: Where does this 16 come from?
+            ret += f"movq 16{rbp}, {r12}\n"
+
+            ret += "## stack room for temporaries: 1\n"
+            ret += f"movq $8, {r14}\n"
+            ret += f"subq {r14}, {rsp}\n"
+            ret += "## return address handling\n"
+
+            for val in config.class_map.class_iterables(class_name):
+                val_name = val.identifier.name
+                val_type = val.typename.name
+                val_offset = config.attr_map.get_offset(class_name, val_name)
+                ret += f"## self[{val_offset}] holds field {val_name} ({val_type})\n"
+            for formal in feature.formals_list:
+                if isinstance(formal, int):
+                    continue
+                ret += f"## fp[TEMP] holds argument TEMP (TEMP)\n"
+            
+            ret += "## method body begins\n"
+            ret += f"{cgen(feature.body)}\n"
+
+            ret += f".global {method_info}.end\n"
+            ret += f"{method_info}.end:\t\t ## method body ends\n" # TODO: SPACING
+            ret += "## return address handling\n"
+
+            ret += f"movq {rbp}, {rsp}\n"
+            ret += f"popq {rbp}\n"
+            ret += "ret\n"
+            ret += "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
+
 
     return ret
 

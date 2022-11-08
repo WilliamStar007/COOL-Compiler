@@ -46,6 +46,12 @@ class Mapping(object):
         '''
         return self.dict.items()
 
+    def class_iterables(self, class_name):
+        '''
+        Return iterables of a class
+        '''
+        return self.dict[class_name]
+
     def size(self, class_name):
         '''
         Returns number of feature in list
@@ -184,7 +190,6 @@ class OffsetMap(object):
         Sets offset
         '''
         var_name = var.identifier.name
-        print(f"{type(var_name)}\n{var_name}\n")
 
         self.fwd_dict[class_name][var_name] = offset
         self.rev_dict[class_name][offset] = var
@@ -194,7 +199,7 @@ class OffsetMap(object):
         Returns offset
         '''
         if class_name in self.fwd_dict and var_name in self.fwd_dict[class_name]:
-            return self.fwd_dict[var_name]
+            return self.fwd_dict[class_name][var_name]
         print("ERROR")
         sys.exit(1)
 
