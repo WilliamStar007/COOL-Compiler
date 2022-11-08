@@ -46,6 +46,12 @@ class Mapping(object):
         '''
         return self.dict.items()
 
+    def keys(self):
+        '''
+        Returns map keys
+        '''
+        return self.dict.keys()
+
     def class_iterables(self, class_name):
         '''
         Return iterables of a class

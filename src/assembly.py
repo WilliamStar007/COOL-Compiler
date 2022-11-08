@@ -2,9 +2,11 @@
 This file has all assembly logic
 '''
 
+from collections import defaultdict
 import config
 from memory import RSP, RBP, RSI, RDI, RNum, RXX
 from tree import *
+import heapq as hq
 
 rsp = RSP()
 rbp = RBP()
@@ -84,6 +86,15 @@ def cgen(exp, ident=None):
 
 
     # ***** EXPRESSION UNARY OPS *****
+
+    # IsVoid
+    elif isinstance(exp, IsVoid):
+        pass
+
+
+    # Negate
+    elif isinstance(exp, Negate):
+        pass
 
 
     # ***** EXPRESSION BINARY OPS *****
@@ -232,12 +243,8 @@ def print_methods():
     '''
     Prints global methods
     '''
-    ordering = config.aast.copy()
-    ordering.pop(0)
-    ordering.sort(key=lambda x : x.class_info.name)
-    # TODO: WANT TO DO A TOP SORT:
-    # TODO: Need to include object, IO, String, Int, Bool
-    print(ordering)
+
+    ordering = top_sort()
 
     ret = ""
 
@@ -248,14 +255,16 @@ def print_methods():
                 continue
             method_info = f"{class_name}.{feature.identifier.name}"
 
-            ret += f".global {method_info}\n"
+            ret += f".globl {method_info}\n"
             ret += f"{method_info}:\t\t\t## method definition\n" #TODO SPACING
             ret += f"pushq {rbp}\n"
             ret += f"movq {rsp}, {rbp}\n"
             # TODO: Where does this 16 come from?
-            ret += f"movq 16{rbp}, {r12}\n"
+            ret += f"movq 16({rbp}), {r12}\n"
 
-            ret += "## stack room for temporaries: 1\n"
+            num_formals = feature.formals_list[0] #TODO: NEED ANY LET EXPRS TOO
+
+            ret += f"## stack room for temporaries: {num_formals}\n"
             ret += f"movq $8, {r14}\n"
             ret += f"subq {r14}, {rsp}\n"
             ret += "## return address handling\n"
@@ -265,11 +274,16 @@ def print_methods():
                 val_type = val.typename.name
                 val_offset = config.attr_map.get_offset(class_name, val_name)
                 ret += f"## self[{val_offset}] holds field {val_name} ({val_type})\n"
+
+            
+            cur_offset = num_formals + 2
+
             for formal in feature.formals_list:
                 if isinstance(formal, int):
                     continue
-                ret += f"## fp[TEMP] holds argument TEMP (TEMP)\n"
-            
+                ret += f"## fp[{cur_offset}] holds argument {formal[0]} ({formal[1]})\n"
+                cur_offset -= 1
+
             ret += "## method body begins\n"
             ret += f"{cgen(feature.body)}\n"
 
@@ -293,3 +307,156 @@ def print_cool_globals():
     ret = ""
 
     return ret
+
+
+def top_sort():
+    '''
+    REPLACE TODO
+    '''
+    base_classes = get_base_classes()
+
+    classes = config.aast.copy()
+    classes.pop(0)
+    for cls in base_classes:
+        classes.append(cls)
+
+    return helper(classes)
+
+
+def helper(classes):
+    '''
+    Helper for toposort. TODO Clean this up
+    '''
+    incoming_edges = defaultdict(int)
+    graph = defaultdict(list)
+    name_to_obj = defaultdict(ClassObj)
+
+    for cls in classes:
+        class_name = cls.class_info.name
+        name_to_obj[class_name] = cls
+        incoming_edges[class_name] = 0
+
+    for cls in classes:
+        class_name = cls.class_info.name
+        if class_name not in graph:
+            graph[class_name] = []
+
+        if class_name == "Main":
+            graph["IO"].append(class_name)
+            graph["Object"].append(class_name)
+            incoming_edges[class_name] += 2
+        elif class_name == "Object":
+            continue
+
+        parent = "Object" if not cls.parent else cls.parent.name
+        if class_name not in graph[parent]:
+            graph[parent].append(class_name)
+            incoming_edges[class_name] += 1
+
+    queue = []
+    for key, val in incoming_edges.items():
+        if val == 0:
+            hq.heappush(queue, key)
+
+    toposort = []
+
+    while len(queue) > 0:
+        name = hq.heappop(queue)
+        toposort.append(name)
+
+        for neighbor in graph[name]:
+            incoming_edges[neighbor] -= 1
+            if incoming_edges[neighbor] == 0:
+                hq.heappush(queue, neighbor)
+
+    for key, val in incoming_edges.items():
+        if not val == 0:
+            print("CYCLE")
+            exit(1)
+
+    ret = []
+
+    for class_name in toposort:
+        ret.append(name_to_obj[class_name])
+
+    return ret
+
+
+
+def get_base_classes():
+    '''
+    Assembles the base classes
+    '''
+
+    abort_method = Method("Object", \
+                   Identifier("Object", 0, "abort"),\
+                   [0], \
+                   Identifier("Object", 0, "Object"),
+                   None)
+    copy_method = Method("Object", \
+                   Identifier("Object", 0, "copy"),\
+                   [0], \
+                   Identifier("Object", 0, "Object"),
+                   None)
+    type_name = Method("Object", \
+                   Identifier("Object", 0, "type_name"),\
+                   [0], \
+                   Identifier("Object", 0, "Object"),
+                   None)
+    object_class = ClassObj(Identifier("Object", 0, "Object"), \
+                      "no_inherits", \
+                      None, \
+                      [abort_method, copy_method, type_name]
+                      )
+    # Object: Methods: abort, copy, typename
+
+    in_int = Method("IO", \
+                   Identifier("IO", 0, "in_int"),\
+                   [0], \
+                   Identifier("IO", 0, "Int"),
+                   None)
+    in_string = Method("IO", \
+                   Identifier("IO", 0, "in_string"),\
+                   [0], \
+                   Identifier("IO", 0, "String"),
+                   None)
+    out_int = Method("IO", \
+                   Identifier("IO", 0, "out_int"),\
+                   [1, (Identifier("IO", 0, "x"), Identifier("IO", 0, "String"))], \
+                   Identifier("IO", 0, "Object"),
+                   None)
+
+    out_string = Method("IO", \
+                   Identifier("IO", 0, "out_string"),\
+                   [1, (Identifier("IO", 0, "x"), Identifier("IO", 0, "String"))], \
+                   Identifier("IO", 0, "SELF_TYPE"),
+                   None)
+
+    io_class = ClassObj(Identifier("IO", 0, "IO"), \
+                      "inherits", \
+                      Identifier("IO", 0, "Object"), \
+                      [in_int, in_string, out_int, out_string]
+                      )
+
+    # IO: In int, in string, out int, out string
+
+    concat = Method("String", \
+        Identifier("IO", 0, "out_string"),\
+        [1, (Identifier("String", 0, "s"), Identifier("String", 0, "String"))], \
+        Identifier("String", 0, "String"),
+        None)
+
+    substr = Method("String", \
+        Identifier("IO", 0, "out_string"),\
+        [2, (Identifier("String", 0, "i"), Identifier("String", 0, "Int")), \
+        (Identifier("String", 0, "l"), Identifier("String", 0, "Int"))], \
+        Identifier("String", 0, "String"), \
+        None)
+
+    str_class = ClassObj(Identifier("String", 0, "String"), \
+        "inherits", \
+        Identifier("IO", 0, "Object"), \
+        [concat, substr]
+        )
+
+    return [object_class, io_class, str_class]
