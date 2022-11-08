@@ -400,8 +400,7 @@ percent.ld:             # " %ld"
 .byte  37 # '%'
 .byte 108 # 'l'
 .byte 100 # 'd'
-.byte 0\n
-"""
+.byte 0\n"""
 
 PROGRAM_INFO = """                        ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 .globl eq_handler

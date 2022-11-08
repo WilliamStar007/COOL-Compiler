@@ -7,7 +7,6 @@ import heapq as hq
 import config
 from memory import RSP, RBP, RSI, RDI, RNum, RXX
 from tree import *
-from collections import defaultdict
 import constant_prints
 
 rsp = RSP()
@@ -148,27 +147,53 @@ def cgen(exp, ident=None):
 
     # Self
     elif isinstance(exp, SelfDispatch):
-        pass
+        ret += f"## {exp.method_name}(...)\n"
+        ret += f"pushq {r12}\n"
+        ret += f"pushq {rbp}\n"
 
-
-    # Dynamic
-    elif isinstance(exp, DynamicDispatch): # <id>.<method_name>(<params>)
-        # Steps:
-        # Push base ptr
-        # Move base ptr to stack ptr
-        # Load params + modify symbol table
-        # Find in vtable
-        # Load into reg
-        # Call
-        ret += f"push {rbp}\n"
         for formal in exp.formals:
             # If ID, have to check symbol table
             # Else, call cgen on
-            if isinstance(formal, Identifier):
+            ret += f"## {formal.identifier}\n"
+            if isinstance(formal, IdentifierExp):
+                cur_class = formal.in_class
+                id_name = formal.identifier.name
+
+                tpl = config.symbol_table.top(cur_class, id_name)
+                offset = tpl[0]
+                reg = tpl[1]
+
+                ret += f"movq {offset * config.OFFSET_AMT}({reg}), {r13}\n"
+                ret += f"pushq {r13}\n"
+                ret += f"pushq {r12}\n"
+
+            else:
+                ret += f"{cgen(formal)}\n"
+
+        ret += f"## obtain vtable for self object of type {exp.in_class}\n"
+
+        ret += f"movq 16({r12}), {r14}\n" # TODO: less hard-coded
+        method_offset = config.vtable_map.get_offset(exp.in_class, exp.method_name.name)
+        ret += f"## look up {exp.method_name}() at offset {method_offset} in vtable\n"
+        ret += f"movq {method_offset * config.OFFSET_AMT}({r14}), {r14}\n"
+        ret += f"call *{r14}\n"
+        ret += f"addq $16, {rsp}\n"
+        ret += f"popq {rbp}\n"
+        ret += f"popq {r12}"
+
+    # Dynamic
+    elif isinstance(exp, DynamicDispatch):
+        ret += f"## {exp.obj_name.value}.{exp.method_name}(...)\n" #TODO: WRONG
+        ret += f"pushq {r12}\n"
+        ret += f"pushq {rbp}\n"
+        for formal in exp.formals:
+            # If ID, have to check symbol table
+            # Else, call cgen on
+            if isinstance(formal, IdentifierExp):
                 cur_class = formal.in_class
                 id_name = formal.name
 
-                tpl = config.symbol_table[cur_class][id_name]
+                tpl = config.symbol_table.get(cur_class, id_name)
                 offset = tpl[0]
                 reg = tpl[1]
 
@@ -176,13 +201,11 @@ def cgen(exp, ident=None):
 
             else:
                 ret += f"{cgen(formal)}\n"
-        
-
-        
-
-            
+        cgen(exp.obj_name)
 
 
+    elif isinstance(exp, Dispatch):
+        pass # TODO
 
 
     # ***** EXPRESSION BASE CLASS *****
@@ -410,7 +433,8 @@ def print_cool_globals():
         ret += f".globl {str[0]}\n"
         ret += f"{str[0]}:\t\t\t# \"{str[1]}\"\n"
         for ch in str[1]:
-            ret += f".byte  {ord(ch)} # '{ch}'\n"
+            sub = ".byte"
+            ret += f"{sub:6}{ord(ch)} # '{ch}'\n"
         ret += ".byte 0\n\n"
 
     ret += f"{constant_prints.PROGRAM_INFO}\n"
