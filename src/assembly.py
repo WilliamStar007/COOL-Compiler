@@ -77,7 +77,7 @@ def cgen(exp, ident=None):
         else:
             offset = 24
             reg = r12
-        
+
         if exp.value not in config.string_tag.vals():
             config.string_tag.add(exp.value)
 
@@ -284,8 +284,6 @@ def print_methods():
 
     ret = ""
 
-    config.string_tag.add(constant_prints.ABORT_STR)
-
     for cls in ordering:
         class_name = cls.class_info.name
         if class_name == "IO":
@@ -295,6 +293,7 @@ def print_methods():
         elif class_name == "Object":
             ret += f"{constant_prints.OBJ_ABORT}\n{constant_prints.OBJ_COPY}\n"
             ret += f"{constant_prints.OBJ_TYPE_NAME}\n"
+            config.string_tag.add(constant_prints.ABORT_STR)
             continue
         elif class_name == "String":
             ret += f"{constant_prints.STR_CONCAT}\n{constant_prints.STR_LENGTH}\n"
@@ -354,8 +353,9 @@ def print_cool_globals():
     '''
     Prints cool globals
     '''
+
     config.string_tag.add(constant_prints.VOID_ERROR)
-    config.string_tag.add(constant_prints.SUBSTR_ERROR)
+    config.string_tag.add(constant_prints.SUBSTR_ERROR) # TODO: In wrong place?
 
     ret = ""
     ret += "## global string constants\n"
