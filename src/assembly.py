@@ -82,7 +82,7 @@ def cgen(exp, ident=None):
 
         str_num = config.string_tag.get_num(exp.value)
 
-        ret += f"## string{str_num} holds {exp.value}\n"
+        ret += f"## string{str_num} holds \"{exp.value}\"\n"
         ret += f"movq $string{str_num}, {r14}\n"
         ret += f"movq {r14}, 24({r13})\n"
         ret += f"movq {r13}, {offset}({reg})"
@@ -325,7 +325,10 @@ def print_ctors():
             if not attr.expr:
                 ret += "-- none\n"
             else:
-                ret += f"<- {attr.expr.value}\n"
+                if isinstance(attr.expr, StringObj):
+                    ret += f"<- \"{attr.expr.value}\"\n"
+                else:
+                    ret += f"<- {attr.expr.value}\n"
                 ret += f"{cgen(attr.expr, attr.identifier.name)}\n"
             self_offset += 1
 
@@ -372,7 +375,8 @@ def print_methods():
             method_info = f"{class_name}.{feature.identifier.name}"
 
             ret += f".globl {method_info}\n"
-            ret += f"{method_info}:\t\t\t## method definition\n" #TODO SPACING
+            temp = method_info + ":"
+            ret += f"{temp:24}## method definition\n" #TODO SPACING
             ret += f"pushq {rbp}\n"
             ret += f"movq {rsp}, {rbp}\n"
             # TODO: Where does this 16 come from?
@@ -404,7 +408,8 @@ def print_methods():
             ret += f"{cgen(feature.body)}\n"
 
             ret += f".globl {method_info}.end\n"
-            ret += f"{method_info}.end:\t\t ## method body ends\n" # TODO: SPACING
+            temp = method_info + ".end:"
+            ret += f"{temp:24}## method body ends\n"
             ret += "## return address handling\n"
 
             ret += f"movq {rbp}, {rsp}\n"
@@ -431,10 +436,13 @@ def print_cool_globals():
 
     for str in sorted_strs:
         ret += f".globl {str[0]}\n"
-        ret += f"{str[0]}:\t\t\t# \"{str[1]}\"\n"
+        temp = str[0] + ":"
+        ret += f"{temp:24}# \"{str[1]}\"\n"
         for ch in str[1]:
-            sub = ".byte"
-            ret += f"{sub:6}{ord(ch)} # '{ch}'\n"
+            if ch == "\\":
+                ret += f".byte {ord(ch):>3} # '{ch}{ch}'\n"
+            else:
+                ret += f".byte {ord(ch):>3} # '{ch}'\n"
         ret += ".byte 0\n\n"
 
     ret += f"{constant_prints.PROGRAM_INFO}\n"
