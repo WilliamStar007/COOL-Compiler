@@ -365,9 +365,14 @@ def print_cool_globals():
 
     for str in sorted_strs:
         ret += f".globl {str[0]}\n"
-        ret += f"{str[0]}:\t\t\t# \"{str[1]}\"\n"
+        temp = str[0] + ":"
+        ret += f"{temp:24}# \"{str[1]}\"\n"
         for ch in str[1]:
-            ret += f".byte  {ord(ch)} # '{ch}'\n"
+            if ch == "\\":
+                ret += f".byte {ord(ch):>3} # '{ch}{ch}'\n"
+                print(ret)
+            else:
+                ret += f".byte {ord(ch):>3} # '{ch}'\n"
         ret += ".byte 0\n\n"
 
     ret += f"{constant_prints.PROGRAM_INFO}\n"
