@@ -25,5 +25,3 @@ symbol_table = SymbolTable()
 str_num_contents = defaultdict(str)
 
 OFFSET_AMT = 8
-
-# HELPER METHODS

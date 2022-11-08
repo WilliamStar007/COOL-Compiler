@@ -7,6 +7,7 @@ import config
 from memory import RSP, RBP, RSI, RDI, RNum, RXX
 from tree import *
 import heapq as hq
+import constant_prints
 
 rsp = RSP()
 rbp = RBP()
@@ -102,6 +103,21 @@ def cgen(exp, ident=None):
 
     # ***** EXPRESSION BLOCKS *****
 
+    # Block
+    elif isinstance(exp, Block):
+        for i, sub_exp in enumerate(exp.exps):
+            ret += f"{cgen(sub_exp)}"
+            if i < exp.num_exps - 1:
+                ret += "\n"
+
+    # If
+    elif isinstance(exp, IfBlock):
+        pass
+
+
+    # Loop
+    elif isinstance(exp, LoopBlock):
+        pass
 
     # ***** EXPRESSION DISPATCHES *****
 
@@ -250,6 +266,19 @@ def print_methods():
 
     for cls in ordering:
         class_name = cls.class_info.name
+        if class_name == "IO":
+            ret += f"{constant_prints.IO_IN_INT}\n{constant_prints.IO_IN_STRING}\n"
+            ret += f"{constant_prints.IO_OUT_INT}\n{constant_prints.IO_OUT_STRING}\n"
+            continue
+        elif class_name == "Object":
+            ret += f"{constant_prints.OBJ_ABORT}\n{constant_prints.OBJ_COPY}\n"
+            ret += f"{constant_prints.OBJ_TYPE_NAME}\n"
+            continue
+        elif class_name == "String":
+            ret += f"{constant_prints.STR_CONCAT}\n{constant_prints.STR_LENGTH}\n"
+            ret += f"{constant_prints.STR_SUBSTR}\n"
+            continue
+
         for feature in cls.feature_list:
             if not isinstance(feature, Method):
                 continue
@@ -275,7 +304,7 @@ def print_methods():
                 val_offset = config.attr_map.get_offset(class_name, val_name)
                 ret += f"## self[{val_offset}] holds field {val_name} ({val_type})\n"
 
-            
+
             cur_offset = num_formals + 2
 
             for formal in feature.formals_list:
@@ -287,7 +316,7 @@ def print_methods():
             ret += "## method body begins\n"
             ret += f"{cgen(feature.body)}\n"
 
-            ret += f".global {method_info}.end\n"
+            ret += f".globl {method_info}.end\n"
             ret += f"{method_info}.end:\t\t ## method body ends\n" # TODO: SPACING
             ret += "## return address handling\n"
 
@@ -360,7 +389,7 @@ def helper(classes):
 
     toposort = []
 
-    while len(queue) > 0:
+    while len(queue) != 0:
         name = hq.heappop(queue)
         toposort.append(name)
 
@@ -371,7 +400,7 @@ def helper(classes):
 
     for key, val in incoming_edges.items():
         if not val == 0:
-            print("CYCLE")
+            print("ERROR")
             exit(1)
 
     ret = []
@@ -380,7 +409,6 @@ def helper(classes):
         ret.append(name_to_obj[class_name])
 
     return ret
-
 
 
 def get_base_classes():
@@ -422,7 +450,7 @@ def get_base_classes():
                    None)
     out_int = Method("IO", \
                    Identifier("IO", 0, "out_int"),\
-                   [1, (Identifier("IO", 0, "x"), Identifier("IO", 0, "String"))], \
+                   [1, (Identifier("IO", 0, "x"), Identifier("IO", 0, "Int"))], \
                    Identifier("IO", 0, "Object"),
                    None)
 
@@ -441,13 +469,19 @@ def get_base_classes():
     # IO: In int, in string, out int, out string
 
     concat = Method("String", \
-        Identifier("IO", 0, "out_string"),\
+        Identifier("IO", 0, "concat"),\
+        [1, (Identifier("String", 0, "s"), Identifier("String", 0, "String"))], \
+        Identifier("String", 0, "String"),
+        None)
+
+    length = Method("String", \
+        Identifier("IO", 0, "length"),\
         [1, (Identifier("String", 0, "s"), Identifier("String", 0, "String"))], \
         Identifier("String", 0, "String"),
         None)
 
     substr = Method("String", \
-        Identifier("IO", 0, "out_string"),\
+        Identifier("IO", 0, "substr"),\
         [2, (Identifier("String", 0, "i"), Identifier("String", 0, "Int")), \
         (Identifier("String", 0, "l"), Identifier("String", 0, "Int"))], \
         Identifier("String", 0, "String"), \
@@ -456,7 +490,7 @@ def get_base_classes():
     str_class = ClassObj(Identifier("String", 0, "String"), \
         "inherits", \
         Identifier("IO", 0, "Object"), \
-        [concat, substr]
+        [concat, length, substr]
         )
 
     return [object_class, io_class, str_class]
