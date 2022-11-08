@@ -94,6 +94,49 @@ def cgen(exp, ident=None):
 
     # ***** EXPRESSION DISPATCHES *****
 
+    # Static
+    elif isinstance(exp, StaticDispatch):
+        pass
+
+
+    # Self
+    elif isinstance(exp, SelfDispatch):
+        pass
+
+
+    # Dynamic
+    elif isinstance(exp, DynamicDispatch): # <id>.<method_name>(<params>)
+        # Steps:
+        # Push base ptr
+        # Move base ptr to stack ptr
+        # Load params + modify symbol table
+        # Find in vtable
+        # Load into reg
+        # Call
+        ret += f"push {rbp}\n"
+        for formal in exp.formals:
+            # If ID, have to check symbol table
+            # Else, call cgen on
+            if isinstance(formal, Identifier):
+                cur_class = formal.in_class
+                id_name = formal.name
+
+                tpl = config.symbol_table[cur_class][id_name]
+                offset = tpl[0]
+                reg = tpl[1]
+
+                ret += f"{offset * config.OFFSET_AMT}({reg}) holds {id_name} ({id_name.type_of})\n"
+
+            else:
+                ret += f"{cgen(formal)}\n"
+        
+
+        
+
+            
+
+
+
 
     # ***** EXPRESSION BASE CLASS *****
         # Expression base class
