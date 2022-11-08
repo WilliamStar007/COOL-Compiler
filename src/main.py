@@ -6,7 +6,7 @@ Main file
 import sys
 import config
 from reader import read_input
-from assembly import print_vtables, print_ctors
+from assembly import print_vtables, print_ctors, print_methods
 
 def main():
     '''
@@ -67,6 +67,7 @@ def main():
 
     output_str += print_vtables()
     output_str += print_ctors()
+    output_str += print_methods()
 
     # Output file logic
     output_filename = sys.argv[1]
