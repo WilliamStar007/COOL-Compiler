@@ -115,14 +115,18 @@ def read_exp():
     elif exp_name == 'integer':
         return Integer(cur_class, lineno, type_of, int(get_line()))
     elif exp_name == 'string':
-        return StringObj(cur_class, lineno, type_of, get_line())
+        obj = StringObj(cur_class, lineno, type_of, get_line())
+        # Add the string to the string_num table if the string is not already in the table
+        if obj.value not in config.str_num_contents.values():
+            config.str_num_contents[len(config.str_num_contents)+1] = obj.value
+        return obj
     elif exp_name == 'identifier':
         return IdentifierExp(cur_class, lineno, type_of, read_identifier())
     elif exp_name == 'internal':
         desc = get_line()
         return Internal(cur_class, lineno, type_of, exp_name, desc)
     elif exp_name == 'true':
-        return Bool(cur_class, lineno, "tru")
+        return Bool(cur_class, lineno, "true")
     elif exp_name == 'false':
         return Bool(cur_class, lineno, "false")
 

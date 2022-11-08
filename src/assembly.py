@@ -5,6 +5,7 @@ This file has all assembly logic
 import config
 from memory import RSP, RBP, RSI, RDI, RNum, RXX
 from tree import *
+from collections import defaultdict
 
 rsp = RSP()
 rbp = RBP()
@@ -64,7 +65,25 @@ def cgen(exp, ident=None):
     # String
     elif isinstance(exp, StringObj):
         ret += f"{cgen(Expression(exp.in_class, 0, 'String'))}\n"
-        ret += "FIXIXIFSFJONFD" # TODO: FIX
+
+        # get offset or default to 24
+        if ident:
+            tpl = config.symbol_table.top(exp.in_class, ident)
+            offset = tpl[0] * config.OFFSET_AMT
+            reg = tpl[1]
+        else:
+            offset = 24
+            reg = r12
+        
+        # find string number
+        for num, value in config.str_num_contents.items():
+            if value == exp.value:
+                str_num = num
+        
+        ret += f"## string{str_num} holds {exp.value}\n"
+        ret += f"movq $string{str_num}, {r14}\n"
+        ret += f"movq {r14}, 24({r13})\n"
+        ret += f"movq {r13}, {offset}({reg})"
 
 
     # True exp
@@ -141,12 +160,32 @@ def print_ctors():
     '''
     Print program constructors
     '''
+
+    # reconstruct the str_num_contents dictionary
+    new_str_num_contents = defaultdict(str)
+    num_classes = len(config.class_map.iterables())
+    for num, value in config.str_num_contents.items():
+        new_str_num_contents[num+num_classes] = value
+    config.str_num_contents = new_str_num_contents
+
     ret = ""
 
     class_names = []
+    class_str_num = 1
     for key, _ in config.class_map.iterables():
         class_names.append(key)
-        config.str_num_contents[len(config.str_num_contents) + 1] = key
+
+        # delete existing class name string (if any)
+        if key in config.str_num_contents.values():
+            for num, value in config.str_num_contents:
+                if value == key:
+                    pop_num = num
+                    break
+            config.str_num_contents.pop(pop_num)
+        
+        # add class name string to str_num_contents
+        config.str_num_contents[class_str_num] = key
+        class_str_num += 1
 
     config.class_tags.assemble_dicts(class_names)
 
