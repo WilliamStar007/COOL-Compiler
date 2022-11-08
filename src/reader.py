@@ -2,7 +2,6 @@
 This file deserializes an annotated abstract syntax tree
 '''
 
-from mappings import MapMethod
 from tree import *
 import config
 
@@ -256,6 +255,7 @@ def read_implementation_map():
 
     for _ in range(num_methods):
         method_name = get_line()
+        method_name = Identifier(cur_class, 0, method_name)
         num_formals = int(get_line())
 
         formals = []
@@ -267,7 +267,7 @@ def read_implementation_map():
 
         body = read_exp()
 
-        method = MapMethod(method_name, num_formals, formals, method_class_name, body)
+        method = Method(method_class_name, method_name, num_formals, formals, body)
         config.impl_map.append_obj(class_name, method)
 
 

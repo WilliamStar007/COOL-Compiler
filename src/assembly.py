@@ -2,10 +2,13 @@
 This file has all assembly logic
 '''
 
+from collections import defaultdict
 import config
 from memory import RSP, RBP, RSI, RDI, RNum, RXX
 from tree import *
 from collections import defaultdict
+import heapq as hq
+import constant_prints
 
 rsp = RSP()
 rbp = RBP()
@@ -104,12 +107,36 @@ def cgen(exp, ident=None):
 
     # ***** EXPRESSION UNARY OPS *****
 
+    # IsVoid
+    elif isinstance(exp, IsVoid):
+        pass
+
+
+    # Negate
+    elif isinstance(exp, Negate):
+        pass
+
 
     # ***** EXPRESSION BINARY OPS *****
 
 
     # ***** EXPRESSION BLOCKS *****
 
+    # Block
+    elif isinstance(exp, Block):
+        for i, sub_exp in enumerate(exp.exps):
+            ret += f"{cgen(sub_exp)}"
+            if i < exp.num_exps - 1:
+                ret += "\n"
+
+    # If
+    elif isinstance(exp, IfBlock):
+        pass
+
+
+    # Loop
+    elif isinstance(exp, LoopBlock):
+        pass
 
     # ***** EXPRESSION DISPATCHES *****
 
@@ -147,7 +174,7 @@ def print_vtables():
         cur_offset = 2
 
         for method in val:
-            ret += f"\t\t\t.quad {method.method_class}.{method.method_name}\n"
+            ret += f"\t\t\t.quad {method.in_class}.{method.identifier}\n"
             config.vtable_map.set_offset(key, method, cur_offset)
             cur_offset += 1
 
@@ -271,8 +298,71 @@ def print_methods():
     '''
     Prints global methods
     '''
+
+    ordering = top_sort()
+
     ret = ""
 
+    for cls in ordering:
+        class_name = cls.class_info.name
+        if class_name == "IO":
+            ret += f"{constant_prints.IO_IN_INT}\n{constant_prints.IO_IN_STRING}\n"
+            ret += f"{constant_prints.IO_OUT_INT}\n{constant_prints.IO_OUT_STRING}\n"
+            continue
+        elif class_name == "Object":
+            ret += f"{constant_prints.OBJ_ABORT}\n{constant_prints.OBJ_COPY}\n"
+            ret += f"{constant_prints.OBJ_TYPE_NAME}\n"
+            continue
+        elif class_name == "String":
+            ret += f"{constant_prints.STR_CONCAT}\n{constant_prints.STR_LENGTH}\n"
+            ret += f"{constant_prints.STR_SUBSTR}\n"
+            continue
+
+        for feature in cls.feature_list:
+            if not isinstance(feature, Method):
+                continue
+            method_info = f"{class_name}.{feature.identifier.name}"
+
+            ret += f".globl {method_info}\n"
+            ret += f"{method_info}:\t\t\t## method definition\n" #TODO SPACING
+            ret += f"pushq {rbp}\n"
+            ret += f"movq {rsp}, {rbp}\n"
+            # TODO: Where does this 16 come from?
+            ret += f"movq 16({rbp}), {r12}\n"
+
+            num_formals = feature.formals_list[0] #TODO: NEED ANY LET EXPRS TOO
+
+            ret += f"## stack room for temporaries: {num_formals}\n"
+            ret += f"movq $8, {r14}\n"
+            ret += f"subq {r14}, {rsp}\n"
+            ret += "## return address handling\n"
+
+            for val in config.class_map.class_iterables(class_name):
+                val_name = val.identifier.name
+                val_type = val.typename.name
+                val_offset = config.attr_map.get_offset(class_name, val_name)
+                ret += f"## self[{val_offset}] holds field {val_name} ({val_type})\n"
+
+
+            cur_offset = num_formals + 2
+
+            for formal in feature.formals_list:
+                if isinstance(formal, int):
+                    continue
+                ret += f"## fp[{cur_offset}] holds argument {formal[0]} ({formal[1]})\n"
+                cur_offset -= 1
+
+            ret += "## method body begins\n"
+            ret += f"{cgen(feature.body)}\n"
+
+            ret += f".globl {method_info}.end\n"
+            ret += f"{method_info}.end:\t\t ## method body ends\n" # TODO: SPACING
+            ret += "## return address handling\n"
+
+            ret += f"movq {rbp}, {rsp}\n"
+            ret += f"popq {rbp}\n"
+            ret += "ret\n"
+            ret += "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
 
 
     return ret
@@ -285,3 +375,161 @@ def print_cool_globals():
     ret = ""
 
     return ret
+
+
+def top_sort():
+    '''
+    REPLACE TODO
+    '''
+    base_classes = get_base_classes()
+
+    classes = config.aast.copy()
+    classes.pop(0)
+    for cls in base_classes:
+        classes.append(cls)
+
+    return helper(classes)
+
+
+def helper(classes):
+    '''
+    Helper for toposort. TODO Clean this up
+    '''
+    incoming_edges = defaultdict(int)
+    graph = defaultdict(list)
+    name_to_obj = defaultdict(ClassObj)
+
+    for cls in classes:
+        class_name = cls.class_info.name
+        name_to_obj[class_name] = cls
+        incoming_edges[class_name] = 0
+
+    for cls in classes:
+        class_name = cls.class_info.name
+        if class_name not in graph:
+            graph[class_name] = []
+
+        if class_name == "Main":
+            graph["IO"].append(class_name)
+            graph["Object"].append(class_name)
+            incoming_edges[class_name] += 2
+        elif class_name == "Object":
+            continue
+
+        parent = "Object" if not cls.parent else cls.parent.name
+        if class_name not in graph[parent]:
+            graph[parent].append(class_name)
+            incoming_edges[class_name] += 1
+
+    queue = []
+    for key, val in incoming_edges.items():
+        if val == 0:
+            hq.heappush(queue, key)
+
+    toposort = []
+
+    while len(queue) != 0:
+        name = hq.heappop(queue)
+        toposort.append(name)
+
+        for neighbor in graph[name]:
+            incoming_edges[neighbor] -= 1
+            if incoming_edges[neighbor] == 0:
+                hq.heappush(queue, neighbor)
+
+    for key, val in incoming_edges.items():
+        if not val == 0:
+            print("ERROR")
+            exit(1)
+
+    ret = []
+
+    for class_name in toposort:
+        ret.append(name_to_obj[class_name])
+
+    return ret
+
+
+def get_base_classes():
+    '''
+    Assembles the base classes
+    '''
+
+    abort_method = Method("Object", \
+                   Identifier("Object", 0, "abort"),\
+                   [0], \
+                   Identifier("Object", 0, "Object"),
+                   None)
+    copy_method = Method("Object", \
+                   Identifier("Object", 0, "copy"),\
+                   [0], \
+                   Identifier("Object", 0, "Object"),
+                   None)
+    type_name = Method("Object", \
+                   Identifier("Object", 0, "type_name"),\
+                   [0], \
+                   Identifier("Object", 0, "Object"),
+                   None)
+    object_class = ClassObj(Identifier("Object", 0, "Object"), \
+                      "no_inherits", \
+                      None, \
+                      [abort_method, copy_method, type_name]
+                      )
+    # Object: Methods: abort, copy, typename
+
+    in_int = Method("IO", \
+                   Identifier("IO", 0, "in_int"),\
+                   [0], \
+                   Identifier("IO", 0, "Int"),
+                   None)
+    in_string = Method("IO", \
+                   Identifier("IO", 0, "in_string"),\
+                   [0], \
+                   Identifier("IO", 0, "String"),
+                   None)
+    out_int = Method("IO", \
+                   Identifier("IO", 0, "out_int"),\
+                   [1, (Identifier("IO", 0, "x"), Identifier("IO", 0, "Int"))], \
+                   Identifier("IO", 0, "Object"),
+                   None)
+
+    out_string = Method("IO", \
+                   Identifier("IO", 0, "out_string"),\
+                   [1, (Identifier("IO", 0, "x"), Identifier("IO", 0, "String"))], \
+                   Identifier("IO", 0, "SELF_TYPE"),
+                   None)
+
+    io_class = ClassObj(Identifier("IO", 0, "IO"), \
+                      "inherits", \
+                      Identifier("IO", 0, "Object"), \
+                      [in_int, in_string, out_int, out_string]
+                      )
+
+    # IO: In int, in string, out int, out string
+
+    concat = Method("String", \
+        Identifier("IO", 0, "concat"),\
+        [1, (Identifier("String", 0, "s"), Identifier("String", 0, "String"))], \
+        Identifier("String", 0, "String"),
+        None)
+
+    length = Method("String", \
+        Identifier("IO", 0, "length"),\
+        [1, (Identifier("String", 0, "s"), Identifier("String", 0, "String"))], \
+        Identifier("String", 0, "String"),
+        None)
+
+    substr = Method("String", \
+        Identifier("IO", 0, "substr"),\
+        [2, (Identifier("String", 0, "i"), Identifier("String", 0, "Int")), \
+        (Identifier("String", 0, "l"), Identifier("String", 0, "Int"))], \
+        Identifier("String", 0, "String"), \
+        None)
+
+    str_class = ClassObj(Identifier("String", 0, "String"), \
+        "inherits", \
+        Identifier("IO", 0, "Object"), \
+        [concat, length, substr]
+        )
+
+    return [object_class, io_class, str_class]
