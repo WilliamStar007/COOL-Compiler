@@ -8,7 +8,7 @@ import math
 import config
 from memory import RSP, RBP, RSI, RDI, RNum, RXX
 from tree import *
-import constant_prints
+import built_ins
 
 rsp = RSP()
 rbp = RBP()
@@ -120,6 +120,7 @@ def cgen(exp):
         true_branch = config.jump_table.get()
         false_branch = true_branch + 1
         end_branch = false_branch + 1
+        config.jump_table.increment(3)
 
         # Handle predicate
         ret += f"{cgen(exp.predicate)}\n"
@@ -374,17 +375,17 @@ def print_methods():
     for cls in ordering:
         class_name = cls.class_info.name
         if class_name == "IO":
-            ret += f"{constant_prints.IO_IN_INT}\n{constant_prints.IO_IN_STRING}\n"
-            ret += f"{constant_prints.IO_OUT_INT}\n{constant_prints.IO_OUT_STRING}\n"
+            ret += f"{built_ins.io_in_int()}\n{built_ins.io_in_string()}\n"
+            ret += f"{built_ins.io_out_int()}\n{built_ins.io_out_string()}\n"
             continue
         elif class_name == "Object":
-            ret += f"{constant_prints.OBJ_ABORT}\n{constant_prints.OBJ_COPY}\n"
-            ret += f"{constant_prints.OBJ_TYPE_NAME}\n"
-            config.string_tag.add(constant_prints.ABORT_STR)
+            ret += f"{built_ins.obj_abort()}\n{built_ins.obj_copy()}\n"
+            ret += f"{built_ins.obj_type_name()}\n"
+            config.string_tag.add(built_ins.ABORT_STR)
             continue
         elif class_name == "String":
-            ret += f"{constant_prints.STR_CONCAT}\n{constant_prints.STR_LENGTH}\n"
-            ret += f"{constant_prints.STR_SUBSTR}\n"
+            ret += f"{built_ins.str_concat()}\n{built_ins.str_length()}\n"
+            ret += f"{built_ins.str_substr()}\n"
             continue
 
         for feature in cls.feature_list:
@@ -449,11 +450,11 @@ def print_cool_globals():
     '''
 
     # config.string_tag.add(constant_prints.VOID_ERROR) # TODO: WHERE TO USE???
-    config.string_tag.add(constant_prints.SUBSTR_ERROR) # TODO: In wrong place?
+    config.string_tag.add(built_ins.SUBSTR_ERROR) # TODO: In wrong place?
 
     ret = ""
     ret += "## global string constants\n"
-    ret += f"{constant_prints.STR_START}\n"
+    ret += f"{built_ins.str_start()}\n"
 
     sorted_strs = config.string_tag.pairs()
 
@@ -474,7 +475,7 @@ def print_cool_globals():
                 ret += f".byte {ord(ch):>3} # '{ch}'\n"
         ret += ".byte 0\n\n"
 
-    ret += f"{constant_prints.PROGRAM_INFO}\n"
+    ret += f"{built_ins.program_info()}\n"
 
     return ret
 
