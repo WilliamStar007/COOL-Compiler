@@ -359,7 +359,7 @@ def print_cool_globals():
     Prints cool globals
     '''
 
-    config.string_tag.add(constant_prints.VOID_ERROR)
+    # config.string_tag.add(constant_prints.VOID_ERROR) # TODO: WHERE TO USE???
     config.string_tag.add(constant_prints.SUBSTR_ERROR) # TODO: In wrong place?
 
     ret = ""

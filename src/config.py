@@ -3,7 +3,13 @@ All global variables
 '''
 
 # Imports
-from mappings import ClassMap, ClassTag, StringTag, ImplementationMap, OffsetMap, ParentMap, SymbolTable
+from mappings import ClassMap,\
+                     ClassTag,\
+                     StringTag,\
+                    ImplementationMap,\
+                    OffsetMap,\
+                    ParentMap,\
+                    SymbolTable
 
 # Lines from file
 lines = []

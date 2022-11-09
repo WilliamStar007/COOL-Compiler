@@ -126,7 +126,7 @@ class StringObj(Expression):
     '''
     def __init__(self, _in_class, _lineno, _type_of, _value):
         Expression.__init__(self,_in_class, _lineno, _type_of)
-        self.value = "\"" + _value + "\""
+        self.value = _value
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nstring\n{self.value}"
