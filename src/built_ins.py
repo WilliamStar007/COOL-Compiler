@@ -60,9 +60,9 @@ Object.copy:            ## method definition
 			movq %r14, %rdi
 			call calloc
 			movq %rax, %r13
-                        pushq %r13"""
+                        pushq %r13\n"""
         branch_info = f"l{init_branch}"
-        ret += f".globl {branch_info}"
+        ret += f".globl {branch_info}\n"
         branch_info += ":"
         ret += f"{branch_info:24}cmpq $0, %r14\n"
         ret += f"""       je l{end_branch}
@@ -73,11 +73,11 @@ Object.copy:            ## method definition
                         addq %r15, %r13
                         movq $1, %r15
                         subq %r15, %r14
-                        jmp l{init_branch}"""
+                        jmp l{init_branch}\n"""
         branch_info = f"l{end_branch}"
         ret += f".globl {branch_info}\n"
         branch_info += ":"
-        ret += f"{branch_info:24}## done with Object.copy loop"
+        ret += f"{branch_info:24}## done with Object.copy loop\n"
         ret += """      popq %r13
 .globl Object.copy.end
 Object.copy.end:        ## method body ends

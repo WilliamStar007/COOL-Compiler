@@ -83,7 +83,15 @@ def cgen(exp):
 
     # Identifier exp
     elif isinstance(exp, IdentifierExp):
-        pass
+        ret += f"## {exp.exp_print()}\n"
+        cur_class = exp.in_class
+        id_name = exp.identifier.name
+
+        tpl = config.symbol_table.top(cur_class, id_name)
+        offset = tpl[0]
+        reg = tpl[1]
+
+        ret += f"movq {offset * config.OFFSET_AMT}({reg}), {r13}" # TODO: DIFF FOR EACH EXPR TYPE
 
 
     # Identifier
@@ -124,6 +132,7 @@ def cgen(exp):
 
         # Handle predicate
         ret += f"{cgen(exp.predicate)}\n"
+        ret += f"movq 24(%r13), {r13}\n"
         ret += f"cmpq $0, {r13}\n"
         ret += f"jne l{true_branch}\n" # TODO
 
@@ -163,8 +172,9 @@ def cgen(exp):
         # Predicate
         # TODO: Must be bool or identifier that rets bool
         ret += f"{cgen(exp.predicate)}\n"
+        ret += f"movq 24(%r13), {r13}\n" # TODO Identifiers must be fixed
         ret += f"cmpq $0, {r13}\n"
-        ret += f"je l{end_branch}\n" # TODO
+        ret += f"je l{end_branch}\n"
 
         # Body
         ret += f"{cgen(exp.body)}\n"
