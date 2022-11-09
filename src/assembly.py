@@ -20,9 +20,9 @@ rax = RXX('a')
 r12 = RNum(12)
 r13 = RNum(13)
 r14 = RNum(14)
+r15 = RNum(15)
 
-
-def cgen(exp, ident=None):
+def cgen(exp):
     '''
     Code generation
     Recursively defined
@@ -46,55 +46,42 @@ def cgen(exp, ident=None):
 
     # Int
     elif isinstance(exp, Integer):
-        ret += f"{cgen(Expression(exp.in_class, 0, 'Int'))}\n"
-        ret += f"movq ${exp.value}, {r14}\n"
+        ret += f"{cgen(Expression(exp.in_class, 0, 'Int'))}"
 
-        # TODO: Find offset for the last line
-
-        offset = None
-        reg = None
-
-        if ident: # TODO: Hardcode this less
-            tpl = config.symbol_table.top(exp.in_class, ident)
-            offset = tpl[0] * config.OFFSET_AMT
-            reg = tpl[1]
-        else:
-            offset = 24
-            reg = r12
-
-        ret += f"movq {r14}, 24({r13})\n"
-        ret += f"movq {r13}, {offset}({reg})"
+        if exp.value:
+            ret += "\n"
+            ret += f"movq ${exp.value}, {r14}\n"
+            ret += f"movq {r14}, 24({r13})"
 
     # String
     elif isinstance(exp, StringObj):
         ret += f"{cgen(Expression(exp.in_class, 0, 'String'))}\n"
 
-        # get offset or default to 24
-        if ident:
-            tpl = config.symbol_table.top(exp.in_class, ident)
-            offset = tpl[0] * config.OFFSET_AMT
-            reg = tpl[1]
-        else:
-            offset = 24
-            reg = r12
+        if not exp.value:
+            ret += f"movq $the.empty.string, {r15}\n"
+            ret += f"movq {r15}, 24({r13})"
+
+            return ret
+
 
         if exp.value not in config.string_tag.vals():
             config.string_tag.add(exp.value)
+
+
 
         str_num = config.string_tag.get_num(exp.value)
 
         ret += f"## string{str_num} holds \"{exp.value}\"\n"
         ret += f"movq $string{str_num}, {r14}\n"
-        ret += f"movq {r14}, 24({r13})\n"
-        ret += f"movq {r13}, {offset}({reg})"
-
-
+        ret += f"movq {r14}, 24({r13})"
 
     # True exp
     elif isinstance(exp, Bool):
-        ret += f"{cgen(Expression(exp.in_class, 0, 'Bool'))}\n"
-        ret += "FINISH" # TODO FINISH
-
+        ret += f"{cgen(Expression(exp.in_class, 0, 'Bool'))}"
+        if exp.value == "true":
+            ret += "\n"
+            ret += f"movq $1, {r14}\n"
+            ret += f"movq {r14}, 24({r13})"
 
     # Identifier exp
     elif isinstance(exp, IdentifierExp):
@@ -138,6 +125,50 @@ def cgen(exp, ident=None):
     # Loop
     elif isinstance(exp, LoopBlock):
         pass
+
+
+    # Let
+    elif isinstance(exp, Let):
+        cur_class = exp.in_class
+        cur_offset = 0
+        for formal in exp.let_list:
+            identifier = formal[1]
+            id_type = formal[2]
+            expr_type = formal[3]
+
+            ret += f"## fp[{cur_offset}] holds local {identifier} ({id_type})\n"
+
+            config.symbol_table.add(cur_class, identifier.name, cur_offset, rbp)
+
+            if not expr_type:
+                match id_type.name:
+                    case "Bool":
+                        expr_type = Bool(cur_class, 0, None)
+                    case "Int":
+                        expr_type = Integer(cur_class, 0, "Int", None)
+                    case "String":
+                        expr_type = StringObj(cur_class, 0, "String", None)
+                    case _:
+                        ret += f"movq $0, {r13}\n"
+                        #expr_type = Identifier(cur_class, 0, id_type.name)
+            if expr_type:
+                ret += f"{cgen(expr_type)}\n"
+            ret += f"movq {r13}, {cur_offset * config.OFFSET_AMT}({rbp})\n"
+
+            cur_offset -= 1
+
+            config.dynamic += 1
+
+        ret += cgen(exp.let_body)
+
+        for formal in exp.let_list:
+            identifier = formal[1].name
+            id_type = formal[2]
+            expr_type = formal[3]
+
+            config.symbol_table.pop(cur_class, identifier)
+
+
 
     # ***** EXPRESSION DISPATCHES *****
 
@@ -263,7 +294,11 @@ def print_ctors():
                     ret += f"<- \"{attr.expr.value}\"\n"
                 else:
                     ret += f"<- {attr.expr.value}\n"
-                ret += f"{cgen(attr.expr, attr.identifier.name)}\n"
+                ret += f"{cgen(attr.expr)}\n"
+                tpl = config.symbol_table.top(key, attr.identifier.name)
+                offset = tpl[0] * config.OFFSET_AMT
+                reg = tpl[1]
+                ret += f"movq {r13}, {offset}({reg})\n"
             self_offset += 1
 
             r12.update_offset()
@@ -316,30 +351,35 @@ def print_methods():
             # TODO: Where does this 16 come from?
             ret += f"movq 16({rbp}), {r12}\n"
 
-            num_formals = feature.formals_list[0] #TODO: NEED ANY LET EXPRS TOO
+            num_formals = feature.formals_list[0]
 
-            ret += f"## stack room for temporaries: {num_formals}\n"
-            ret += f"movq $8, {r14}\n"
-            ret += f"subq {r14}, {rsp}\n"
-            ret += "## return address handling\n"
+            config.dynamic = 0
 
+            tmp = ""
             for val in config.class_map.class_iterables(class_name):
                 val_name = val.identifier.name
                 val_type = val.typename.name
                 val_offset = config.attr_map.get_offset(class_name, val_name)
-                ret += f"## self[{val_offset}] holds field {val_name} ({val_type})\n"
-
+                tmp += f"## self[{val_offset}] holds field {val_name} ({val_type})\n"
 
             cur_offset = num_formals + 2
 
             for formal in feature.formals_list:
                 if isinstance(formal, int):
                     continue
-                ret += f"## fp[{cur_offset}] holds argument {formal[0]} ({formal[1]})\n"
+                tmp += f"## fp[{cur_offset}] holds argument {formal[0]} ({formal[1]})\n"
                 cur_offset -= 1
 
-            ret += "## method body begins\n"
-            ret += f"{cgen(feature.body)}\n"
+            tmp += "## method body begins\n"
+            tmp += f"{cgen(feature.body)}\n"
+            offset = config.dynamic + 1
+            ret += f"## stack room for temporaries: {offset}\n"
+            ret += f"movq ${offset * config.OFFSET_AMT}, {r14}\n"
+            ret += f"subq {r14}, {rsp}\n"
+            ret += "## return address handling\n"
+
+            ret += tmp
+
 
             ret += f".globl {method_info}.end\n"
             temp = method_info + ".end:"
@@ -368,15 +408,15 @@ def print_cool_globals():
 
     sorted_strs = config.string_tag.pairs()
 
-    for str in sorted_strs:
-        ret += f".globl {str[0]}\n"
-        temp = str[0] + ":"
-        if "\\n" in str[1]:
-            tmp_str = str[1][:len(str[1])-2] + "\\\\n"
+    for cur_str in sorted_strs:
+        ret += f".globl {cur_str[0]}\n"
+        temp = cur_str[0] + ":"
+        if "\\n" in cur_str[1]:
+            tmp_str = cur_str[1][:len(cur_str[1])-2] + "\\\\n"
             ret += f"{temp:24}# \"{tmp_str}\"\n"
         else:
-            ret += f"{temp:24}# \"{str[1]}\"\n"
-        for ch in str[1]:
+            ret += f"{temp:24}# \"{cur_str[1]}\"\n"
+        for ch in cur_str[1]:
             if ch == "\"":
                 continue
             elif ch == "\\":
