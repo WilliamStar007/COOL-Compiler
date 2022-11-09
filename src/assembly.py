@@ -351,9 +351,9 @@ def print_methods():
 
             tmp += "## method body begins\n"
             tmp += f"{cgen(feature.body)}\n"
-
-            ret += f"## stack room for temporaries: {config.dynamic + 1}\n"
-            ret += f"movq $8, {r14}\n"
+            offset = config.dynamic + 1
+            ret += f"## stack room for temporaries: {offset}\n"
+            ret += f"movq ${offset * config.OFFSET_AMT}, {r14}\n"
             ret += f"subq {r14}, {rsp}\n"
             ret += "## return address handling\n"
 
