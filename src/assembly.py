@@ -20,6 +20,7 @@ rax = RXX('a')
 r12 = RNum(12)
 r13 = RNum(13)
 r14 = RNum(14)
+r15 = RNum(15)
 
 def cgen(exp):
     '''
@@ -45,19 +46,28 @@ def cgen(exp):
 
     # Int
     elif isinstance(exp, Integer):
-        ret += f"{cgen(Expression(exp.in_class, 0, 'Int'))}\n"
-        ret += f"movq ${exp.value}, {r14}\n"
+        ret += f"{cgen(Expression(exp.in_class, 0, 'Int'))}"
 
-        # TODO: Find offset for the last line
-
-        ret += f"movq {r14}, 24({r13})"
+        if exp.value:
+            ret += "\n"
+            ret += f"movq ${exp.value}, {r14}\n"
+            ret += f"movq {r14}, 24({r13})"
 
     # String
     elif isinstance(exp, StringObj):
         ret += f"{cgen(Expression(exp.in_class, 0, 'String'))}\n"
 
+        if not exp.value:
+            ret += f"movq $the.empty.string, {r15}\n"
+            ret += f"movq {r15}, 24({r13})"
+
+            return ret
+
+
         if exp.value not in config.string_tag.vals():
             config.string_tag.add(exp.value)
+
+
 
         str_num = config.string_tag.get_num(exp.value)
 
@@ -68,6 +78,10 @@ def cgen(exp):
     # True exp
     elif isinstance(exp, Bool):
         ret += f"{cgen(Expression(exp.in_class, 0, 'Bool'))}"
+        if exp.value == "true":
+            ret += "\n"
+            ret += f"movq $1, {r14}\n"
+            ret += f"movq {r14}, 24({r13})"
 
     # Identifier exp
     elif isinstance(exp, IdentifierExp):
@@ -118,18 +132,27 @@ def cgen(exp):
         cur_class = exp.in_class
         cur_offset = 0
         for formal in exp.let_list:
-            binding_type = formal[0]
             identifier = formal[1]
             id_type = formal[2]
             expr_type = formal[3]
 
             ret += f"## fp[{cur_offset}] holds local {identifier} ({id_type})\n"
 
-            print(f"{binding_type}, {identifier}, {id_type}, {expr_type}\n")
+            config.symbol_table.add(cur_class, identifier.name, cur_offset, rbp)
 
-            config.symbol_table.add(cur_class, identifier, cur_offset, rbp)
-
-            ret += f"{cgen(expr_type)}\n"
+            if not expr_type:
+                match id_type.name:
+                    case "Bool":
+                        expr_type = Bool(cur_class, 0, None)
+                    case "Int":
+                        expr_type = Integer(cur_class, 0, "Int", None)
+                    case "String":
+                        expr_type = StringObj(cur_class, 0, "String", None)
+                    case _:
+                        ret += f"movq $0, {r13}\n"
+                        #expr_type = Identifier(cur_class, 0, id_type.name)
+            if expr_type:
+                ret += f"{cgen(expr_type)}\n"
             ret += f"movq {r13}, {cur_offset * config.OFFSET_AMT}({rbp})\n"
 
             cur_offset -= 1
@@ -139,8 +162,7 @@ def cgen(exp):
         ret += cgen(exp.let_body)
 
         for formal in exp.let_list:
-            binding_type = formal[0]
-            identifier = formal[1]
+            identifier = formal[1].name
             id_type = formal[2]
             expr_type = formal[3]
 
@@ -339,7 +361,6 @@ def print_methods():
                 val_type = val.typename.name
                 val_offset = config.attr_map.get_offset(class_name, val_name)
                 tmp += f"## self[{val_offset}] holds field {val_name} ({val_type})\n"
-
 
             cur_offset = num_formals + 2
 
