@@ -4,10 +4,10 @@ This file has all assembly logic
 
 from collections import defaultdict
 import heapq as hq
+import math
 import config
 from memory import RSP, RBP, RSI, RDI, RNum, RXX
 from tree import *
-from collections import defaultdict
 import constant_prints
 
 rsp = RSP()
@@ -67,8 +67,6 @@ def cgen(exp):
         if exp.value not in config.string_tag.vals():
             config.string_tag.add(exp.value)
 
-
-
         str_num = config.string_tag.get_num(exp.value)
 
         ret += f"## string{str_num} holds \"{exp.value}\"\n"
@@ -119,13 +117,62 @@ def cgen(exp):
 
     # If
     elif isinstance(exp, IfBlock):
-        pass
+        true_branch = config.jump_table.get()
+        false_branch = true_branch + 1
+        end_branch = false_branch + 1
+
+        # Handle predicate
+        ret += f"{cgen(exp.predicate)}\n"
+        ret += f"cmpq $0, {r13}\n"
+        ret += f"jne l{true_branch}\n" # TODO
+
+        # Handle else
+        branch_details = f"l{false_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## false branch\n"
+        ret += f"{cgen(exp.else_body)}\n"
+        ret += f"jmp l{end_branch}\n"
+
+        # Handle true
+        branch_details = f"l{true_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## true branch\n"
+        ret += f"{cgen(exp.then_body)}\n"
+
+        # End
+        branch_details = f"l{end_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## end of if conditional"
 
 
     # Loop
     elif isinstance(exp, LoopBlock):
-        pass
+        init_branch = config.jump_table.get()
+        end_branch = init_branch + 1
+        config.jump_table.increment(2)
 
+        branch_details = f"l{init_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## while conditional check\n"
+
+        # Predicate
+        # TODO: Must be bool or identifier that rets bool
+        ret += f"{cgen(exp.predicate)}\n"
+        ret += f"cmpq $0, {r13}\n"
+        ret += f"je l{end_branch}\n" # TODO
+
+        # Body
+        ret += f"{cgen(exp.body)}\n"
+        ret += f"jmp l{init_branch}\n"
+
+        branch_details = f"l{end_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## end of while loop"
 
     # Let
     elif isinstance(exp, Let):
@@ -157,7 +204,7 @@ def cgen(exp):
 
             cur_offset -= 1
 
-            config.dynamic += 1
+            config.dynamic.increment()
 
         ret += cgen(exp.let_body)
 
@@ -237,8 +284,10 @@ def print_ctors():
         ret += f"pushq {rbp}\n"
         ret += f"movq {rsp}, {rbp}\n"
 
-        ret += "## stack room for temporaries: 1\n"
-        ret += f"movq $8, {r14}\n"
+        offset = max(math.ceil(len(val) / config.OFFSET_AMT), 1)
+
+        ret += f"## stack room for temporaries: {offset}\n"
+        ret += f"movq ${offset * config.OFFSET_AMT}, {r14}\n"
         ret += f"subq {r14}, {rsp}\n"
 
         ret += "## return address handling\n"
@@ -293,7 +342,7 @@ def print_ctors():
                 if isinstance(attr.expr, StringObj):
                     ret += f"<- \"{attr.expr.value}\"\n"
                 else:
-                    ret += f"<- {attr.expr.value}\n"
+                    ret += f"<- {attr.expr.exp_print()}\n"
                 ret += f"{cgen(attr.expr)}\n"
                 tpl = config.symbol_table.top(key, attr.identifier.name)
                 offset = tpl[0] * config.OFFSET_AMT
@@ -353,7 +402,7 @@ def print_methods():
 
             num_formals = feature.formals_list[0]
 
-            config.dynamic = 0
+            config.dynamic.reset()
 
             tmp = ""
             for val in config.class_map.class_iterables(class_name):
@@ -372,7 +421,7 @@ def print_methods():
 
             tmp += "## method body begins\n"
             tmp += f"{cgen(feature.body)}\n"
-            offset = config.dynamic + 1
+            offset = len(config.dynamic) + 1
             ret += f"## stack room for temporaries: {offset}\n"
             ret += f"movq ${offset * config.OFFSET_AMT}, {r14}\n"
             ret += f"subq {r14}, {rsp}\n"

@@ -3,13 +3,14 @@ All global variables
 '''
 
 # Imports
-from mappings import ClassMap,\
+from mappings import Tracker, \
+                     ClassMap,\
                      ClassTag,\
                      StringTag,\
-                    ImplementationMap,\
-                    OffsetMap,\
-                    ParentMap,\
-                    SymbolTable
+                     ImplementationMap,\
+                     OffsetMap,\
+                     ParentMap,\
+                     SymbolTable
 
 # Lines from file
 lines = []
@@ -32,4 +33,6 @@ symbol_table = SymbolTable()
 
 OFFSET_AMT = 8
 
-dynamic = 0
+dynamic = Tracker(0)
+
+jump_table = Tracker(1)

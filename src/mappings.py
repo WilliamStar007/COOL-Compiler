@@ -311,3 +311,38 @@ class SymbolTable(object):
             return self.dict[class_name][var_name][-1]
         print("ERROR")
         sys.exit(1)
+
+class Tracker(object):
+    '''
+    Tracks amounts
+    '''
+    def __init__(self, _amt=0):
+        self.amt = _amt
+        self.init = _amt
+
+    def __len__(self):
+        return self.amt
+
+    def get(self):
+        ''''
+        Get amt
+        '''
+        return self.amt
+
+    def increment(self, _amt=1):
+        '''
+        Increment amt
+        '''
+        self.amt += _amt
+
+    def decrement(self):
+        '''
+        Decrement amt
+        '''
+        self.amt -= 1
+
+    def reset(self):
+        '''
+        Reset
+        '''
+        self.amt = self.init
