@@ -49,8 +49,7 @@ def cgen(exp):
     # Int
     elif isinstance(exp, Integer):
         ret += f"{cgen(Expression(exp.in_class, 0, 'Int'))}"
-
-        if exp.value:
+        if exp.value is not None:
             ret += "\n"
             ret += f"movq ${exp.value}, {r14}\n"
             ret += f"movq {r14}, 24({r13})"
@@ -137,10 +136,35 @@ def cgen(exp):
 
     # Negate
     elif isinstance(exp, Negate):
-        pass
+        # TODO: Need Substract in order to work
+        ret += f"{cgen(Integer(None, 0, 'int', 0))}\n"
+        ret += f"{cgen(exp.rhs)}\n"
 
 
     # ***** EXPRESSION BINARY OPS *****
+
+    # Minus
+    elif isinstance(exp, Minus):
+        ret += f"{cgen(exp.lhs)}\n"
+
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq {r13}, 0({rbp})\n"
+        
+        ret += f"{cgen(exp.rhs)}\n"
+
+        # TODO: not sure if hard coding this is correct
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq 0({rbp}), {r14}\n"
+        ret += f"movq {r14}, {rax}\n"
+        ret += f"subq {r13}, {rax}\n"
+        ret += f"movq {rax}, {r13}\n"
+        ret += f"movq {r13}, 0({rbp})\n"
+
+        # TODO: hardcoded 24 in the code...
+        # create an Integer to store the result
+        ret += f"{cgen(Integer(None, 0, 'int', None))}\n"
+        ret += f"movq 0({rbp}), {r14}\n"
+        ret += f"movq {r14}, 24({r13})"
 
 
     # ***** EXPRESSION BLOCKS *****

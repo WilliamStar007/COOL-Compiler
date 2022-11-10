@@ -311,6 +311,13 @@ class Negate(Unary):
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nnegate\n{self.rhs}"
         return ret
+    
+    def exp_print(self):
+        '''
+        Print expr
+        '''
+        ret = f"~ {self.rhs.value}"
+        return ret
 
 class NotExpr(Unary):
     '''
@@ -366,6 +373,13 @@ class Minus(Binary):
 
     def __repr__(self):
         return self.print()
+    
+    def exp_print(self):
+        '''
+        Print expr
+        '''
+        ret = f"{self.lhs.value} - {self.rhs.value}"
+        return ret
 
 class Times(Binary):
     '''
