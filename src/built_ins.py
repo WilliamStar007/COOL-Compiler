@@ -5,6 +5,10 @@ import config
 
 ABORT_STR = "abort\\n"
 
+CASE_BRANCH_ERROR = "ERROR: 58: Exception: case without matching branch\\n"
+
+CASE_VOID_ERROR = "ERROR: 58: Exception: case on void\\n"
+
 VOID_ERROR = "ERROR: 48: Exception: dispatch on void\\n"
 
 SUBSTR_ERROR = "ERROR: 0: Exception: String.substr out of range\\n"
@@ -409,6 +413,7 @@ def str_substr():
         '''
         str.substr() built in
         '''
+        str_tag = config.string_tag.get_num(SUBSTR_ERROR)
         end_branch = config.jump_table.get()
         config.jump_table.increment()
         ret = f""".globl String.substr
@@ -443,7 +448,7 @@ String.substr:          ## method definition
 			movq %rax, %r13
                         cmpq $0, %r13
 			jne l{end_branch}
-                        movq $string18, %r13
+                        movq $string{str_tag}, %r13
                         movq %r13, %rdi
 			call cooloutstr
                         movl $0, %edi

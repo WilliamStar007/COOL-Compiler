@@ -6,7 +6,7 @@ from collections import defaultdict
 import heapq as hq
 import math
 import config
-from memory import RSP, RBP, RSI, RDI, RNum, RXX
+from memory import RSP, RBP, RSI, RDI, RNum, RXX, EDI
 from tree import *
 import built_ins
 
@@ -21,6 +21,8 @@ r12 = RNum(12)
 r13 = RNum(13)
 r14 = RNum(14)
 r15 = RNum(15)
+
+edi = EDI()
 
 def cgen(exp):
     '''
@@ -86,7 +88,6 @@ def cgen(exp):
         ret += f"## {exp.exp_print()}\n"
         cur_class = exp.in_class
         id_name = exp.identifier.name
-
         tpl = config.symbol_table.top(cur_class, id_name)
         offset = tpl[0]
         reg = tpl[1]
@@ -184,6 +185,79 @@ def cgen(exp):
         ret += f".globl {branch_details}\n"
         branch_details += ":"
         ret += f"{branch_details:24}## end of while loop"
+
+
+    # Case
+    elif isinstance(exp, CaseBlock):
+        num_branches = len(exp.exps) + 2
+        void_branch = config.jump_table.get()
+        error_branch = void_branch + num_branches - 1
+        end_branch = error_branch + 1
+        config.jump_table.increment(num_branches + 1)
+
+
+        ret += "## case expression begins\n"
+        ret += f"{cgen(exp.case_exp)}\n"
+
+        ret += f"cmpq $0, {r13}\n" # Check void
+
+        # Handle exprs
+
+
+        # ERROR BRANCH
+        config.string_tag.add(built_ins.CASE_BRANCH_ERROR)
+
+        branch_info = f"l{error_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## case expression: error case\n"
+
+        str_tag = f"string{config.string_tag.get_num(built_ins.CASE_BRANCH_ERROR)}"
+
+        ret += f"movq ${str_tag}, {r13}\n"
+        ret += f"movq {r13}, {rdi}\n"
+        ret += "call cooloutstr\n"
+        ret += f"movl $0, {edi}\n"
+        ret += "call exit\n"
+
+        # VOID BRANCH
+        config.string_tag.add(built_ins.CASE_VOID_ERROR)
+
+        branch_info = f"l{void_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## case expression: void case\n"
+
+        str_tag = f"string{config.string_tag.get_num(built_ins.CASE_VOID_ERROR)}"
+
+        ret +=  f"movq ${str_tag}, {r13}\n"
+        ret += f"movq {r13}, {rdi}\n"
+        ret += "call cooloutstr\n"
+        ret += f"movl $0, {edi}\n"
+        ret += "call exit\n"
+        ret += "## case expression: branches\n"
+
+        # Branches
+        for i, case_expr in enumerate(exp.exps):
+            identifier = case_expr[0]
+            id_type = case_expr[1]
+            exp_rem = case_expr[2]
+            num = i + void_branch + 1
+
+            branch_info = f"l{num}"
+            ret += f".globl {branch_info}\n"
+            branch_info += ":"
+            ret += f"{branch_info:24}## fp[0] holds case {identifier.name} ({id_type})\n"
+
+            cgen(identifier) # TODO: More than this?
+            ret += f"{cgen(exp_rem)}\n"
+            ret += f"jmp l{end_branch}\n"
+
+        branch_info = f"l{end_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## case expression ends"
+
 
     # Let
     elif isinstance(exp, Let):
@@ -394,6 +468,7 @@ def print_methods():
             config.string_tag.add(built_ins.ABORT_STR)
             continue
         elif class_name == "String":
+            config.string_tag.add(built_ins.SUBSTR_ERROR) # TODO: In wrong place?
             ret += f"{built_ins.str_concat()}\n{built_ins.str_length()}\n"
             ret += f"{built_ins.str_substr()}\n"
             continue
@@ -428,6 +503,10 @@ def print_methods():
                 if isinstance(formal, int):
                     continue
                 tmp += f"## fp[{cur_offset}] holds argument {formal[0]} ({formal[1]})\n"
+
+                id_name = formal[0].name
+                config.symbol_table.add(class_name, id_name, cur_offset, rbp)
+
                 cur_offset -= 1
 
             tmp += "## method body begins\n"
@@ -460,7 +539,6 @@ def print_cool_globals():
     '''
 
     # config.string_tag.add(constant_prints.VOID_ERROR) # TODO: WHERE TO USE???
-    config.string_tag.add(built_ins.SUBSTR_ERROR) # TODO: In wrong place?
 
     ret = ""
     ret += "## global string constants\n"

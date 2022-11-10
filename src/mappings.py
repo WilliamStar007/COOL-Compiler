@@ -194,10 +194,14 @@ class StringTag(object):
         '''
         Add string to dicts
         '''
+
+        if cur_str in self.rev_dict:
+            return
+
         num = len(self.fwd_dict) + 1
 
         self.fwd_dict[num] = f"{cur_str}"
-        self.rev_dict[f"{cur_str}"] = num
+        self.rev_dict[cur_str] = num
 
     def get_str(self, num):
         '''
