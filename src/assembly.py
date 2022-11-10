@@ -97,7 +97,7 @@ def cgen(exp):
 
     # Identifier
     elif isinstance(exp, Identifier):
-        pass
+        ret += f"## {exp.name}"
 
 
     # ***** EXPRESSION UNARY OPS *****
@@ -163,7 +163,7 @@ def cgen(exp):
         ret += f"{cgen(exp.predicate)}\n"
         ret += f"movq 24(%r13), {r13}\n"
         ret += f"cmpq $0, {r13}\n"
-        ret += f"jne l{true_branch}\n" # TODO
+        ret += f"jne l{true_branch}\n"
 
         # Handle else
         branch_details = f"l{false_branch}"
@@ -357,6 +357,103 @@ def cgen(exp):
 
     # ***** EXPRESSION DISPATCHES *****
 
+    # Static
+    elif isinstance(exp, StaticDispatch):
+        pass
+
+
+    # Self
+    elif isinstance(exp, SelfDispatch):
+        method_name = exp.method_name.name
+        ret += f"## {method_name}(...)\n"
+        ret += f"pushq {r12}\n"
+        ret += f"pushq {rbp}\n"
+        # TODO: Need to figure out why this is needed
+        if method_name in ["in_string", "in_int"]:
+            ret += f"pushq {r12}\n"
+
+        for formal in exp.formals:
+            ret += f"{cgen(formal)}\n"
+            ret += f"pushq {r13}\n"
+            ret += f"pushq {r12}\n"
+
+        ret += f"## obtain vtable for self object of type {exp.in_class}\n"
+        vt_met = config.vtable_map.get_class(exp.in_class, method_name)
+        cur_size = config.OFFSET_AMT
+        
+        # TODO: WRONG
+        if vt_met in ["IO"]:
+            cur_size *= config.obj_size.get(exp.in_class, exp.type_of)
+        else:
+            cur_size *= config.obj_size.get(exp.in_class, exp.in_class)
+
+        ret += f"movq 16({r12}), {r14}\n" # TODO: less hard-coded
+        method_offset = config.vtable_map.get_offset(exp.in_class, exp.method_name.name)
+        ret += f"## look up {exp.method_name}() at offset {method_offset} in vtable\n"
+        ret += f"movq {method_offset * config.OFFSET_AMT}({r14}), {r14}\n"
+        ret += f"call *{r14}\n"
+        ret += f"addq ${cur_size}, {rsp}\n"
+        ret += f"popq {rbp}\n"
+        ret += f"popq {r12}"
+
+    # Dynamic
+    elif isinstance(exp, DynamicDispatch):
+        met_branch = config.jump_table.get()
+        config.jump_table.increment()
+
+        config.string_tag.add(built_ins.DISPATCH_VOID_ERROR)
+        ret += f"## {exp.obj_name.exp_print()}.{exp.method_name}(...)\n"
+        ret += f"pushq {r12}\n"
+        ret += f"pushq {rbp}\n"
+        for formal in exp.formals:
+            # If ID, have to check symbol table
+            # Else, call cgen on
+            if isinstance(formal, IdentifierExp):
+                cur_class = formal.in_class
+                id_name = formal.name
+
+                tpl = config.symbol_table.get(cur_class, id_name)
+                offset = tpl[0]
+                reg = tpl[1]
+
+                ret += f"{offset * config.OFFSET_AMT}({reg}) holds {id_name} ({id_name.type_of})\n"
+
+            else:
+                ret += f"{cgen(formal)}\n"
+        ret += f"{cgen(exp.obj_name)}\n"
+
+        # Check for error
+        error_tag = f"string{config.string_tag.get_num(built_ins.DISPATCH_VOID_ERROR)}"
+        ret += f"cmpq $0, {r13}\n"
+        ret += f"jne l{met_branch}\n"
+        ret += f"movq ${error_tag}, {r13}\n"
+        ret += f"movq {r13}, {rdi}\n"
+        ret += "call cooloutstr\n"
+        ret += f"movl $0, {edi}\n"
+        ret += "call exit\n"
+
+        branch_info = f"l{met_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}pushq {r13}\n"
+
+        # TODO: What is r1
+        ret += f"## obtain vtable from object in r1 with static type {exp.obj_name.type_of}\n"
+
+        # TODO: Hardcoded 16
+        ret += f"movq 16({r13}), {r14}\n"
+
+        method_offset = config.vtable_map.get_offset(exp.obj_name.type_of, exp.method_name.name)
+        offset = method_offset * config.OFFSET_AMT
+
+        ret += f"## look up {exp.method_name.name}() at offset {method_offset} in vtable\n"
+        ret += f"movq {offset}({r14}), {r14}\n"
+        ret += f"call *{r14}\n"
+        # TODO: Hardcoded 8
+        ret += f"addq $8, {rsp}\n"
+        ret += f"popq {rbp}\n"
+        ret += f"popq {r12}"
+
 
     # ***** EXPRESSION BASE CLASS *****
         # Expression base class
@@ -377,6 +474,8 @@ def print_vtables():
     '''
     Print program vtables
     '''
+    assemble_orig_vtable()
+
     str_num = 1
     ret = "\t\t\t## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
 
@@ -422,10 +521,11 @@ def print_ctors():
         ret += f"pushq {rbp}\n"
         ret += f"movq {rsp}, {rbp}\n"
 
-        offset = max(math.ceil(len(val) / config.OFFSET_AMT), 1)
+        cur_size = max(math.ceil(len(val) / config.OFFSET_AMT), 1)
+        config.obj_size.set(key, cur_size)
 
-        ret += f"## stack room for temporaries: {offset}\n"
-        ret += f"movq ${offset * config.OFFSET_AMT}, {r14}\n"
+        ret += f"## stack room for temporaries: {cur_size}\n"
+        ret += f"movq ${cur_size * config.OFFSET_AMT}, {r14}\n"
         ret += f"subq {r14}, {rsp}\n"
 
         ret += "## return address handling\n"
@@ -583,6 +683,13 @@ def print_methods():
             ret += "ret\n"
             ret += "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
 
+            for formal in feature.formals_list:
+                if isinstance(formal, int):
+                    continue
+
+                id_name = formal[0].name
+                config.symbol_table.pop(class_name, id_name)
+
     return ret
 
 
@@ -620,6 +727,53 @@ def print_cool_globals():
 
     return ret
 
+def assemble_orig_vtable():
+    '''
+    Assembles map of cur_class -> method -> orig class
+    '''
+    base_classes = get_base_classes()
+    classes = config.aast.copy()
+    classes.pop(0)
+
+    name_to_obj = defaultdict(ClassObj)
+
+    for cls in base_classes:
+        classes.append(cls)
+
+    for cls in classes:
+        class_name = cls.class_info.name
+        name_to_obj[class_name] = cls
+
+    stk = []
+    for cls in classes:
+        orig_cls = cls.class_info.name
+        stk.append(cls)
+
+        cur = cls.parent
+        while cur:
+            cur = cur.name
+            cur = name_to_obj[cur]
+            stk.append(cur)
+            cur = cur.parent
+
+        # TODO: lol
+        if not cls.parent and orig_cls != "Object":
+            stk.append(name_to_obj["Object"])
+        if orig_cls == "Main":
+            stk.append(name_to_obj["IO"])
+
+
+        while len(stk) != 0:
+            top = stk.pop()
+            cls_name = top.class_info.name
+
+            for feature in top.feature_list:
+                if isinstance(feature, Method):
+                    method_name = feature.identifier.name
+                    config.vtable_map.set_class(orig_cls, method_name, cls_name)
+
+    for key, items in config.vtable_map.actual.items():
+        print(f"{key}, {items}\n")
 
 def alpha_sort():
     '''
@@ -666,7 +820,7 @@ def helper(classes):
         if class_name not in graph:
             graph[class_name] = []
 
-        if class_name == "Main":
+        if class_name == "Main": # TODO: What if main inherits from another class?
             graph["IO"].append(class_name)
             graph["Object"].append(class_name)
             incoming_edges[class_name] += 2
