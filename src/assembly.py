@@ -200,6 +200,22 @@ def cgen(exp):
         ret += f"{cgen(exp.case_exp)}\n"
 
         ret += f"cmpq $0, {r13}\n" # Check void
+        ret += f"je l{void_branch}\n"
+        ret += f"movq {r13}, 0({rbp})\n"
+        ret += f"movq 0({r13}), {r13}\n" # TODO ??
+
+        for i, case_expr in enumerate(exp.exps):
+            num = i + void_branch + 1
+            identifier = case_expr[0]
+            id_type = case_expr[1]
+            exp_rem = case_expr[2]
+
+            ret += f"## case {id_type} will jump to l{num}\n"
+
+        ret += "## case expression: compare type tags\n"
+
+        # TODO: Need to finish and compare type tags
+
 
         # Handle exprs
 
