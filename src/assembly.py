@@ -119,6 +119,12 @@ def cgen(exp, ident=None):
 
 
     # ***** EXPRESSION BINARY OPS *****
+    
+    
+    elif isinstance(exp, Binary):
+        
+        
+        pass
 
 
     # ***** EXPRESSION BLOCKS *****
@@ -132,6 +138,23 @@ def cgen(exp, ident=None):
 
     # If
     elif isinstance(exp, IfBlock):
+        # If: inorder of declaration
+        
+        # second_l print false branch
+        
+        # first_l print true branch
+        
+        # third_l end of if conditional
+        
+        # for nested if 
+        # follow false then true
+        # if false true on same level follow the normal structure above
+        # but then the end of if is inner -> outer
+        
+        # if: nested
+        # else: nested
+        # show nesting of else
+        # then show nesting of if
         pass
 
 
