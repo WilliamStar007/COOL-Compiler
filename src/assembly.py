@@ -104,8 +104,36 @@ def cgen(exp):
 
     # IsVoid
     elif isinstance(exp, IsVoid):
-        pass
+        ret += f"{cgen(exp.rhs)}\n"
+        
+        true_branch = config.jump_table.get()
+        false_branch = true_branch + 1
+        end_branch = false_branch + 1
+        config.jump_table.increment(3)
 
+        ret += f"{config.SPC}cmpq $0, {r13}\n"
+        ret += f"{config.SPC}je l{true_branch}\n"
+
+        # Handle false
+        branch_details = f"l{false_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## false branch of isvoid\n"
+        ret += f"{cgen(Bool(None, 0, 'false'))}\n"
+        ret += f"jmp l{end_branch}\n"
+
+        # Handle true
+        branch_details = f"l{true_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## true branch of isvoid\n"
+        ret += f"{cgen(Bool(None, 0, 'true'))}\n"
+
+        # End
+        branch_details = f"l{end_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## end of isvoid"
 
     # Negate
     elif isinstance(exp, Negate):
