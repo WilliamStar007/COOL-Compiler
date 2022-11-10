@@ -108,6 +108,13 @@ class IdentifierExp(Expression):
         ret += f"{self.identifier.lineno}\n{self.identifier}"
         return ret
 
+    def exp_print(self):
+        '''
+        Print expr
+        '''
+        ret = f"{self.identifier}"
+        return ret
+
 class Integer(Expression):
     '''
     Integer expression object
@@ -118,6 +125,13 @@ class Integer(Expression):
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\ninteger\n{self.value}"
+        return ret
+
+    def exp_print(self):
+        '''
+        Print exp
+        '''
+        ret = f"{self.value}"
         return ret
 
 class StringObj(Expression):
@@ -132,6 +146,13 @@ class StringObj(Expression):
         ret = f"{self.lineno}\n{self.type_of}\nstring\n{self.value}"
         return ret
 
+    def exp_print(self):
+        '''
+        Print exp
+        '''
+        ret = f"{self.value}"
+        return ret
+
 class Bool(Expression):
     '''
     Bool base class
@@ -142,6 +163,13 @@ class Bool(Expression):
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\n{self.value}"
+        return ret
+
+    def exp_print(self):
+        '''
+        Print exp
+        '''
+        ret = f"{self.value}"
         return ret
 
 # *** DISPATCHES ***
@@ -396,6 +424,14 @@ class IfBlock(Expression):
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nif\n{self.predicate}\n{self.then_body}\n{self.else_body}"
         return ret
+    
+    def exp_print(self):
+        '''
+        Print exp
+        '''
+        ret = f"if {self.predicate.exp_print()} then {self.then_body.exp_print()} "
+        ret += f"else {self.else_body.exp_print()}"
+        return ret
 
 class CaseBlock(Expression):
     '''
@@ -433,6 +469,13 @@ class LoopBlock(Expression):
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nwhile\n{self.predicate}\n{self.body}"
+        return ret
+    
+    def exp_print(self):
+        '''
+        Print exp
+        '''
+        ret = f"while {self.predicate.exp_print()} loop {self.body.exp_print()} pool"
         return ret
 
 class Block(Expression):
@@ -478,4 +521,11 @@ class Let(Expression):
 
         ret += f"{self.let_body}"
 
+        return ret
+    
+    def exp_print(self):
+        '''
+        Print exp
+        '''
+        ret = f"let ... in ..."
         return ret
