@@ -3,7 +3,14 @@ All global variables
 '''
 
 # Imports
-from mappings import ClassMap, ClassTag, StringTag, ImplementationMap, OffsetMap, ParentMap, SymbolTable
+from mappings import Tracker, \
+                     ClassMap,\
+                     ClassTag,\
+                     StringTag,\
+                     ImplementationMap,\
+                     OffsetMap,\
+                     ParentMap,\
+                     SymbolTable
 
 # Lines from file
 lines = []
@@ -24,6 +31,8 @@ symbol_table = SymbolTable()
 
 #str_num_contents = defaultdict(str)
 
-
-
 OFFSET_AMT = 8
+
+dynamic = Tracker(0)
+
+jump_table = Tracker(1)

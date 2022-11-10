@@ -194,10 +194,14 @@ class StringTag(object):
         '''
         Add string to dicts
         '''
+
+        if cur_str in self.rev_dict:
+            return
+
         num = len(self.fwd_dict) + 1
 
         self.fwd_dict[num] = f"{cur_str}"
-        self.rev_dict[f"{cur_str}"] = num
+        self.rev_dict[cur_str] = num
 
     def get_str(self, num):
         '''
@@ -311,3 +315,38 @@ class SymbolTable(object):
             return self.dict[class_name][var_name][-1]
         print("ERROR")
         sys.exit(1)
+
+class Tracker(object):
+    '''
+    Tracks amounts
+    '''
+    def __init__(self, _amt=0):
+        self.amt = _amt
+        self.init = _amt
+
+    def __len__(self):
+        return self.amt
+
+    def get(self):
+        ''''
+        Get amt
+        '''
+        return self.amt
+
+    def increment(self, _amt=1):
+        '''
+        Increment amt
+        '''
+        self.amt += _amt
+
+    def decrement(self):
+        '''
+        Decrement amt
+        '''
+        self.amt -= 1
+
+    def reset(self):
+        '''
+        Reset
+        '''
+        self.amt = self.init

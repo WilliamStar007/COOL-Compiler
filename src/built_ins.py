@@ -1,14 +1,23 @@
 '''
 All constant, unchanging prints
 '''
+import config
 
 ABORT_STR = "abort\\n"
+
+CASE_BRANCH_ERROR = "ERROR: 58: Exception: case without matching branch\\n"
+
+CASE_VOID_ERROR = "ERROR: 58: Exception: case on void\\n"
 
 VOID_ERROR = "ERROR: 48: Exception: dispatch on void\\n"
 
 SUBSTR_ERROR = "ERROR: 0: Exception: String.substr out of range\\n"
 
-OBJ_ABORT = """.globl Object.abort
+def obj_abort():
+        '''
+        Object.abort built in
+        '''
+        ret = """.globl Object.abort
 Object.abort:           ## method definition
                         pushq %rbp
                         movq %rsp, %rbp
@@ -30,8 +39,17 @@ Object.abort.end:       ## method body ends
                         popq %rbp
                         ret
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
+        return ret
 
-OBJ_COPY = """.globl Object.copy
+def obj_copy():
+        '''
+        Object.copy built int
+        '''
+        init_branch = config.jump_table.get()
+        end_branch = init_branch + 1
+        config.jump_table.increment(2)
+
+        ret = """.globl Object.copy
 Object.copy:            ## method definition
                         pushq %rbp
                         movq %rsp, %rbp
@@ -46,10 +64,12 @@ Object.copy:            ## method definition
 			movq %r14, %rdi
 			call calloc
 			movq %rax, %r13
-                        pushq %r13
-.globl l1
-l1:                     cmpq $0, %r14
-			je l2
+                        pushq %r13\n"""
+        branch_info = f"l{init_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}cmpq $0, %r14\n"
+        ret += f"""       je l{end_branch}
                         movq 0(%r12), %r15
                         movq %r15, 0(%r13)
                         movq $8, %r15
@@ -57,10 +77,12 @@ l1:                     cmpq $0, %r14
                         addq %r15, %r13
                         movq $1, %r15
                         subq %r15, %r14
-                        jmp l1
-.globl l2
-l2:                     ## done with Object.copy loop
-                        popq %r13
+                        jmp l{init_branch}\n"""
+        branch_info = f"l{end_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## done with Object.copy loop\n"
+        ret += """      popq %r13
 .globl Object.copy.end
 Object.copy.end:        ## method body ends
                         ## return address handling
@@ -68,8 +90,13 @@ Object.copy.end:        ## method body ends
                         popq %rbp
                         ret
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
+        return ret
 
-OBJ_TYPE_NAME = """.globl Object.type_name
+def obj_type_name():
+        '''
+        Object.type_name() builtin
+        '''
+        ret = """.globl Object.type_name
 Object.type_name:       ## method definition
                         pushq %rbp
                         movq %rsp, %rbp
@@ -99,7 +126,13 @@ Object.type_name.end:   ## method body ends
                         ret
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
 
-IO_IN_INT = """.globl IO.in_int
+        return ret
+
+def io_in_int():
+        '''
+        IO.in_int built in
+        '''
+        ret = """.globl IO.in_int
 IO.in_int:              ## method definition
                         pushq %rbp
                         movq %rsp, %rbp
@@ -147,8 +180,15 @@ IO.in_int.end:          ## method body ends
                         popq %rbp
                         ret
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
+        
+        return ret
 
-IO_IN_STRING = """.globl IO.in_string
+def io_in_string():
+        '''
+        IO.in_string builtin
+        '''
+
+        ret = """.globl IO.in_string
 IO.in_string:           ## method definition
                         pushq %rbp
                         movq %rsp, %rbp
@@ -177,8 +217,14 @@ IO.in_string.end:       ## method body ends
                         popq %rbp
                         ret
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
+        
+        return ret
 
-IO_OUT_INT = """.globl IO.out_int
+def io_out_int():
+        '''
+        IO.out_int builtin
+        '''
+        ret = """.globl IO.out_int
 IO.out_int:             ## method definition
                         pushq %rbp
                         movq %rsp, %rbp
@@ -205,8 +251,14 @@ IO.out_int.end:         ## method body ends
                         popq %rbp
                         ret
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
+        
+        return ret
 
-IO_OUT_STRING = """.globl IO.out_string
+def io_out_string():
+        '''
+        IO.out_string()
+        '''
+        ret = """.globl IO.out_string
 IO.out_string:          ## method definition
                         pushq %rbp
                         movq %rsp, %rbp
@@ -230,7 +282,56 @@ IO.out_string.end:      ## method body ends
                         ret
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
 
-STR_CONCAT = """.globl String.concat
+        return ret
+
+def str_concat():
+        '''
+        str.concat() built in
+        '''
+        ret = """.globl String.concat
+String.concat:          ## method definition
+                        pushq %rbp
+                        movq %rsp, %rbp
+                        movq 16(%rbp), %r12
+                        ## stack room for temporaries: 1
+                        movq $8, %r14
+                        subq %r14, %rsp
+                        ## return address handling
+                        ## fp[3] holds argument s (String)
+                        ## method body begins
+                        ## new String
+                        pushq %rbp
+                        pushq %r12
+                        movq $String..new, %r14
+                        call *%r14
+                        popq %r12
+                        popq %rbp
+                        movq %r13, %r15
+                        movq 24(%rbp), %r14
+                        movq 24(%r14), %r14
+                        movq 24(%r12), %r13
+                        movq %r13, %rdi
+			movq %r14, %rsi
+			call coolstrcat
+			movq %rax, %r13
+                        movq %r13, 24(%r15)
+                        movq %r15, %r13
+.globl String.concat.end
+String.concat.end:      ## method body ends
+                        ## return address handling
+                        movq %rbp, %rsp
+                        popq %rbp
+                        ret
+                        ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
+ 
+        return ret
+
+def str_concat():
+        '''
+        str.concat() built in
+        '''
+
+        ret = """.globl String.concat
 String.concat:          ## method definition
                         pushq %rbp
                         movq %rsp, %rbp
@@ -266,43 +367,14 @@ String.concat.end:      ## method body ends
                         ret
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
 
-STR_CONCAT = """.globl String.concat
-String.concat:          ## method definition
-                        pushq %rbp
-                        movq %rsp, %rbp
-                        movq 16(%rbp), %r12
-                        ## stack room for temporaries: 1
-                        movq $8, %r14
-                        subq %r14, %rsp
-                        ## return address handling
-                        ## fp[3] holds argument s (String)
-                        ## method body begins
-                        ## new String
-                        pushq %rbp
-                        pushq %r12
-                        movq $String..new, %r14
-                        call *%r14
-                        popq %r12
-                        popq %rbp
-                        movq %r13, %r15
-                        movq 24(%rbp), %r14
-                        movq 24(%r14), %r14
-                        movq 24(%r12), %r13
-                        movq %r13, %rdi
-			movq %r14, %rsi
-			call coolstrcat
-			movq %rax, %r13
-                        movq %r13, 24(%r15)
-                        movq %r15, %r13
-.globl String.concat.end
-String.concat.end:      ## method body ends
-                        ## return address handling
-                        movq %rbp, %rsp
-                        popq %rbp
-                        ret
-                        ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
+        return ret
 
-STR_LENGTH = """.globl String.length
+def str_length():
+        '''
+        string.length() built in
+        '''
+
+        ret = """.globl String.length
 String.length:          ## method definition
                         pushq %rbp
                         movq %rsp, %rbp
@@ -335,7 +407,16 @@ String.length.end:      ## method body ends
                         ret
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
 
-STR_SUBSTR = """.globl String.substr
+        return ret
+
+def str_substr():
+        '''
+        str.substr() built in
+        '''
+        str_tag = config.string_tag.get_num(SUBSTR_ERROR)
+        end_branch = config.jump_table.get()
+        config.jump_table.increment()
+        ret = f""".globl String.substr
 String.substr:          ## method definition
                         pushq %rbp
                         movq %rsp, %rbp
@@ -366,15 +447,19 @@ String.substr:          ## method definition
 			call coolsubstr
 			movq %rax, %r13
                         cmpq $0, %r13
-			jne l4
-                        movq $string18, %r13
+			jne l{end_branch}
+                        movq $string{str_tag}, %r13
                         movq %r13, %rdi
 			call cooloutstr
                         movl $0, %edi
-			call exit
-.globl l4
-l4:                     movq %r13, 24(%r15)
-                        movq %r15, %r13
+			call exit\n"""
+
+        branch_info = f"l{end_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}movq %r13, 24(%r15)\n"
+
+        ret += """        movq %r15, %r13
 .globl String.substr.end
 String.substr.end:      ## method body ends
                         ## return address handling
@@ -383,7 +468,13 @@ String.substr.end:      ## method body ends
                         ret
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
 
-STR_START = """.globl the.empty.string
+        return ret
+
+def str_start():
+        '''
+        String start
+        '''
+        ret = """.globl the.empty.string
 the.empty.string:       # ""
 .byte 0
 
@@ -402,7 +493,14 @@ percent.ld:             # " %ld"
 .byte 100 # 'd'
 .byte 0\n"""
 
-PROGRAM_INFO = """                        ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        return ret
+
+def program_info():
+        '''
+        Return end of program logic
+        '''
+
+        ret = """                        ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 .globl eq_handler
 eq_handler:             ## helper function for =
                         pushq %rbp
@@ -950,3 +1048,5 @@ coolsubstr:
 .LFE4:
 	.size	coolsubstr, .-coolsubstr
 """
+
+        return ret
