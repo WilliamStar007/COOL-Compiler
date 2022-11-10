@@ -4,11 +4,11 @@ This file has all assembly logic
 
 from collections import defaultdict
 import heapq as hq
+import math
 import config
-from memory import RSP, RBP, RSI, RDI, RNum, RXX
+from memory import RSP, RBP, RSI, RDI, RNum, RXX, EDI
 from tree import *
-from collections import defaultdict
-import constant_prints
+import built_ins
 
 rsp = RSP()
 rbp = RBP()
@@ -20,9 +20,11 @@ rax = RXX('a')
 r12 = RNum(12)
 r13 = RNum(13)
 r14 = RNum(14)
+r15 = RNum(15)
 
+edi = EDI()
 
-def cgen(exp, ident=None):
+def cgen(exp):
     '''
     Code generation
     Recursively defined
@@ -46,72 +48,92 @@ def cgen(exp, ident=None):
 
     # Int
     elif isinstance(exp, Integer):
-        ret += f"{cgen(Expression(exp.in_class, 0, 'Int'))}\n"
-        ret += f"movq ${exp.value}, {r14}\n"
+        ret += f"{cgen(Expression(exp.in_class, 0, 'Int'))}"
 
-        # TODO: Find offset for the last line
-
-        offset = None
-        reg = None
-
-        if ident: # TODO: Hardcode this less
-            tpl = config.symbol_table.top(exp.in_class, ident)
-            offset = tpl[0] * config.OFFSET_AMT
-            reg = tpl[1]
-        else:
-            offset = 24
-            reg = r12
-
-        ret += f"movq {r14}, 24({r13})\n"
-        ret += f"movq {r13}, {offset}({reg})"
+        if exp.value:
+            ret += "\n"
+            ret += f"movq ${exp.value}, {r14}\n"
+            ret += f"movq {r14}, 24({r13})"
 
     # String
     elif isinstance(exp, StringObj):
         ret += f"{cgen(Expression(exp.in_class, 0, 'String'))}\n"
 
-        # get offset or default to 24
-        if ident:
-            tpl = config.symbol_table.top(exp.in_class, ident)
-            offset = tpl[0] * config.OFFSET_AMT
-            reg = tpl[1]
-        else:
-            offset = 24
-            reg = r12
+        if not exp.value:
+            ret += f"movq $the.empty.string, {r15}\n"
+            ret += f"movq {r15}, 24({r13})"
+
+            return ret
+
 
         if exp.value not in config.string_tag.vals():
             config.string_tag.add(exp.value)
 
         str_num = config.string_tag.get_num(exp.value)
 
-        ret += f"## string{str_num} holds {exp.value}\n"
+        ret += f"## string{str_num} holds \"{exp.value}\"\n"
         ret += f"movq $string{str_num}, {r14}\n"
-        ret += f"movq {r14}, 24({r13})\n"
-        ret += f"movq {r13}, {offset}({reg})"
-
-
+        ret += f"movq {r14}, 24({r13})"
 
     # True exp
     elif isinstance(exp, Bool):
-        ret += f"{cgen(Expression(exp.in_class, 0, 'Bool'))}\n"
-        ret += "FINISH" # TODO FINISH
-
+        ret += f"{cgen(Expression(exp.in_class, 0, 'Bool'))}"
+        if exp.value == "true":
+            ret += "\n"
+            ret += f"movq $1, {r14}\n"
+            ret += f"movq {r14}, 24({r13})"
 
     # Identifier exp
     elif isinstance(exp, IdentifierExp):
-        pass
+        ret += f"## {exp.exp_print()}\n"
+        cur_class = exp.in_class
+        id_name = exp.identifier.name
+        tpl = config.symbol_table.top(cur_class, id_name)
+        offset = tpl[0]
+        reg = tpl[1]
+
+        ret += f"movq {offset * config.OFFSET_AMT}({reg}), {r13}" # TODO: DIFF FOR EACH EXPR TYPE
 
 
     # Identifier
     elif isinstance(exp, Identifier):
-        pass
+        ret += f"## {exp.name}"
 
 
     # ***** EXPRESSION UNARY OPS *****
 
     # IsVoid
     elif isinstance(exp, IsVoid):
-        pass
+        ret += f"{cgen(exp.rhs)}\n"
+        
+        true_branch = config.jump_table.get()
+        false_branch = true_branch + 1
+        end_branch = false_branch + 1
+        config.jump_table.increment(3)
 
+        ret += f"{config.SPC}cmpq $0, {r13}\n"
+        ret += f"{config.SPC}je l{true_branch}\n"
+
+        # Handle false
+        branch_details = f"l{false_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## false branch of isvoid\n"
+        ret += f"{cgen(Bool(None, 0, 'false'))}\n"
+        ret += f"jmp l{end_branch}\n"
+
+        # Handle true
+        branch_details = f"l{true_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## true branch of isvoid\n"
+        ret += f"{cgen(Bool(None, 0, 'true'))}\n"
+
+        # End
+        branch_details = f"l{end_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## end of isvoid"
 
     # Negate
     elif isinstance(exp, Negate):
@@ -138,31 +160,305 @@ def cgen(exp, ident=None):
 
     # If
     elif isinstance(exp, IfBlock):
-        # If: inorder of declaration
-        
-        # second_l print false branch
-        
-        # first_l print true branch
-        
-        # third_l end of if conditional
-        
-        # for nested if 
-        # follow false then true
-        # if false true on same level follow the normal structure above
-        # but then the end of if is inner -> outer
-        
-        # if: nested
-        # else: nested
-        # show nesting of else
-        # then show nesting of if
-        pass
+        true_branch = config.jump_table.get()
+        false_branch = true_branch + 1
+        end_branch = false_branch + 1
+        config.jump_table.increment(3)
+
+        # Handle predicate
+        ret += f"{cgen(exp.predicate)}\n"
+        ret += f"movq 24(%r13), {r13}\n"
+        ret += f"cmpq $0, {r13}\n"
+        ret += f"jne l{true_branch}\n"
+
+        # Handle else
+        branch_details = f"l{false_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## false branch\n"
+        ret += f"{cgen(exp.else_body)}\n"
+        ret += f"jmp l{end_branch}\n"
+
+        # Handle true
+        branch_details = f"l{true_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## true branch\n"
+        ret += f"{cgen(exp.then_body)}\n"
+
+        # End
+        branch_details = f"l{end_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## end of if conditional"
 
 
     # Loop
     elif isinstance(exp, LoopBlock):
-        pass
+        init_branch = config.jump_table.get()
+        end_branch = init_branch + 1
+        config.jump_table.increment(2)
+
+        branch_details = f"l{init_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## while conditional check\n"
+
+        # Predicate
+        # TODO: Must be bool or identifier that rets bool
+        ret += f"{cgen(exp.predicate)}\n"
+        ret += f"movq 24(%r13), {r13}\n" # TODO Identifiers must be fixed
+        ret += f"cmpq $0, {r13}\n"
+        ret += f"je l{end_branch}\n"
+
+        # Body
+        ret += f"{cgen(exp.body)}\n"
+        ret += f"jmp l{init_branch}\n"
+
+        branch_details = f"l{end_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## end of while loop"
+
+
+    # Case
+    elif isinstance(exp, CaseBlock):
+        num_branches = len(exp.exps) + 2
+        void_branch = config.jump_table.get()
+        error_branch = void_branch + num_branches - 1
+        end_branch = error_branch + 1
+        config.jump_table.increment(num_branches + 1)
+
+
+        ret += "## case expression begins\n"
+        ret += f"{cgen(exp.case_exp)}\n"
+
+        ret += f"cmpq $0, {r13}\n" # Check void
+        ret += f"je l{void_branch}\n"
+        ret += f"movq {r13}, 0({rbp})\n"
+        ret += f"movq 0({r13}), {r13}\n" # TODO ??
+
+        valid_branches = defaultdict(int)
+        for i, case_expr in enumerate(exp.exps):
+            num = i + void_branch + 1
+            identifier = case_expr[0]
+            id_type = case_expr[1]
+            exp_rem = case_expr[2]
+
+            ret += f"## case {id_type} will jump to l{num}\n"
+            valid_branches[id_type.name] = num
+
+        ret += "## case expression: compare type tags\n"
+
+        # TODO: Need to finish and compare type tags
+        cls_map = alpha_sort()
+        for cls, val in cls_map:
+            ret += f"movq ${val}, {r14}\n"
+            ret += f"cmpq {r14}, {r13}\n"
+            if cls in valid_branches.keys():
+                ret += f"je l{valid_branches[cls]}\n"
+            else:
+                ret += f"je l{error_branch}\n"
+
+        # Handle exprs
+
+
+        # ERROR BRANCH
+        config.string_tag.add(built_ins.CASE_BRANCH_ERROR)
+
+        branch_info = f"l{error_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## case expression: error case\n"
+
+        str_tag = f"string{config.string_tag.get_num(built_ins.CASE_BRANCH_ERROR)}"
+
+        ret += f"movq ${str_tag}, {r13}\n"
+        ret += f"movq {r13}, {rdi}\n"
+        ret += "call cooloutstr\n"
+        ret += f"movl $0, {edi}\n"
+        ret += "call exit\n"
+
+        # VOID BRANCH
+        config.string_tag.add(built_ins.CASE_VOID_ERROR)
+
+        branch_info = f"l{void_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## case expression: void case\n"
+
+        str_tag = f"string{config.string_tag.get_num(built_ins.CASE_VOID_ERROR)}"
+
+        ret +=  f"movq ${str_tag}, {r13}\n"
+        ret += f"movq {r13}, {rdi}\n"
+        ret += "call cooloutstr\n"
+        ret += f"movl $0, {edi}\n"
+        ret += "call exit\n"
+        ret += "## case expression: branches\n"
+
+        # Branches
+        for i, case_expr in enumerate(exp.exps):
+            identifier = case_expr[0]
+            id_type = case_expr[1]
+            exp_rem = case_expr[2]
+            num = i + void_branch + 1
+
+            branch_info = f"l{num}"
+            ret += f".globl {branch_info}\n"
+            branch_info += ":"
+            ret += f"{branch_info:24}## fp[0] holds case {identifier.name} ({id_type})\n"
+
+            cgen(identifier) # TODO: More than this?
+            ret += f"{cgen(exp_rem)}\n"
+            ret += f"jmp l{end_branch}\n"
+
+        branch_info = f"l{end_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## case expression ends"
+
+
+    # Let
+    elif isinstance(exp, Let):
+        cur_class = exp.in_class
+        cur_offset = 0
+        for formal in exp.let_list:
+            identifier = formal[1]
+            id_type = formal[2]
+            expr_type = formal[3]
+
+            ret += f"## fp[{cur_offset}] holds local {identifier} ({id_type})\n"
+
+            config.symbol_table.add(cur_class, identifier.name, cur_offset, rbp)
+
+            if not expr_type:
+                match id_type.name:
+                    case "Bool":
+                        expr_type = Bool(cur_class, 0, None)
+                    case "Int":
+                        expr_type = Integer(cur_class, 0, "Int", None)
+                    case "String":
+                        expr_type = StringObj(cur_class, 0, "String", None)
+                    case _:
+                        ret += f"movq $0, {r13}\n"
+                        #expr_type = Identifier(cur_class, 0, id_type.name)
+            if expr_type:
+                ret += f"{cgen(expr_type)}\n"
+            ret += f"movq {r13}, {cur_offset * config.OFFSET_AMT}({rbp})\n"
+
+            cur_offset -= 1
+
+            config.dynamic.increment()
+
+        ret += cgen(exp.let_body)
+
+        for formal in exp.let_list:
+            identifier = formal[1].name
+            id_type = formal[2]
+            expr_type = formal[3]
+
+            config.symbol_table.pop(cur_class, identifier)
+
+
 
     # ***** EXPRESSION DISPATCHES *****
+
+    # Static
+    elif isinstance(exp, StaticDispatch):
+        pass
+
+
+    # Self
+    elif isinstance(exp, SelfDispatch):
+        method_name = exp.method_name.name
+        ret += f"## {method_name}(...)\n"
+        ret += f"pushq {r12}\n"
+        ret += f"pushq {rbp}\n"
+        # TODO: Need to figure out why this is needed
+        if method_name in ["in_string", "in_int"]:
+            ret += f"pushq {r12}\n"
+
+        for formal in exp.formals:
+            ret += f"{cgen(formal)}\n"
+            ret += f"pushq {r13}\n"
+            ret += f"pushq {r12}\n"
+
+        ret += f"## obtain vtable for self object of type {exp.in_class}\n"
+        vt_met = config.vtable_map.get_class(exp.in_class, method_name)
+        cur_size = config.OFFSET_AMT
+        
+        # TODO: WRONG
+        if vt_met in ["IO"]:
+            cur_size *= config.obj_size.get(exp.in_class, exp.type_of)
+        else:
+            cur_size *= config.obj_size.get(exp.in_class, exp.in_class)
+
+        ret += f"movq 16({r12}), {r14}\n" # TODO: less hard-coded
+        method_offset = config.vtable_map.get_offset(exp.in_class, exp.method_name.name)
+        ret += f"## look up {exp.method_name}() at offset {method_offset} in vtable\n"
+        ret += f"movq {method_offset * config.OFFSET_AMT}({r14}), {r14}\n"
+        ret += f"call *{r14}\n"
+        ret += f"addq ${cur_size}, {rsp}\n"
+        ret += f"popq {rbp}\n"
+        ret += f"popq {r12}"
+
+    # Dynamic
+    elif isinstance(exp, DynamicDispatch):
+        met_branch = config.jump_table.get()
+        config.jump_table.increment()
+
+        config.string_tag.add(built_ins.DISPATCH_VOID_ERROR)
+        ret += f"## {exp.obj_name.exp_print()}.{exp.method_name}(...)\n"
+        ret += f"pushq {r12}\n"
+        ret += f"pushq {rbp}\n"
+        for formal in exp.formals:
+            # If ID, have to check symbol table
+            # Else, call cgen on
+            if isinstance(formal, IdentifierExp):
+                cur_class = formal.in_class
+                id_name = formal.name
+
+                tpl = config.symbol_table.get(cur_class, id_name)
+                offset = tpl[0]
+                reg = tpl[1]
+
+                ret += f"{offset * config.OFFSET_AMT}({reg}) holds {id_name} ({id_name.type_of})\n"
+
+            else:
+                ret += f"{cgen(formal)}\n"
+        ret += f"{cgen(exp.obj_name)}\n"
+
+        # Check for error
+        error_tag = f"string{config.string_tag.get_num(built_ins.DISPATCH_VOID_ERROR)}"
+        ret += f"cmpq $0, {r13}\n"
+        ret += f"jne l{met_branch}\n"
+        ret += f"movq ${error_tag}, {r13}\n"
+        ret += f"movq {r13}, {rdi}\n"
+        ret += "call cooloutstr\n"
+        ret += f"movl $0, {edi}\n"
+        ret += "call exit\n"
+
+        branch_info = f"l{met_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}pushq {r13}\n"
+
+        # TODO: What is r1
+        ret += f"## obtain vtable from object in r1 with static type {exp.obj_name.type_of}\n"
+
+        # TODO: Hardcoded 16
+        ret += f"movq 16({r13}), {r14}\n"
+
+        method_offset = config.vtable_map.get_offset(exp.obj_name.type_of, exp.method_name.name)
+        offset = method_offset * config.OFFSET_AMT
+
+        ret += f"## look up {exp.method_name.name}() at offset {method_offset} in vtable\n"
+        ret += f"movq {offset}({r14}), {r14}\n"
+        ret += f"call *{r14}\n"
+        # TODO: Hardcoded 8
+        ret += f"addq $8, {rsp}\n"
+        ret += f"popq {rbp}\n"
+        ret += f"popq {r12}"
 
 
     # ***** EXPRESSION BASE CLASS *****
@@ -184,6 +480,8 @@ def print_vtables():
     '''
     Print program vtables
     '''
+    assemble_orig_vtable()
+
     str_num = 1
     ret = "\t\t\t## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
 
@@ -229,8 +527,11 @@ def print_ctors():
         ret += f"pushq {rbp}\n"
         ret += f"movq {rsp}, {rbp}\n"
 
-        ret += "## stack room for temporaries: 1\n"
-        ret += f"movq $8, {r14}\n"
+        cur_size = max(math.ceil(len(val) / config.OFFSET_AMT), 1)
+        config.obj_size.set(key, cur_size)
+
+        ret += f"## stack room for temporaries: {cur_size}\n"
+        ret += f"movq ${cur_size * config.OFFSET_AMT}, {r14}\n"
         ret += f"subq {r14}, {rsp}\n"
 
         ret += "## return address handling\n"
@@ -282,8 +583,15 @@ def print_ctors():
             if not attr.expr:
                 ret += "-- none\n"
             else:
-                ret += f"<- {attr.expr.value}\n"
-                ret += f"{cgen(attr.expr, attr.identifier.name)}\n"
+                if isinstance(attr.expr, StringObj):
+                    ret += f"<- \"{attr.expr.value}\"\n"
+                else:
+                    ret += f"<- {attr.expr.exp_print()}\n"
+                ret += f"{cgen(attr.expr)}\n"
+                tpl = config.symbol_table.top(key, attr.identifier.name)
+                offset = tpl[0] * config.OFFSET_AMT
+                reg = tpl[1]
+                ret += f"movq {r13}, {offset}({reg})\n"
             self_offset += 1
 
             r12.update_offset()
@@ -310,17 +618,18 @@ def print_methods():
     for cls in ordering:
         class_name = cls.class_info.name
         if class_name == "IO":
-            ret += f"{constant_prints.IO_IN_INT}\n{constant_prints.IO_IN_STRING}\n"
-            ret += f"{constant_prints.IO_OUT_INT}\n{constant_prints.IO_OUT_STRING}\n"
+            ret += f"{built_ins.io_in_int()}\n{built_ins.io_in_string()}\n"
+            ret += f"{built_ins.io_out_int()}\n{built_ins.io_out_string()}\n"
             continue
         elif class_name == "Object":
-            ret += f"{constant_prints.OBJ_ABORT}\n{constant_prints.OBJ_COPY}\n"
-            ret += f"{constant_prints.OBJ_TYPE_NAME}\n"
-            config.string_tag.add(constant_prints.ABORT_STR)
+            ret += f"{built_ins.obj_abort()}\n{built_ins.obj_copy()}\n"
+            ret += f"{built_ins.obj_type_name()}\n"
+            config.string_tag.add(built_ins.ABORT_STR)
             continue
         elif class_name == "String":
-            ret += f"{constant_prints.STR_CONCAT}\n{constant_prints.STR_LENGTH}\n"
-            ret += f"{constant_prints.STR_SUBSTR}\n"
+            config.string_tag.add(built_ins.SUBSTR_ERROR) # TODO: In wrong place?
+            ret += f"{built_ins.str_concat()}\n{built_ins.str_length()}\n"
+            ret += f"{built_ins.str_substr()}\n"
             continue
 
         for feature in cls.feature_list:
@@ -329,45 +638,63 @@ def print_methods():
             method_info = f"{class_name}.{feature.identifier.name}"
 
             ret += f".globl {method_info}\n"
-            ret += f"{method_info}:\t\t\t## method definition\n" #TODO SPACING
+            temp = method_info + ":"
+            ret += f"{temp:24}## method definition\n" #TODO SPACING
             ret += f"pushq {rbp}\n"
             ret += f"movq {rsp}, {rbp}\n"
             # TODO: Where does this 16 come from?
             ret += f"movq 16({rbp}), {r12}\n"
 
-            num_formals = feature.formals_list[0] #TODO: NEED ANY LET EXPRS TOO
+            num_formals = feature.formals_list[0]
 
-            ret += f"## stack room for temporaries: {num_formals}\n"
-            ret += f"movq $8, {r14}\n"
-            ret += f"subq {r14}, {rsp}\n"
-            ret += "## return address handling\n"
+            config.dynamic.reset()
 
+            tmp = ""
             for val in config.class_map.class_iterables(class_name):
                 val_name = val.identifier.name
                 val_type = val.typename.name
                 val_offset = config.attr_map.get_offset(class_name, val_name)
-                ret += f"## self[{val_offset}] holds field {val_name} ({val_type})\n"
-
+                tmp += f"## self[{val_offset}] holds field {val_name} ({val_type})\n"
 
             cur_offset = num_formals + 2
 
             for formal in feature.formals_list:
                 if isinstance(formal, int):
                     continue
-                ret += f"## fp[{cur_offset}] holds argument {formal[0]} ({formal[1]})\n"
+                tmp += f"## fp[{cur_offset}] holds argument {formal[0]} ({formal[1]})\n"
+
+                id_name = formal[0].name
+                config.symbol_table.add(class_name, id_name, cur_offset, rbp)
+
                 cur_offset -= 1
 
-            ret += "## method body begins\n"
-            ret += f"{cgen(feature.body)}\n"
+            tmp += "## method body begins\n"
+            tmp += f"{cgen(feature.body)}\n"
+            offset = len(config.dynamic) + 1
+            ret += f"## stack room for temporaries: {offset}\n"
+            ret += f"movq ${offset * config.OFFSET_AMT}, {r14}\n"
+            ret += f"subq {r14}, {rsp}\n"
+            ret += "## return address handling\n"
+
+            ret += tmp
+
 
             ret += f".globl {method_info}.end\n"
-            ret += f"{method_info}.end:\t\t ## method body ends\n" # TODO: SPACING
+            temp = method_info + ".end:"
+            ret += f"{temp:24}## method body ends\n"
             ret += "## return address handling\n"
 
             ret += f"movq {rbp}, {rsp}\n"
             ret += f"popq {rbp}\n"
             ret += "ret\n"
             ret += "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
+
+            for formal in feature.formals_list:
+                if isinstance(formal, int):
+                    continue
+
+                id_name = formal[0].name
+                config.symbol_table.pop(class_name, id_name)
 
     return ret
 
@@ -377,25 +704,92 @@ def print_cool_globals():
     Prints cool globals
     '''
 
-    config.string_tag.add(constant_prints.VOID_ERROR)
-    config.string_tag.add(constant_prints.SUBSTR_ERROR) # TODO: In wrong place?
+    # config.string_tag.add(constant_prints.VOID_ERROR) # TODO: WHERE TO USE???
 
     ret = ""
     ret += "## global string constants\n"
-    ret += f"{constant_prints.STR_START}\n"
+    ret += f"{built_ins.str_start()}\n"
 
     sorted_strs = config.string_tag.pairs()
 
-    for str in sorted_strs:
-        ret += f".globl {str[0]}\n"
-        ret += f"{str[0]}:\t\t\t# \"{str[1]}\"\n"
-        for ch in str[1]:
-            ret += f".byte  {ord(ch)} # '{ch}'\n"
+    for cur_str in sorted_strs:
+        ret += f".globl {cur_str[0]}\n"
+        temp = cur_str[0] + ":"
+        if "\\n" in cur_str[1]:
+            tmp_str = cur_str[1][:len(cur_str[1])-2] + "\\\\n"
+            ret += f"{temp:24}# \"{tmp_str}\"\n"
+        else:
+            ret += f"{temp:24}# \"{cur_str[1]}\"\n"
+        for ch in cur_str[1]:
+            if ch == "\"":
+                continue
+            elif ch == "\\":
+                ret += f".byte {ord(ch):>3} # '{ch}{ch}'\n"
+            else:
+                ret += f".byte {ord(ch):>3} # '{ch}'\n"
         ret += ".byte 0\n\n"
 
-    ret += f"{constant_prints.PROGRAM_INFO}\n"
+    ret += f"{built_ins.program_info()}\n"
 
     return ret
+
+def assemble_orig_vtable():
+    '''
+    Assembles map of cur_class -> method -> orig class
+    '''
+    base_classes = get_base_classes()
+    classes = config.aast.copy()
+    classes.pop(0)
+
+    name_to_obj = defaultdict(ClassObj)
+
+    for cls in base_classes:
+        classes.append(cls)
+
+    for cls in classes:
+        class_name = cls.class_info.name
+        name_to_obj[class_name] = cls
+
+    stk = []
+    for cls in classes:
+        orig_cls = cls.class_info.name
+        stk.append(cls)
+
+        cur = cls.parent
+        while cur:
+            cur = cur.name
+            cur = name_to_obj[cur]
+            stk.append(cur)
+            cur = cur.parent
+
+        # TODO: lol
+        if not cls.parent and orig_cls != "Object":
+            stk.append(name_to_obj["Object"])
+        if orig_cls == "Main":
+            stk.append(name_to_obj["IO"])
+
+
+        while len(stk) != 0:
+            top = stk.pop()
+            cls_name = top.class_info.name
+
+            for feature in top.feature_list:
+                if isinstance(feature, Method):
+                    method_name = feature.identifier.name
+                    config.vtable_map.set_class(orig_cls, method_name, cls_name)
+
+
+def alpha_sort():
+    '''
+    Sorts ClasseMap in alphabetical order
+    Return dictionary of class name to ClassObj
+    '''
+
+    cls_map = []
+    for key, _ in config.class_map.iterables():
+        cls_map.append((key, config.class_tags.get_tag(key)))
+
+    return sorted(cls_map, key=lambda x: x[0])
 
 
 def top_sort():
@@ -430,7 +824,7 @@ def helper(classes):
         if class_name not in graph:
             graph[class_name] = []
 
-        if class_name == "Main":
+        if class_name == "Main": # TODO: What if main inherits from another class?
             graph["IO"].append(class_name)
             graph["Object"].append(class_name)
             incoming_edges[class_name] += 2

@@ -86,3 +86,13 @@ class RXX(Register):
 
     def __repr__(self):
         return f"%r{self.switch}x"
+
+class EDI(Register):
+    '''
+    EDI register
+    '''
+    def __init__(self, _offset=0):
+        Register.__init__(self, _offset)
+
+    def __repr__(self):
+        return "%edi"

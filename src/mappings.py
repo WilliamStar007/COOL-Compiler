@@ -170,7 +170,7 @@ class ClassTag(Mapping):
         if class_name in self.dict:
             return self.dict[class_name]
         else:
-            exit(1) # TODO: ERROR
+            sys.exit(1) # TODO: ERROR
 
     def get_name(self, tag):
         '''
@@ -179,7 +179,7 @@ class ClassTag(Mapping):
         if tag in self.rev_dict:
             return self.rev_dict[tag]
         else:
-            exit(1) # TODO: ERROR
+            sys.exit(1) # TODO: ERROR
 
 
 class StringTag(object):
@@ -194,10 +194,14 @@ class StringTag(object):
         '''
         Add string to dicts
         '''
+
+        if cur_str in self.rev_dict:
+            return
+
         num = len(self.fwd_dict) + 1
 
         self.fwd_dict[num] = f"{cur_str}"
-        self.rev_dict[f"{cur_str}"] = num
+        self.rev_dict[cur_str] = num
 
     def get_str(self, num):
         '''
@@ -242,6 +246,30 @@ class StringTag(object):
     def __len__(self):
         return len(self.fwd_dict)
 
+class ObjSize(object):
+    '''
+    Maps object to its size
+    '''
+    def __init__(self):
+        self.dict = defaultdict(int)
+
+    def set(self, class_name, amt):
+        '''
+        Set size
+        '''
+        self.dict[class_name] = amt
+
+    def get(self, cur_class, class_name):
+        '''
+        Get size
+        '''
+        if class_name == "SELF_TYPE":
+            class_name = cur_class
+        if class_name not in self.dict:
+            print("OBJ SIZE ERROR")
+            sys.exit(1)
+        return self.dict[class_name]
+
 
 class OffsetMap(object):
     '''
@@ -280,6 +308,30 @@ class OffsetMap(object):
         sys.exit(1)
 
 
+class VTableMap(OffsetMap):
+    '''
+    VTable map
+    '''
+    def __init__(self):
+        super().__init__()
+        self.actual = defaultdict(lambda : defaultdict(dict))
+
+    def set_class(self, cur_class, method_name, actual_class):
+        '''
+        Sets the actual class of the method
+        '''
+        self.actual[cur_class][method_name] = actual_class
+
+    def get_class(self, cur_class, method_name):
+        '''
+        Sets the actual class of the method
+        '''
+        if cur_class in self.actual or method_name and method_name in self.actual[cur_class]:
+            return self.actual[cur_class][method_name]
+        print("ORIG VTABLE ERROR")
+        sys.exit(1)
+
+
 class SymbolTable(object):
     '''
     Symbol table maps
@@ -311,3 +363,38 @@ class SymbolTable(object):
             return self.dict[class_name][var_name][-1]
         print("ERROR")
         sys.exit(1)
+
+class Tracker(object):
+    '''
+    Tracks amounts
+    '''
+    def __init__(self, _amt=0):
+        self.amt = _amt
+        self.init = _amt
+
+    def __len__(self):
+        return self.amt
+
+    def get(self):
+        ''''
+        Get amt
+        '''
+        return self.amt
+
+    def increment(self, _amt=1):
+        '''
+        Increment amt
+        '''
+        self.amt += _amt
+
+    def decrement(self):
+        '''
+        Decrement amt
+        '''
+        self.amt -= 1
+
+    def reset(self):
+        '''
+        Reset
+        '''
+        self.amt = self.init
