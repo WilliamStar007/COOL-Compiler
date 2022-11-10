@@ -772,8 +772,6 @@ def assemble_orig_vtable():
                     method_name = feature.identifier.name
                     config.vtable_map.set_class(orig_cls, method_name, cls_name)
 
-    for key, items in config.vtable_map.actual.items():
-        print(f"{key}, {items}\n")
 
 def alpha_sort():
     '''
