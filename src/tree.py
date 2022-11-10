@@ -424,7 +424,7 @@ class IfBlock(Expression):
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nif\n{self.predicate}\n{self.then_body}\n{self.else_body}"
         return ret
-    
+
     def exp_print(self):
         '''
         Print exp

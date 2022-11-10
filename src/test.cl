@@ -26,7 +26,7 @@ class Z inherits Main {
     };
 };
 
-class ANV  {
+class ANV inherits IO {
     abc : Int <- 10;
     obj : Z;
     asdmf : Z;
@@ -55,11 +55,23 @@ class ANV  {
         "BREAK";
         while false loop 10 pool;
 
+        (*
         case sc of
             a : Int => 5;
             b : String => "tmpstr";
             c : Bool => "false";
         esac;
+        *)
+
+        a(5);
+        a(abc);
+        obj.x();
+        out_int(10);
+        out_string("Hi");
+        in_int();
+        in_string();
+        10;
+
     }};
 };
 
