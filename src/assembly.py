@@ -204,6 +204,7 @@ def cgen(exp):
         ret += f"movq {r13}, 0({rbp})\n"
         ret += f"movq 0({r13}), {r13}\n" # TODO ??
 
+        valid_branches = defaultdict(int)
         for i, case_expr in enumerate(exp.exps):
             num = i + void_branch + 1
             identifier = case_expr[0]
@@ -211,11 +212,19 @@ def cgen(exp):
             exp_rem = case_expr[2]
 
             ret += f"## case {id_type} will jump to l{num}\n"
+            valid_branches[id_type.name] = num
 
         ret += "## case expression: compare type tags\n"
 
         # TODO: Need to finish and compare type tags
-
+        cls_map = alpha_sort()
+        for cls, val in cls_map:
+            ret += f"movq ${val}, {r14}\n"
+            ret += f"cmpq {r14}, {r13}\n"
+            if cls in valid_branches.keys():
+                ret += f"je l{valid_branches[cls]}\n"
+            else:
+                ret += f"je l{error_branch}\n"
 
         # Handle exprs
 
@@ -582,6 +591,19 @@ def print_cool_globals():
     ret += f"{built_ins.program_info()}\n"
 
     return ret
+
+
+def alpha_sort():
+    '''
+    Sorts ClasseMap in alphabetical order
+    Return dictionary of class name to ClassObj
+    '''
+
+    cls_map = []
+    for key, _ in config.class_map.iterables():
+        cls_map.append((key, config.class_tags.get_tag(key)))
+
+    return sorted(cls_map, key=lambda x: x[0])
 
 
 def top_sort():
