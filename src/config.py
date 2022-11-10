@@ -8,9 +8,11 @@ from mappings import Tracker, \
                      ClassTag,\
                      StringTag,\
                      ImplementationMap,\
+                     ObjSize, \
                      OffsetMap,\
                      ParentMap,\
-                     SymbolTable
+                     SymbolTable, \
+                     VTableMap
 
 # Lines from file
 lines = []
@@ -25,9 +27,10 @@ parent_map = ParentMap()
 # Map of class -> list of accessible methods
 class_tags = ClassTag()
 string_tag = StringTag()
-vtable_map = OffsetMap()
+vtable_map = VTableMap()
 attr_map = OffsetMap()
 symbol_table = SymbolTable()
+obj_size = ObjSize()
 
 #str_num_contents = defaultdict(str)
 
