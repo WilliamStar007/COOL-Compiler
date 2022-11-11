@@ -7,7 +7,7 @@ import heapq as hq
 import math
 import config
 from config import SPC
-from memory import RSP, RBP, RSI, RDI, RNum, RXX, EDI
+from memory import RSP, RBP, RSI, RDI, RNum, RXX, EDI, R13D, EAX
 from tree import *
 import built_ins
 
@@ -24,6 +24,8 @@ r14 = RNum(14)
 r15 = RNum(15)
 
 edi = EDI()
+eax = EAX()
+r13d = R13D()
 
 def cgen(exp):
     '''
@@ -267,7 +269,25 @@ def cgen(exp):
 
     # Times
     elif isinstance(exp, Times):
-        pass
+        ret += f"{cgen(exp.lhs)}\n"
+
+        ret += f"{SPC}movq 24({r13}), {r13}\n"
+        ret += f"{SPC}movq {r13}, -8({rbp})\n"
+
+        ret += f"{cgen(exp.rhs)}\n"
+
+        ret += f"{SPC}movq 24({r13}), {r13}\n"
+        ret += f"{SPC}movq -8({rbp}), {r14}\n\n"
+        ret += f"movq {r14}, {rax}\n"
+        ret += f"imull {r13d}, {eax}\n"
+        ret += f"shlq $32, {rax}\n"
+        ret += f"shrq $32, {rax}\n"
+        ret += f"movl {eax}, {r13d}\n"
+        ret += f"{SPC}movq {r13}, -8({rbp})\n"
+
+        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+        ret += f"{SPC}movq -8({rbp}), {r14}\n"
+        ret += f"{SPC}movq {r14}, 24({r13})"
 
     # Divide
     elif isinstance(exp, Divide):
