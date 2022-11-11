@@ -73,6 +73,8 @@ class ANV {
         abc <- 100;
         abc <- cnofewf;
 
+        --5 + 5;
+
     }};
 };
 

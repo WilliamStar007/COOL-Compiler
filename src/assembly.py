@@ -178,7 +178,10 @@ def cgen(exp):
 
     # Plus
     elif isinstance(exp, Plus):
-        pass
+        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+        ret += f"{cgen(exp.lhs)}\n"
+        ret += f"{cgen(exp.rhs)}"
+
 
 
     # Minus
@@ -365,7 +368,7 @@ def cgen(exp):
             branch_info += ":"
             ret += f"{branch_info:24}## fp[0] holds case {identifier.name} ({id_type})\n"
 
-            cgen(identifier) # TODO: More than this?
+            cgen(identifier)
             ret += f"{cgen(exp_rem)}\n"
             ret += f"jmp l{end_branch}\n"
 
@@ -398,7 +401,6 @@ def cgen(exp):
                         expr_type = StringObj(cur_class, 0, "String", None)
                     case _:
                         ret += f"movq $0, {r13}\n"
-                        #expr_type = Identifier(cur_class, 0, id_type.name)
             if expr_type:
                 ret += f"{cgen(expr_type)}\n"
             ret += f"movq {r13}, {cur_offset * config.OFFSET_AMT}({rbp})\n"
@@ -415,7 +417,6 @@ def cgen(exp):
             expr_type = formal[3]
 
             config.symbol_table.pop(cur_class, identifier)
-
 
 
     # ***** EXPRESSION DISPATCHES *****
@@ -488,8 +489,8 @@ def cgen(exp):
         method_offset = config.vtable_map.get_offset(exp.in_class, exp.method_name.name)
         ret += f"## look up {exp.method_name}() at offset {method_offset} in vtable\n"
         ret += f"movq {method_offset * config.OFFSET_AMT}({r14}), {r14}\n"
-        ret += f"call *{r14}\n"
-        ret += f"addq ${cur_size}, {rsp}\n"
+        ret += f"call *{r14}\n" # TODO:
+        ret += f"addq $16, {rsp}\n"
         ret += f"popq {rbp}\n"
         ret += f"popq {r12}"
 
@@ -713,12 +714,12 @@ def print_methods():
             ret += f"{built_ins.io_out_int()}\n{built_ins.io_out_string()}\n"
             continue
         elif class_name == "Object":
+            config.string_tag.add(built_ins.ABORT_STR)
             ret += f"{built_ins.obj_abort()}\n{built_ins.obj_copy()}\n"
             ret += f"{built_ins.obj_type_name()}\n"
-            config.string_tag.add(built_ins.ABORT_STR)
             continue
         elif class_name == "String":
-            config.string_tag.add(built_ins.SUBSTR_ERROR) # TODO: In wrong place?
+            config.string_tag.add(built_ins.SUBSTR_ERROR)
             ret += f"{built_ins.str_concat()}\n{built_ins.str_length()}\n"
             ret += f"{built_ins.str_substr()}\n"
             continue
