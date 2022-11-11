@@ -322,7 +322,41 @@ def cgen(exp):
 
     # Static
     elif isinstance(exp, StaticDispatch):
-        pass
+        method_branch = config.jump_table.get()
+        config.jump_table.increment()
+        branch_info = f"l{method_branch}"
+
+        config.string_tag.add(built_ins.STATIC_DISPATCH_ERROR)
+        offset = config.vtable_map.get_offset(exp.typename.name, exp.method_name.name)
+        err_tag = f"string{config.string_tag.get_num(built_ins.STATIC_DISPATCH_ERROR)}"
+
+        ret += f"## {exp.exp_print()}\n"
+        ret += f"pushq {r12}\n"
+        ret += f"pushq {rbp}\n"
+
+        ret += f"{cgen(exp.obj_name)}\n"
+
+        ret += f"cmpq $0, {r13}\n"
+        ret += f"jne {branch_info}\n"
+        ret += f"movq ${err_tag}, {r13}\n"
+        ret += f"movq {r13}, {rdi}\n"
+        ret += "call cooloutstr\n"
+        ret += f"movl $0, {edi}\n"
+        ret += "call exit\n"
+
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}pushq {r13}\n"
+
+        ret += f"## obtain vtable for class {exp.typename.name}\n"
+        ret += f"movq ${exp.typename.name}..vtable, {r14}\n"
+        ret += f"## look up {exp.method_name}() at offset {offset} in vtable\n"
+        ret += f"movq {offset * config.OFFSET_AMT}({r14}), {r14}\n"
+        ret += f"call *{r14}\n"
+        # TODO: Hardcoded 8
+        ret += f"addq $8, {rsp}\n"
+        ret += f"popq {rbp}\n"
+        ret += f"popq {r12}"
 
 
     # Self
@@ -343,7 +377,7 @@ def cgen(exp):
         ret += f"## obtain vtable for self object of type {exp.in_class}\n"
         vt_met = config.vtable_map.get_class(exp.in_class, method_name)
         cur_size = config.OFFSET_AMT
-        
+
         # TODO: WRONG
         if vt_met in ["IO"]:
             cur_size *= config.obj_size.get(exp.in_class, exp.type_of)
@@ -364,7 +398,7 @@ def cgen(exp):
         met_branch = config.jump_table.get()
         config.jump_table.increment()
 
-        config.string_tag.add(built_ins.DISPATCH_VOID_ERROR)
+        config.string_tag.add(built_ins.DYNAMIC_DISPATCH_ERROR)
         ret += f"## {exp.obj_name.exp_print()}.{exp.method_name}(...)\n"
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
@@ -386,7 +420,7 @@ def cgen(exp):
         ret += f"{cgen(exp.obj_name)}\n"
 
         # Check for error
-        error_tag = f"string{config.string_tag.get_num(built_ins.DISPATCH_VOID_ERROR)}"
+        error_tag = f"string{config.string_tag.get_num(built_ins.DYNAMIC_DISPATCH_ERROR)}"
         ret += f"cmpq $0, {r13}\n"
         ret += f"jne l{met_branch}\n"
         ret += f"movq ${error_tag}, {r13}\n"
@@ -735,8 +769,6 @@ def assemble_orig_vtable():
                     method_name = feature.identifier.name
                     config.vtable_map.set_class(orig_cls, method_name, cls_name)
 
-    for key, items in config.vtable_map.actual.items():
-        print(f"{key}, {items}\n")
 
 def top_sort():
     '''

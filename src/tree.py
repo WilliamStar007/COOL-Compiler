@@ -95,6 +95,12 @@ class Identifier(object):
         ret = f"{self.name}"
         return ret
 
+    def exp_print(self):
+        '''
+        Exp print
+        '''
+        return self.name
+
 class IdentifierExp(Expression):
     '''
     Identifier expression object
@@ -229,6 +235,14 @@ class StaticDispatch(Dispatch):
                 if i != len(self.formals) - 1:
                     ret += "\n"
 
+        return ret
+
+    def exp_print(self):
+        '''
+        Exp print
+        '''
+        ret = f"{self.obj_name.exp_print()}@{self.typename.exp_print()}."
+        ret += f"{self.method_name.exp_print()}(...)"
         return ret
 
 class SelfDispatch(Dispatch):

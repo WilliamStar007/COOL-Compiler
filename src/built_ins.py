@@ -9,7 +9,9 @@ CASE_BRANCH_ERROR = "ERROR: 58: Exception: case without matching branch\\n"
 
 CASE_VOID_ERROR = "ERROR: 58: Exception: case on void\\n"
 
-DISPATCH_VOID_ERROR = "ERROR: 68: Exception: dispatch on void\\n"
+DYNAMIC_DISPATCH_ERROR = "ERROR: 68: Exception: dispatch on void\\n"
+
+STATIC_DISPATCH_ERROR = "ERROR: 69: Exception: dispatch on void\\n"
 
 SUBSTR_ERROR = "ERROR: 0: Exception: String.substr out of range\\n"
 
