@@ -27,7 +27,7 @@ class Z inherits Main {
 };
 
 class ANV {
-    abc : Int <- 10 - 100;
+    abc : Int <- 10;
     obj : Z;
     asdmf : Z;
     asncejc : Int <- 101204;
@@ -66,10 +66,21 @@ class ANV {
         a(5);
         a(abc);
         obj.x();
-        ~5;
-        ~abc;
-        5 - 10 - 500;
+        obj@Main.main();
+        abc <- 10;
+        abc <- new Int;
+        obj <- new Z;
+        abc <- 100;
+        abc <- cnofewf;
+        10 = 500;
+        abc = cnofewf;
 
+        abc < cnofewf;
+
+        abc <= cnofewf;
+
+
+        10;
     }};
 };
 

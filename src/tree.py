@@ -95,6 +95,12 @@ class Identifier(object):
         ret = f"{self.name}"
         return ret
 
+    def exp_print(self):
+        '''
+        Exp print
+        '''
+        return self.name
+
 class IdentifierExp(Expression):
     '''
     Identifier expression object
@@ -139,7 +145,7 @@ class StringObj(Expression):
     String expression object
     '''
     def __init__(self, _in_class, _lineno, _type_of, _value):
-        Expression.__init__(self,_in_class, _lineno, _type_of)
+        Expression.__init__(self, _in_class, _lineno, _type_of)
         self.value = _value
 
     def __repr__(self):
@@ -231,6 +237,14 @@ class StaticDispatch(Dispatch):
 
         return ret
 
+    def exp_print(self):
+        '''
+        Exp print
+        '''
+        ret = f"{self.obj_name.exp_print()}@{self.typename.exp_print()}."
+        ret += f"{self.method_name.exp_print()}(...)"
+        return ret
+
 class SelfDispatch(Dispatch):
     '''
     Self dispatch object
@@ -293,7 +307,7 @@ class IsVoid(Unary):
 
     def __repr__(self):
         return self.print()
-    
+
     def exp_print(self):
         '''
         Print expr
@@ -535,7 +549,7 @@ class LoopBlock(Expression):
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nwhile\n{self.predicate}\n{self.body}"
         return ret
-    
+
     def exp_print(self):
         '''
         Print exp
@@ -587,7 +601,7 @@ class Let(Expression):
         ret += f"{self.let_body}"
 
         return ret
-    
+
     def exp_print(self):
         '''
         Print exp

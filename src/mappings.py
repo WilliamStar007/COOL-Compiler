@@ -170,7 +170,8 @@ class ClassTag(Mapping):
         if class_name in self.dict:
             return self.dict[class_name]
         else:
-            sys.exit(1) # TODO: ERROR
+            print("CLASS TAG ERROR")
+            sys.exit(1)
 
     def get_name(self, tag):
         '''
@@ -179,7 +180,8 @@ class ClassTag(Mapping):
         if tag in self.rev_dict:
             return self.rev_dict[tag]
         else:
-            sys.exit(1) # TODO: ERROR
+            print("CLASS TAG ERROR")
+            sys.exit(1)
 
 
 class StringTag(object):
@@ -294,7 +296,7 @@ class OffsetMap(object):
         '''
         if class_name in self.fwd_dict and var_name in self.fwd_dict[class_name]:
             return self.fwd_dict[class_name][var_name]
-        print("ERROR")
+        print("OFFSET MAP GET OFFSET ERROR")
         sys.exit(1)
 
     def get_obj(self, class_name, offset):
@@ -304,7 +306,7 @@ class OffsetMap(object):
         if class_name in self.rev_dict and offset in self.rev_dict[class_name]:
             return self.rev_dict[offset]
 
-        print("ERROR")
+        print("OFFSETMAP GET OBJ ERROR")
         sys.exit(1)
 
 
@@ -328,7 +330,7 @@ class VTableMap(OffsetMap):
         '''
         if cur_class in self.actual or method_name and method_name in self.actual[cur_class]:
             return self.actual[cur_class][method_name]
-        print("ORIG VTABLE ERROR")
+        print("ORIG VTABLE GET CLASS ERROR")
         sys.exit(1)
 
 
@@ -352,7 +354,7 @@ class SymbolTable(object):
         if class_name in self.dict and var_name in self.dict[class_name]:
             self.dict[class_name][var_name].pop()
         else:
-            print("ERROR")
+            print("SYMBOL TABLE POP ERROR")
             sys.exit(1)
 
     def top(self, class_name, var_name):
@@ -361,7 +363,7 @@ class SymbolTable(object):
         '''
         if class_name in self.dict and var_name in self.dict[class_name]:
             return self.dict[class_name][var_name][-1]
-        print("ERROR")
+        print("SYMBOL TABLE TOP ERROR")
         sys.exit(1)
 
 class Tracker(object):
