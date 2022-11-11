@@ -26,7 +26,7 @@ class Z inherits Main {
     };
 };
 
-class ANV inherits IO {
+class ANV {
     abc : Int <- 10;
     obj : Z;
     asdmf : Z;
@@ -66,11 +66,7 @@ class ANV inherits IO {
         a(5);
         a(abc);
         obj.x();
-        out_int(10);
-        out_string("Hi");
-        in_int();
-        in_string();
-        10;
+        obj@Main.main();
 
     }};
 };
