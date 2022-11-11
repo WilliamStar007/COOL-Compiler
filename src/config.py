@@ -35,6 +35,7 @@ obj_size = ObjSize()
 #str_num_contents = defaultdict(str)
 
 OFFSET_AMT = 8
+SPC = f"{'':24}"
 
 dynamic = Tracker(0)
 

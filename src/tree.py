@@ -307,6 +307,13 @@ class IsVoid(Unary):
 
     def __repr__(self):
         return self.print()
+    
+    def exp_print(self):
+        '''
+        Print expr
+        '''
+        ret = f"isvoid {self.rhs.value}"
+        return ret
 
 class Negate(Unary):
     '''

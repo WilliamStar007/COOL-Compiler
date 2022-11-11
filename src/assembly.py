@@ -104,8 +104,36 @@ def cgen(exp):
 
     # IsVoid
     elif isinstance(exp, IsVoid):
-        pass
+        ret += f"{cgen(exp.rhs)}\n"
+        
+        true_branch = config.jump_table.get()
+        false_branch = true_branch + 1
+        end_branch = false_branch + 1
+        config.jump_table.increment(3)
 
+        ret += f"{config.SPC}cmpq $0, {r13}\n"
+        ret += f"{config.SPC}je l{true_branch}\n"
+
+        # Handle false
+        branch_details = f"l{false_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## false branch of isvoid\n"
+        ret += f"{cgen(Bool(None, 0, 'false'))}\n"
+        ret += f"jmp l{end_branch}\n"
+
+        # Handle true
+        branch_details = f"l{true_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## true branch of isvoid\n"
+        ret += f"{cgen(Bool(None, 0, 'true'))}\n"
+
+        # End
+        branch_details = f"l{end_branch}"
+        ret += f".globl {branch_details}\n"
+        branch_details += ":"
+        ret += f"{branch_details:24}## end of isvoid"
 
     # Negate
     elif isinstance(exp, Negate):
@@ -204,6 +232,7 @@ def cgen(exp):
         ret += f"movq {r13}, 0({rbp})\n"
         ret += f"movq 0({r13}), {r13}\n" # TODO ??
 
+        valid_branches = defaultdict(int)
         for i, case_expr in enumerate(exp.exps):
             num = i + void_branch + 1
             identifier = case_expr[0]
@@ -211,11 +240,19 @@ def cgen(exp):
             exp_rem = case_expr[2]
 
             ret += f"## case {id_type} will jump to l{num}\n"
+            valid_branches[id_type.name] = num
 
         ret += "## case expression: compare type tags\n"
 
         # TODO: Need to finish and compare type tags
-
+        cls_map = alpha_sort()
+        for cls, val in cls_map:
+            ret += f"movq ${val}, {r14}\n"
+            ret += f"cmpq {r14}, {r13}\n"
+            if cls in valid_branches.keys():
+                ret += f"je l{valid_branches[cls]}\n"
+            else:
+                ret += f"je l{error_branch}\n"
 
         # Handle exprs
 
@@ -768,6 +805,19 @@ def assemble_orig_vtable():
                 if isinstance(feature, Method):
                     method_name = feature.identifier.name
                     config.vtable_map.set_class(orig_cls, method_name, cls_name)
+
+
+def alpha_sort():
+    '''
+    Sorts ClasseMap in alphabetical order
+    Return dictionary of class name to ClassObj
+    '''
+
+    cls_map = []
+    for key, _ in config.class_map.iterables():
+        cls_map.append((key, config.class_tags.get_tag(key)))
+
+    return sorted(cls_map, key=lambda x: x[0])
 
 
 def top_sort():
