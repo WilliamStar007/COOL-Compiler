@@ -140,7 +140,56 @@ def cgen(exp):
         pass
 
 
+    # Not
+    elif isinstance(exp, NotExpr):
+        pass
+
+
+    # New
+    elif isinstance(exp, NewExp):
+        pass
+
+
+    # Assignment
+    elif isinstance(exp, Assign):
+        pass
+
+
     # ***** EXPRESSION BINARY OPS *****
+
+    # Plus
+    elif isinstance(exp, Plus):
+        pass
+
+
+    # Minus
+    elif isinstance(exp, Minus):
+        pass
+
+
+    # Times
+    elif isinstance(exp, Times):
+        pass
+
+
+    # Divide
+    elif isinstance(exp, Divide):
+        pass
+
+
+    # Less than
+    elif isinstance(exp, Less):
+        pass
+
+
+    # Less than or equal
+    elif isinstance(exp, LessOrEqual):
+        pass
+
+
+    # Equals
+    elif isinstance(exp, Equals):
+        pass
 
 
     # ***** EXPRESSION BLOCKS *****
@@ -243,8 +292,6 @@ def cgen(exp):
             valid_branches[id_type.name] = num
 
         ret += "## case expression: compare type tags\n"
-
-        # TODO: Need to finish and compare type tags
         cls_map = alpha_sort()
         for cls, val in cls_map:
             ret += f"movq ${val}, {r14}\n"
@@ -253,9 +300,6 @@ def cgen(exp):
                 ret += f"je l{valid_branches[cls]}\n"
             else:
                 ret += f"je l{error_branch}\n"
-
-        # Handle exprs
-
 
         # ERROR BRANCH
         config.string_tag.add(built_ins.CASE_BRANCH_ERROR)

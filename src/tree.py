@@ -307,7 +307,7 @@ class IsVoid(Unary):
 
     def __repr__(self):
         return self.print()
-    
+
     def exp_print(self):
         '''
         Print expr
@@ -491,7 +491,7 @@ class LoopBlock(Expression):
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nwhile\n{self.predicate}\n{self.body}"
         return ret
-    
+
     def exp_print(self):
         '''
         Print exp
@@ -543,7 +543,7 @@ class Let(Expression):
         ret += f"{self.let_body}"
 
         return ret
-    
+
     def exp_print(self):
         '''
         Print exp
