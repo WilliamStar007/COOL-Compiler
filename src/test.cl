@@ -75,10 +75,13 @@ class ANV {
         10 = 500;
         abc = cnofewf;
 
+        --5 + 5;
+
         abc < cnofewf;
 
         abc <= cnofewf;
 
+        10 + 100;
 
         10;
     }};
