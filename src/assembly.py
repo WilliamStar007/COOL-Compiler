@@ -183,24 +183,38 @@ def cgen(exp):
     elif isinstance(exp, Minus):
         ret += f"{cgen(exp.lhs)}\n"
 
-        ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq {r13}, 0({rbp})\n"
+        ret += f"{SPC}movq 24({r13}), {r13}\n"
+        ret += f"{SPC}movq {r13}, 0({rbp})\n"
 
         ret += f"{cgen(exp.rhs)}\n"
 
-        ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq 0({rbp}), {r14}\n"
-        ret += f"movq {r14}, {rax}\n"
-        ret += f"subq {r13}, {rax}\n"
-        ret += f"movq {rax}, {r13}\n"
-        ret += f"movq {r13}, 0({rbp})\n"
+        ret += f"{SPC}movq 24({r13}), {r13}\n"
+        ret += f"{SPC}movq 0({rbp}), {r14}\n"
+        ret += f"{SPC}movq {r14}, {rax}\n"
+        ret += f"{SPC}subq {r13}, {rax}\n"
+        ret += f"{SPC}movq {rax}, {r13}\n"
+        ret += f"{SPC}movq {r13}, 0({rbp})\n"
 
         ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
-        ret += f"movq 0({rbp}), {r14}\n"
-        ret += f"movq {r14}, 24({r13})"
+        ret += f"{SPC}movq 0({rbp}), {r14}\n"
+        ret += f"{SPC}movq {r14}, 24({r13})"
     # Plus
     elif isinstance(exp, Plus):
-        pass
+        ret += f"{cgen(exp.lhs)}\n"
+
+        ret += f"{SPC}movq 24({r13}), {r13}\n"
+        ret += f"{SPC}movq {r13}, 0({rbp})\n"
+
+        ret += f"{cgen(exp.rhs)}\n"
+
+        ret += f"{SPC}movq 24({r13}), {r13}\n"
+        ret += f"{SPC}movq 0({rbp}), {r14}\n"
+        ret += f"{SPC}addq {r14}, {r13}\n"
+        ret += f"{SPC}movq {r13}, 0({rbp})\n"
+
+        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+        ret += f"{SPC}movq 0({rbp}), {r14}\n"
+        ret += f"{SPC}movq {r14}, 24({r13})"
 
 
     # Times
