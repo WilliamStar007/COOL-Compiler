@@ -39,7 +39,7 @@ class ANV {
     vaingeingwe : Object <- let gj4i : Int in 5;
     avoirw : Int <- if true then 5 else 10 fi;
     cnofewf : Int <- 1023;
-    ijoinvreg : Int <- 102020;
+    ijoinvreg : Int <- abc - abc;
     asndfogeniw : String <- "Asdefw";
     ldnclgwen : Main;
     b(abc : String, fml : String, asd : Z, asdlkn : Bool, adhfei : Main) : Int {

@@ -50,8 +50,7 @@ def cgen(exp):
     # Int
     elif isinstance(exp, Integer):
         ret += f"{cgen(Expression(exp.in_class, 0, 'Int'))}"
-
-        if exp.value:
+        if exp.value is not None:
             ret += "\n"
             ret += f"{SPC}movq ${exp.value}, {r14}\n"
             ret += f"{SPC}movq {r14}, 24({r13})"
@@ -138,7 +137,10 @@ def cgen(exp):
 
     # Negate
     elif isinstance(exp, Negate):
-        pass
+        lhs = Integer(None, 0, "Int", 0)
+        sub_node = Minus(exp.in_class, 0, "Int", lhs, exp.rhs)
+
+        ret += f"{cgen(sub_node)}"
 
 
     # Not
@@ -177,13 +179,27 @@ def cgen(exp):
 
     # ***** EXPRESSION BINARY OPS *****
 
-    # Plus
-    elif isinstance(exp, Plus):
-        pass
-
-
     # Minus
     elif isinstance(exp, Minus):
+        ret += f"{cgen(exp.lhs)}\n"
+
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq {r13}, 0({rbp})\n"
+
+        ret += f"{cgen(exp.rhs)}\n"
+
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq 0({rbp}), {r14}\n"
+        ret += f"movq {r14}, {rax}\n"
+        ret += f"subq {r13}, {rax}\n"
+        ret += f"movq {rax}, {r13}\n"
+        ret += f"movq {r13}, 0({rbp})\n"
+
+        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+        ret += f"movq 0({rbp}), {r14}\n"
+        ret += f"movq {r14}, 24({r13})"
+    # Plus
+    elif isinstance(exp, Plus):
         pass
 
 
@@ -197,7 +213,7 @@ def cgen(exp):
         pass
 
 
-    elif isinstance(exp, Less) or isinstance(exp, LessOrEqual) or isinstance(exp, Equals):
+    elif isinstance(exp, (Less, LessOrEqual, Equals)):
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
         ret += f"{cgen(exp.lhs)}\n"
