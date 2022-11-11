@@ -145,8 +145,36 @@ def cgen(exp):
 
     # Not
     elif isinstance(exp, NotExpr):
-        pass
+        true_branch = config.jump_table.get()
+        false_branch = true_branch + 1
+        end_branch = true_branch + 2
+        config.jump_table.increment(3)
 
+        ret += f"{cgen(exp.rhs)}\n"
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"cmpq $0, {r13}\n"
+        ret += f"jne l{true_branch}\n"
+
+        # False branch
+        branch_info = f"l{false_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## false branch\n"
+        ret += f"{cgen(exp.rhs)}\n"
+        ret += f"jmp l{end_branch}\n"
+
+        # True branch
+        branch_info = f"l{true_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## true branch\n"
+        ret += f"{cgen(Bool(exp.in_class, 0, 'false'))}\n"
+
+        # End branch
+        branch_info = f"l{end_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## end of if conditional"
 
     # New
     elif isinstance(exp, NewExp):
