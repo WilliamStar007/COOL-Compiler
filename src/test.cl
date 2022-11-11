@@ -26,8 +26,8 @@ class Z inherits Main {
     };
 };
 
-class ANV inherits IO {
-    abc : Int <- 10;
+class ANV {
+    abc : Int <- 10 - 100;
     obj : Z;
     asdmf : Z;
     asncejc : Int <- 101204;
@@ -39,7 +39,7 @@ class ANV inherits IO {
     vaingeingwe : Object <- let gj4i : Int in 5;
     avoirw : Int <- if true then 5 else 10 fi;
     cnofewf : Int <- 1023;
-    ijoinvreg : Int <- 102020;
+    ijoinvreg : Int <- abc - abc;
     asndfogeniw : String <- "Asdefw";
     ldnclgwen : Main;
     b(abc : String, fml : String, asd : Z, asdlkn : Bool, adhfei : Main) : Int {
@@ -66,11 +66,9 @@ class ANV inherits IO {
         a(5);
         a(abc);
         obj.x();
-        out_int(10);
-        out_string("Hi");
-        in_int();
-        in_string();
-        10;
+        ~5;
+        ~abc;
+        5 - 10 - 500;
 
     }};
 };

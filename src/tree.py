@@ -364,6 +364,14 @@ class Plus(Binary):
     def __repr__(self):
         return self.print()
 
+    def exp_print(self):
+        '''
+        Print expr
+        '''
+        ret = f"{self.lhs.exp_print()} + {self.rhs.exp_print()}"
+        return ret
+
+
 class Minus(Binary):
     '''
     Minus binary expression
@@ -373,12 +381,12 @@ class Minus(Binary):
 
     def __repr__(self):
         return self.print()
-    
+
     def exp_print(self):
         '''
         Print expr
         '''
-        ret = f"{self.lhs.value} - {self.rhs.value}"
+        ret = f"{self.lhs.exp_print()} - {self.rhs.exp_print()}"
         return ret
 
 class Times(Binary):
@@ -391,6 +399,13 @@ class Times(Binary):
     def __repr__(self):
         return self.print()
 
+    def exp_print(self):
+        '''
+        Print expr
+        '''
+        ret = f"{self.lhs.exp_print()} * {self.rhs.exp_print()}"
+        return ret
+
 class Divide(Binary):
     '''
     Divide binary expression
@@ -400,6 +415,13 @@ class Divide(Binary):
 
     def __repr__(self):
         return self.print()
+    
+    def exp_print(self):
+        '''
+        Print expr
+        '''
+        ret = f"{self.lhs.exp_print()} / {self.rhs.exp_print()}"
+        return ret
 
 class Less(Binary):
     '''
@@ -411,6 +433,13 @@ class Less(Binary):
     def __repr__(self):
         return self.print()
 
+    def exp_print(self):
+        '''
+        Print expr
+        '''
+        ret = f"{self.lhs.exp_print()} < {self.rhs.exp_print()}"
+        return ret
+
 class LessOrEqual(Binary):
     '''
     Le binary expression
@@ -420,6 +449,13 @@ class LessOrEqual(Binary):
 
     def __repr__(self):
         return self.print()
+    
+    def exp_print(self):
+        '''
+        Print expr
+        '''
+        ret = f"{self.lhs.exp_print()} <= {self.rhs.exp_print()}"
+        return ret
 
 class Equals(Binary):
     '''
@@ -430,6 +466,13 @@ class Equals(Binary):
 
     def __repr__(self):
         return self.print()
+
+    def exp_print(self):
+        '''
+        Print expr
+        '''
+        ret = f"{self.lhs.exp_print()} = {self.rhs.exp_print()}"
+        return ret
 
 # *** BLOCK STATEMENTS ***
 class IfBlock(Expression):
@@ -443,7 +486,8 @@ class IfBlock(Expression):
         self.else_body = _else_body
 
     def __repr__(self):
-        ret = f"{self.lineno}\n{self.type_of}\nif\n{self.predicate}\n{self.then_body}\n{self.else_body}"
+        ret = f"{self.lineno}\n{self.type_of}\nif\n{self.predicate}\n"
+        ret += f"{self.then_body}\n{self.else_body}"
         return ret
 
     def exp_print(self):

@@ -104,7 +104,7 @@ def cgen(exp):
     # IsVoid
     elif isinstance(exp, IsVoid):
         ret += f"{cgen(exp.rhs)}\n"
-        
+
         true_branch = config.jump_table.get()
         false_branch = true_branch + 1
         end_branch = false_branch + 1
@@ -136,9 +136,10 @@ def cgen(exp):
 
     # Negate
     elif isinstance(exp, Negate):
-        # TODO: Need Substract in order to work
-        ret += f"{cgen(Integer(None, 0, 'int', 0))}\n"
-        ret += f"{cgen(exp.rhs)}\n"
+        lhs = Integer(None, 0, "Int", 0)
+        sub_node = Minus(exp.in_class, 0, "Int", lhs, exp.rhs)
+
+        ret += f"{cgen(sub_node)}"
 
 
     # ***** EXPRESSION BINARY OPS *****
@@ -149,10 +150,9 @@ def cgen(exp):
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {r13}, 0({rbp})\n"
-        
+
         ret += f"{cgen(exp.rhs)}\n"
 
-        # TODO: not sure if hard coding this is correct
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq 0({rbp}), {r14}\n"
         ret += f"movq {r14}, {rax}\n"
@@ -160,9 +160,7 @@ def cgen(exp):
         ret += f"movq {rax}, {r13}\n"
         ret += f"movq {r13}, 0({rbp})\n"
 
-        # TODO: hardcoded 24 in the code...
-        # create an Integer to store the result
-        ret += f"{cgen(Integer(None, 0, 'int', None))}\n"
+        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
         ret += f"movq 0({rbp}), {r14}\n"
         ret += f"movq {r14}, 24({r13})"
 
