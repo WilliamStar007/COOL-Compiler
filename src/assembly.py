@@ -209,25 +209,6 @@ def cgen(exp):
 
     # ***** EXPRESSION BINARY OPS *****
 
-    # Plus
-    elif isinstance(exp, Plus):
-        ret += f"{cgen(exp.lhs)}\n"
-
-        ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq {r13}, 0({rbp})\n"
-
-        ret += f"{cgen(exp.rhs)}\n"
-
-        ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq 0({rbp}), {r14}\n"
-
-        ret += f"addq {r14}, {r13}\n"
-        ret += f"movq {r13}, 0({rbp})\n"
-
-        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
-        ret += f"movq 0({rbp}), {r14}\n"
-        ret += f"movq {r14}, 24({r13})"
-
     # Minus
     elif isinstance(exp, Minus):
         ret += f"{cgen(exp.lhs)}\n"
