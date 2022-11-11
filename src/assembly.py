@@ -158,7 +158,20 @@ def cgen(exp):
 
     # Assignment
     elif isinstance(exp, Assign):
-        pass
+        ret += f"{cgen(exp.rhs)}\n"
+
+        offset = None
+        reg = None
+
+        if exp.type_of in ["Bool", "Int", "String"]:
+            offset = 24
+            reg = r12
+        else:
+            tpl = config.symbol_table.top(exp.in_class, exp.var.name)
+            offset = tpl[0] * config.OFFSET_AMT
+            reg = tpl[1]
+
+        ret += f"movq {r13}, {offset}({reg})"
 
 
     # ***** EXPRESSION BINARY OPS *****
