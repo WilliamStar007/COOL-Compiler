@@ -67,6 +67,11 @@ class ANV {
         a(abc);
         obj.x();
         obj@Main.main();
+        abc <- 10;
+        abc <- new Int;
+        obj <- new Z;
+        abc <- 100;
+        abc <- cnofewf;
 
     }};
 };

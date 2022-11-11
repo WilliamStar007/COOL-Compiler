@@ -147,12 +147,31 @@ def cgen(exp):
 
     # New
     elif isinstance(exp, NewExp):
-        pass
+        ret += f"## new {exp.rhs.name}\n"
+        ret += f"pushq {rbp}\n"
+        ret += f"pushq {r12}\n"
+        ret += f"movq ${exp.rhs.name}..new, {r14}\n"
+        ret += f"call *{r14}\n"
+        ret += f"popq {r12}\n"
+        ret += f"popq {rbp}"
 
 
     # Assignment
     elif isinstance(exp, Assign):
-        pass
+        ret += f"{cgen(exp.rhs)}\n"
+
+        offset = None
+        reg = None
+
+        if exp.type_of in ["Bool", "Int", "String"]:
+            offset = 24
+            reg = r12
+        else:
+            tpl = config.symbol_table.top(exp.in_class, exp.var.name)
+            offset = tpl[0] * config.OFFSET_AMT
+            reg = tpl[1]
+
+        ret += f"movq {r13}, {offset}({reg})"
 
 
     # ***** EXPRESSION BINARY OPS *****

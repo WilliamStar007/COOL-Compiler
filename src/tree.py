@@ -145,7 +145,7 @@ class StringObj(Expression):
     String expression object
     '''
     def __init__(self, _in_class, _lineno, _type_of, _value):
-        Expression.__init__(self,_in_class, _lineno, _type_of)
+        Expression.__init__(self, _in_class, _lineno, _type_of)
         self.value = _value
 
     def __repr__(self):
