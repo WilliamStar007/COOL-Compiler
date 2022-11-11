@@ -19,7 +19,10 @@ def obj_abort():
         '''
         Object.abort built in
         '''
-        ret = """.globl Object.abort
+
+        str_loc = f"string{config.string_tag.get_num(ABORT_STR)}"
+
+        ret = f""".globl Object.abort
 Object.abort:           ## method definition
                         pushq %rbp
                         movq %rsp, %rbp
@@ -29,7 +32,7 @@ Object.abort:           ## method definition
                         subq %r14, %rsp
                         ## return address handling
                         ## method body begins
-                        movq $string14, %r13
+                        movq ${str_loc}, %r13
                         movq %r13, %rdi
 			call cooloutstr
                         movl $0, %edi
