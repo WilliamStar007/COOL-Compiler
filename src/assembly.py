@@ -147,7 +147,13 @@ def cgen(exp):
 
     # New
     elif isinstance(exp, NewExp):
-        pass
+        ret += f"## new {exp.rhs.name}\n"
+        ret += f"pushq {rbp}\n"
+        ret += f"pushq {r12}\n"
+        ret += f"movq ${exp.rhs.name}..new, {r14}\n"
+        ret += f"call *{r14}\n"
+        ret += f"popq {r12}\n"
+        ret += f"popq {rbp}"
 
 
     # Assignment
