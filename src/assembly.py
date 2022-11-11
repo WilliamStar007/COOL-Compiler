@@ -228,7 +228,6 @@ def cgen(exp):
         ret += f"movq 0({rbp}), {r14}\n"
         ret += f"movq {r14}, 24({r13})"
 
-
     # Minus
     elif isinstance(exp, Minus):
         ret += f"{cgen(exp.lhs)}\n"
