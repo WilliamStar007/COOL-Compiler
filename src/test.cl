@@ -72,7 +72,15 @@ class ANV {
         obj <- new Z;
         abc <- 100;
         abc <- cnofewf;
+        10 = 500;
+        abc = cnofewf;
 
+        abc < cnofewf;
+
+        abc <= cnofewf;
+
+
+        10;
     }};
 };
 

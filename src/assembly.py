@@ -105,7 +105,7 @@ def cgen(exp):
     # IsVoid
     elif isinstance(exp, IsVoid):
         ret += f"{cgen(exp.rhs)}\n"
-        
+
         true_branch = config.jump_table.get()
         false_branch = true_branch + 1
         end_branch = false_branch + 1
@@ -196,19 +196,28 @@ def cgen(exp):
         pass
 
 
-    # Less than
-    elif isinstance(exp, Less):
-        pass
+    elif isinstance(exp, Less) or isinstance(exp, LessOrEqual) or isinstance(exp, Equals):
+        ret += f"pushq {r12}\n"
+        ret += f"pushq {rbp}\n"
+        ret += f"{cgen(exp.lhs)}\n"
+        ret += f"pushq {r13}\n"
+        ret += f"{cgen(exp.rhs)}\n"
+        ret += f"pushq {r13}\n"
 
+        ret += f"pushq {r12}\n"
 
-    # Less than or equal
-    elif isinstance(exp, LessOrEqual):
-        pass
+        match exp:
+            case Less():
+                ret += "call lt_handler\n"
+            case LessOrEqual():
+                ret += "call le_handler\n"
+            case Equals():
+                ret += "call eq_handler\n"
 
-
-    # Equals
-    elif isinstance(exp, Equals):
-        pass
+        # Hardcoded 24
+        ret += f"addq $24, {rsp}\n"
+        ret += f"popq {rbp}\n"
+        ret += f"popq {r12}"
 
 
     # ***** EXPRESSION BLOCKS *****
