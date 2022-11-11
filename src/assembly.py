@@ -147,8 +147,36 @@ def cgen(exp):
 
     # Not
     elif isinstance(exp, NotExpr):
-        pass
+        true_branch = config.jump_table.get()
+        false_branch = true_branch + 1
+        end_branch = true_branch + 2
+        config.jump_table.increment(3)
 
+        ret += f"{cgen(exp.rhs)}\n"
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"cmpq $0, {r13}\n"
+        ret += f"jne l{true_branch}\n"
+
+        # False branch
+        branch_info = f"l{false_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## false branch\n"
+        ret += f"{cgen(exp.rhs)}\n"
+        ret += f"jmp l{end_branch}\n"
+
+        # True branch
+        branch_info = f"l{true_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## true branch\n"
+        ret += f"{cgen(Bool(exp.in_class, 0, 'false'))}\n"
+
+        # End branch
+        branch_info = f"l{end_branch}"
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## end of if conditional"
 
     # New
     elif isinstance(exp, NewExp):
@@ -181,6 +209,26 @@ def cgen(exp):
 
     # ***** EXPRESSION BINARY OPS *****
 
+    # Plus
+    elif isinstance(exp, Plus):
+        ret += f"{cgen(exp.lhs)}\n"
+
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq {r13}, 0({rbp})\n"
+
+        ret += f"{cgen(exp.rhs)}\n"
+
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq 0({rbp}), {r14}\n"
+
+        ret += f"addq {r14}, {r13}\n"
+        ret += f"movq {r13}, 0({rbp})\n"
+
+        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+        ret += f"movq 0({rbp}), {r14}\n"
+        ret += f"movq {r14}, 24({r13})"
+
+
     # Minus
     elif isinstance(exp, Minus):
         ret += f"{cgen(exp.lhs)}\n"
@@ -198,8 +246,10 @@ def cgen(exp):
         ret += f"{SPC}movq {r13}, 0({rbp})\n"
 
         ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+
         ret += f"{SPC}movq 0({rbp}), {r14}\n"
         ret += f"{SPC}movq {r14}, 24({r13})"
+        
     # Plus
     elif isinstance(exp, Plus):
         ret += f"{cgen(exp.lhs)}\n"
@@ -423,7 +473,7 @@ def cgen(exp):
             branch_info += ":"
             ret += f"{branch_info:24}## fp[0] holds case {identifier.name} ({id_type})\n"
 
-            cgen(identifier) # TODO: More than this?
+            cgen(identifier)
             ret += f"{cgen(exp_rem)}\n"
             ret += f"{SPC}jmp l{end_branch}\n"
 
@@ -473,7 +523,6 @@ def cgen(exp):
             expr_type = formal[3]
 
             config.symbol_table.pop(cur_class, identifier)
-
 
 
     # ***** EXPRESSION DISPATCHES *****
@@ -771,12 +820,12 @@ def print_methods():
             ret += f"{built_ins.io_out_int()}\n{built_ins.io_out_string()}\n"
             continue
         elif class_name == "Object":
+            config.string_tag.add(built_ins.ABORT_STR)
             ret += f"{built_ins.obj_abort()}\n{built_ins.obj_copy()}\n"
             ret += f"{built_ins.obj_type_name()}\n"
-            config.string_tag.add(built_ins.ABORT_STR)
             continue
         elif class_name == "String":
-            config.string_tag.add(built_ins.SUBSTR_ERROR) # TODO: In wrong place?
+            config.string_tag.add(built_ins.SUBSTR_ERROR)
             ret += f"{built_ins.str_concat()}\n{built_ins.str_length()}\n"
             ret += f"{built_ins.str_substr()}\n"
             continue
