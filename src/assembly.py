@@ -17,6 +17,7 @@ rsi = RSI()
 rdi = RDI()
 
 rax = RXX('a')
+rdx = RXX('d')
 
 r12 = RNum(12)
 r13 = RNum(13)
@@ -272,7 +273,49 @@ def cgen(exp):
 
     # Divide
     elif isinstance(exp, Divide):
-        pass
+        # Handle error branching
+        error_str = built_ins.divide_error(exp.lineno)
+        config.string_tag.add(error_str)
+        str_tag = f"string{config.string_tag.get_num(error_str)}"
+        succ_branch = config.jump_table.get()
+        config.jump_table.increment()
+        branch_info = f"l{succ_branch}"
+        #ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+        ret += f"{cgen(exp.lhs)}\n"
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq {r13}, 0({rbp})\n"
+
+        ret += f"{cgen(exp.rhs)}\n"
+        ret += f"movq 24({r13}), {r14}\n"
+
+        ret += f"cmpq $0, {r14}\n"
+        ret += f"jne {branch_info}\n"
+
+        # Error
+        ret += f"movq ${str_tag}, {r13}\n"
+        ret += f"movq {r13}, {rdi}\n"
+        ret += f"call cooloutstr\n"
+        ret += f"movl $0, {edi}\n"
+        ret += "call exit\n"
+
+        # Division success
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## division is OK\n"
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq 0({rbp}), {r14}\n\n"
+
+        # Division arithmetic
+        ret += f"movq $0, {rdx}\n"
+        ret += f"movq {r14}, {rax}\n"
+        ret += "cdq\n"
+        ret += f"idivl {r13d}\n" # TODO: do we need this extra reg? Prob an identifier
+        ret += f"movq {rax}, {r13}\n"
+
+        ret += f"movq {r13}, 0({rbp})\n"
+        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+        ret += f"movq 0({rbp}), {r14}\n"
+        ret += f"movq {r14}, 24({r13})"
 
 
     elif isinstance(exp, (Less, LessOrEqual, Equals)):

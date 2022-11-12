@@ -17,6 +17,12 @@ def case_void_error(lineno):
         '''
         return f"ERROR: {lineno}: Exception: case on void\\n"
 
+def divide_error(lineno):
+        '''
+        Divide by zero error
+        '''
+        return f"ERROR: {lineno}: Exception: division by zero\\n"
+
 def dynamic_dispatch_error(lineno):
         '''
         Dynamic dispatch error
@@ -25,7 +31,7 @@ def dynamic_dispatch_error(lineno):
 
 def static_dispatch_error(lineno):
         '''
-        Static dispatch error
+        Static dispatch error 
         '''
         return f"ERROR: {lineno}: Exception: dispatch on void\\n"
 
