@@ -17,6 +17,7 @@ rsi = RSI()
 rdi = RDI()
 
 rax = RXX('a')
+rdx = RXX('d')
 
 r12 = RNum(12)
 r13 = RNum(13)
@@ -272,7 +273,49 @@ def cgen(exp):
 
     # Divide
     elif isinstance(exp, Divide):
-        pass
+        # Handle error branching
+        error_str = built_ins.divide_error(exp.lineno)
+        config.string_tag.add(error_str)
+        str_tag = f"string{config.string_tag.get_num(error_str)}"
+        succ_branch = config.jump_table.get()
+        config.jump_table.increment()
+        branch_info = f"l{succ_branch}"
+        #ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+        ret += f"{cgen(exp.lhs)}\n"
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq {r13}, 0({rbp})\n"
+
+        ret += f"{cgen(exp.rhs)}\n"
+        ret += f"movq 24({r13}), {r14}\n"
+
+        ret += f"cmpq $0, {r14}\n"
+        ret += f"jne {branch_info}\n"
+
+        # Error
+        ret += f"movq ${str_tag}, {r13}\n"
+        ret += f"movq {r13}, {rdi}\n"
+        ret += f"call cooloutstr\n"
+        ret += f"movl $0, {edi}\n"
+        ret += "call exit\n"
+
+        # Division success
+        ret += f".globl {branch_info}\n"
+        branch_info += ":"
+        ret += f"{branch_info:24}## division is OK\n"
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq 0({rbp}), {r14}\n\n"
+
+        # Division arithmetic
+        ret += f"movq $0, {rdx}\n"
+        ret += f"movq {r14}, {rax}\n"
+        ret += "cdq\n"
+        ret += f"idivl {r13d}\n" # TODO: do we need this extra reg? Prob an identifier
+        ret += f"movq {rax}, {r13}\n"
+
+        ret += f"movq {r13}, 0({rbp})\n"
+        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+        ret += f"movq 0({rbp}), {r14}\n"
+        ret += f"movq {r14}, 24({r13})"
 
 
     elif isinstance(exp, (Less, LessOrEqual, Equals)):
@@ -409,14 +452,14 @@ def cgen(exp):
                 ret += f"{SPC}je l{error_branch}\n"
 
         # ERROR BRANCH
-        config.string_tag.add(built_ins.CASE_BRANCH_ERROR)
+        config.string_tag.add(built_ins.case_branch_error(exp.lineno))
 
         branch_info = f"l{error_branch}"
         ret += f".globl {branch_info}\n"
         branch_info += ":"
         ret += f"{branch_info:24}## case expression: error case\n"
 
-        str_tag = f"string{config.string_tag.get_num(built_ins.CASE_BRANCH_ERROR)}"
+        str_tag = f"string{config.string_tag.get_num(built_ins.case_branch_error(exp.lineno))}"
 
         ret += f"{SPC}movq ${str_tag}, {r13}\n"
         ret += f"{SPC}movq {r13}, {rdi}\n"
@@ -425,14 +468,14 @@ def cgen(exp):
         ret += f"{SPC}call exit\n"
 
         # VOID BRANCH
-        config.string_tag.add(built_ins.CASE_VOID_ERROR)
+        config.string_tag.add(built_ins.case_void_error(exp.lineno))
 
         branch_info = f"l{void_branch}"
         ret += f".globl {branch_info}\n"
         branch_info += ":"
         ret += f"{branch_info:24}## case expression: void case\n"
 
-        str_tag = f"string{config.string_tag.get_num(built_ins.CASE_VOID_ERROR)}"
+        str_tag = f"string{config.string_tag.get_num(built_ins.case_void_error(exp.lineno))}"
 
         ret += f"{SPC}movq ${str_tag}, {r13}\n"
         ret += f"{SPC}movq {r13}, {rdi}\n"
@@ -513,9 +556,9 @@ def cgen(exp):
         config.jump_table.increment()
         branch_info = f"l{method_branch}"
 
-        config.string_tag.add(built_ins.STATIC_DISPATCH_ERROR)
+        config.string_tag.add(built_ins.static_dispatch_error(exp.lineno))
         offset = config.vtable_map.get_offset(exp.typename.name, exp.method_name.name)
-        err_tag = f"string{config.string_tag.get_num(built_ins.STATIC_DISPATCH_ERROR)}"
+        err_tag = f"string{config.string_tag.get_num(built_ins.static_dispatch_error(exp.lineno))}"
 
         ret += f"{SPC}## {exp.exp_print()}\n"
         ret += f"{SPC}pushq {r12}\n"
@@ -585,7 +628,7 @@ def cgen(exp):
         met_branch = config.jump_table.get()
         config.jump_table.increment()
 
-        config.string_tag.add(built_ins.DYNAMIC_DISPATCH_ERROR)
+        config.string_tag.add(built_ins.dynamic_dispatch_error(exp.lineno))
         ret += f"{SPC}## {exp.obj_name.exp_print()}.{exp.method_name}(...)\n"
         ret += f"{SPC}pushq {r12}\n"
         ret += f"{SPC}pushq {rbp}\n"
@@ -607,7 +650,7 @@ def cgen(exp):
         ret += f"{cgen(exp.obj_name)}\n"
 
         # Check for error
-        error_tag = f"string{config.string_tag.get_num(built_ins.DYNAMIC_DISPATCH_ERROR)}"
+        error_tag = f"string{config.string_tag.get_num(built_ins.dynamic_dispatch_error(exp.lineno))}"
         ret += f"{SPC}cmpq $0, {r13}\n"
         ret += f"{SPC}jne l{met_branch}\n"
         ret += f"{SPC}movq ${error_tag}, {r13}\n"
@@ -805,7 +848,7 @@ def print_methods():
             ret += f"{built_ins.obj_type_name()}\n"
             continue
         elif class_name == "String":
-            config.string_tag.add(built_ins.SUBSTR_ERROR)
+            config.string_tag.add(built_ins.substr_error(0))
             ret += f"{built_ins.str_concat()}\n{built_ins.str_length()}\n"
             ret += f"{built_ins.str_substr()}\n"
             continue
