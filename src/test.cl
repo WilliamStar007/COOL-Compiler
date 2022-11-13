@@ -101,9 +101,10 @@ class D {
     b : Int <- 2;
 
     binaryTest(num1 : Int, num2 : Int) : Int {{
+            "test".copy();
             let x : Int, num2 : Int in
 	 
-            var <- num1 + b;
+            var <- num1 / b;
 	 
     }};
 };
