@@ -197,6 +197,8 @@ def cgen(exp):
 
     # Assignment
     elif isinstance(exp, Assign):
+        # print(type(exp.rhs))
+            
         ret += f"{cgen(exp.rhs)}\n"
 
         offset = None
@@ -216,13 +218,9 @@ def cgen(exp):
     # ***** EXPRESSION BINARY OPS *****
     
     
-    elif isinstance(exp, Binary):
-        
-        
-        pass
-
     # Minus
     elif isinstance(exp, Minus):
+    
         offset = config.rbp_offset.get() * config.OFFSET_AMT
         ret += f"{cgen(exp.lhs)}\n"
 
@@ -245,13 +243,15 @@ def cgen(exp):
 
     # Plus
     elif isinstance(exp, Plus):
+        
         offset = config.rbp_offset.get() * config.OFFSET_AMT
         ret += f"{cgen(exp.lhs)}\n"
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
-
+       # print(exp.lhs)
         ret += f"{cgen(exp.rhs)}\n"
+        
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {offset}({rbp}), {r14}\n"
@@ -623,8 +623,9 @@ def cgen(exp):
         for formal in exp.formals:
             ret += f"{cgen(formal)}\n"
             ret += f"pushq {r13}\n"
-            ret += f"pushq {r12}\n"
-
+            # ret += f"pushq {r12}\n"
+        # RAJAY FIX
+        ret += f"pushq {r12}\n"
         ret += f"## obtain vtable for self object of type {exp.in_class}\n"
         vt_met = config.vtable_map.get_class(exp.in_class, method_name)
         cur_size = config.OFFSET_AMT
