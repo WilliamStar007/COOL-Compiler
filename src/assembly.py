@@ -223,23 +223,24 @@ def cgen(exp):
 
     # Minus
     elif isinstance(exp, Minus):
+        offset = config.rbp_offset.get() * config.OFFSET_AMT
         ret += f"{cgen(exp.lhs)}\n"
 
         ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq {r13}, 0({rbp})\n"
+        ret += f"movq {r13}, {offset}({rbp})\n"
 
         ret += f"{cgen(exp.rhs)}\n"
 
         ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq 0({rbp}), {r14}\n"
+        ret += f"movq {offset}({rbp}), {r14}\n"
         ret += f"movq {r14}, {rax}\n"
         ret += f"subq {r13}, {rax}\n"
         ret += f"movq {rax}, {r13}\n"
-        ret += f"movq {r13}, 0({rbp})\n"
+        ret += f"movq {r13}, {offset}({rbp})\n"
 
         ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
 
-        ret += f"movq 0({rbp}), {r14}\n"
+        ret += f"movq {offset}({rbp}), {r14}\n"
         ret += f"movq {r14}, 24({r13})"
 
     # Plus
@@ -263,28 +264,32 @@ def cgen(exp):
 
     # Times
     elif isinstance(exp, Times):
+        offset = config.rbp_offset.get() * config.OFFSET_AMT
+
         ret += f"{cgen(exp.lhs)}\n"
 
         ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq {r13}, -8({rbp})\n"
+        ret += f"movq {r13}, {offset}({rbp})\n"
 
         ret += f"{cgen(exp.rhs)}\n"
 
         ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq -8({rbp}), {r14}\n\n"
+        ret += f"movq {offset}({rbp}), {r14}\n\n"
         ret += f"movq {r14}, {rax}\n"
         ret += f"imull {r13d}, {eax}\n"
         ret += f"shlq $32, {rax}\n"
         ret += f"shrq $32, {rax}\n"
         ret += f"movl {eax}, {r13d}\n"
-        ret += f"movq {r13}, -8({rbp})\n"
+        ret += f"movq {r13}, {offset}({rbp})\n"
 
         ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
-        ret += f"movq -8({rbp}), {r14}\n"
+        ret += f"movq {offset}({rbp}), {r14}\n"
         ret += f"movq {r14}, 24({r13})"
 
     # Divide
     elif isinstance(exp, Divide):
+        offset = config.rbp_offset.get() * config.OFFSET_AMT
+
         # Handle error branching
         error_str = built_ins.divide_error(exp.lineno)
         config.string_tag.add(error_str)
@@ -295,7 +300,7 @@ def cgen(exp):
         #ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
         ret += f"{cgen(exp.lhs)}\n"
         ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq {r13}, 0({rbp})\n"
+        ret += f"movq {r13}, {offset}({rbp})\n"
 
         ret += f"{cgen(exp.rhs)}\n"
         ret += f"movq 24({r13}), {r14}\n"
@@ -315,7 +320,7 @@ def cgen(exp):
         branch_info += ":"
         ret += f"{branch_info:24}## division is OK\n"
         ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq 0({rbp}), {r14}\n\n"
+        ret += f"movq {offset}({rbp}), {r14}\n\n"
 
         # Division arithmetic
         ret += f"movq $0, {rdx}\n"
@@ -324,9 +329,9 @@ def cgen(exp):
         ret += f"idivl {r13d}\n" # TODO: do we need this extra reg? Prob an identifier
         ret += f"movq {rax}, {r13}\n"
 
-        ret += f"movq {r13}, 0({rbp})\n"
+        ret += f"movq {r13}, {offset}({rbp})\n"
         ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
-        ret += f"movq 0({rbp}), {r14}\n"
+        ret += f"movq {offset}({rbp}), {r14}\n"
         ret += f"movq {r14}, 24({r13})"
 
 
@@ -644,29 +649,17 @@ def cgen(exp):
         met_branch = config.jump_table.get()
         config.jump_table.increment()
 
-        config.string_tag.add(built_ins.dynamic_dispatch_error(exp.lineno))
         ret += f"## {exp.obj_name.exp_print()}.{exp.method_name}(...)\n"
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
         for formal in exp.formals:
-            # # If ID, have to check symbol table
-            # # Else, call cgen on
-            # if isinstance(formal, IdentifierExp):
-            #     cur_class = formal.in_class
-            #     id_name = formal.identifier.name
-
-            #     tpl = config.symbol_table.top(cur_class, id_name)
-            #     offset = tpl[0]
-            #     reg = tpl[1]
-            #     ret += f"{offset * config.OFFSET_AMT}({reg}) holds {id_name} ({formal.type_of})\n"
-
-            # else:
             ret += f"{cgen(formal)}\n"
         if len(exp.formals) != 0:
             ret += f"pushq {r13}\n"
         ret += f"{cgen(exp.obj_name)}\n"
 
         # Check for error
+        config.string_tag.add(built_ins.dynamic_dispatch_error(exp.lineno))
         error_tag = f"string{config.string_tag.get_num(built_ins.dynamic_dispatch_error(exp.lineno))}"
         ret += f"cmpq $0, {r13}\n"
         ret += f"jne l{met_branch}\n"
@@ -696,10 +689,6 @@ def cgen(exp):
 
 
         obj_size = config.obj_size.get(exp.in_class, exp.type_of) * config.OFFSET_AMT
-        # print(f"{exp.in_class}, {exp.type_of}, {obj_size}\n")
-
-        for key, val in config.obj_size.dict.items():
-            print(f"{key}, {val}\n")
 
         ret += f"addq ${obj_size}, {rsp}\n"
         ret += f"popq {rbp}\n"
@@ -824,8 +813,6 @@ def print_ctors():
 
                 r12.update_offset(r12.offset + 8)
                 cur_offset += 1
-        #config.symbol_table.add(key, "self", 1, 10)
-
 
         self_offset = 3
         for attr in val:
@@ -867,7 +854,7 @@ def print_methods():
 
     for cls in ordering:
         class_name = cls.class_info.name
-        print(class_name)
+
         if class_name == "IO":
             ret += f"{built_ins.io_in_int()}\n{built_ins.io_in_string()}\n"
             ret += f"{built_ins.io_out_int()}\n{built_ins.io_out_string()}\n"
