@@ -259,7 +259,8 @@ class ObjSize(object):
         '''
         Set size
         '''
-        self.dict[class_name] = amt
+        if class_name not in self.dict:
+            self.dict[class_name] = amt
 
     def get(self, cur_class, class_name):
         '''
@@ -365,6 +366,12 @@ class SymbolTable(object):
             return self.dict[class_name][var_name][-1]
         print("SYMBOL TABLE TOP ERROR")
         sys.exit(1)
+
+    def exists(self, class_name, var_name):
+        '''
+        Returns true if var exists in the symbol table
+        '''
+        return class_name in self.dict and var_name in self.dict[class_name]
 
 class Tracker(object):
     '''
