@@ -42,9 +42,10 @@ class ANV {
     ijoinvreg : Int <- abc - abc;
     asndfogeniw : String <- "Asdefw";
     ldnclgwen : Main;
-    b(abc : String, fml : String, asd : Z, asdlkn : Bool, adhfei : Main) : Int {
-        5
-    };
+    b(abc : String, fml : String, asd : Z, asdlkn : Bool, adhfei : Main) : Int {{
+        fml.concat(fml);
+        5;
+    }};
     a(sc : Int) : Object {{
         --a(abc);
         let abc  : Z, done : Bool <- false, sdin : Bool <- true, acwqv : String <- "hi", asdinog : String, sdguiegu : Int in "Hi";
@@ -90,9 +91,19 @@ class ANV {
         10 / 100;
 
         10;
+
     }};
 };
 
 class D {
     var : Int <- 5;
+    a : Int <- 1;
+    b : Int <- 2;
+
+    binaryTest(num1 : Int, num2 : Int) : Int {{
+            let x : Int, num2 : Int in
+	 
+            var <- num1 + b;
+	 
+    }};
 };
