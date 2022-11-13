@@ -156,7 +156,7 @@ class StringObj(Expression):
         '''
         Print exp
         '''
-        ret = f"{self.value}"
+        ret = f"\"{self.value}\""
         return ret
 
 class Bool(Expression):
