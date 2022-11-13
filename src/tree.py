@@ -272,6 +272,12 @@ class SelfDispatch(Dispatch):
 
         return ret
 
+    def exp_print(self):
+        '''
+        Exp print
+        '''
+        return f"{self.method_name}(...)"
+
 # *** EXPRESSIONS OPERATIONS ***
 class Unary(Expression):
     '''
@@ -364,7 +370,7 @@ class NewExp(Unary):
         '''
         Exp print
         '''
-        return f"{self.rhs}"
+        return f"new {self.rhs}"
 
 class Assign(Unary):
     '''
