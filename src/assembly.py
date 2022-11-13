@@ -61,7 +61,7 @@ def cgen(exp):
     elif isinstance(exp, StringObj):
         ret += f"{cgen(Expression(exp.in_class, 0, 'String'))}\n"
 
-        if not exp.value:
+        if exp.value is None:
             ret += f"movq $the.empty.string, {r15}\n"
             ret += f"movq {r15}, 24({r13})"
 
@@ -147,7 +147,6 @@ def cgen(exp):
 
         ret += f"{cgen(sub_node)}"
 
-
     # Not
     elif isinstance(exp, NotExpr):
         true_branch = config.jump_table.get()
@@ -183,9 +182,6 @@ def cgen(exp):
 
     # New
     elif isinstance(exp, NewExp):
-        # TODO: Need this only when it's LHS
-        # config.dynamic.increment()
-
         ret += f"## new {exp.rhs.name}\n"
         ret += f"pushq {rbp}\n"
         ret += f"pushq {r12}\n"
@@ -202,13 +198,9 @@ def cgen(exp):
         offset = None
         reg = None
 
-        if exp.type_of in ["Bool", "Int", "String"]:
-            offset = 24
-            reg = r12
-        else:
-            tpl = config.symbol_table.top(exp.in_class, exp.var.name)
-            offset = tpl[0] * config.OFFSET_AMT
-            reg = tpl[1]
+        tpl = config.symbol_table.top(exp.in_class, exp.var.name)
+        offset = tpl[0] * config.OFFSET_AMT
+        reg = tpl[1]
 
         ret += f"movq {r13}, {offset}({reg})"
 
@@ -218,12 +210,15 @@ def cgen(exp):
     # Minus
     elif isinstance(exp, Minus):
         offset = config.rbp_offset.get() * config.OFFSET_AMT
+
+        config.rbp_offset.decrement()
         ret += f"{cgen(exp.lhs)}\n"
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
 
         ret += f"{cgen(exp.rhs)}\n"
+        config.rbp_offset.increment()
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {offset}({rbp}), {r14}\n"
@@ -240,6 +235,7 @@ def cgen(exp):
     # Plus
     elif isinstance(exp, Plus):
         offset = config.rbp_offset.get() * config.OFFSET_AMT
+
         ret += f"{cgen(exp.lhs)}\n"
 
         ret += f"movq 24({r13}), {r13}\n"
@@ -260,12 +256,14 @@ def cgen(exp):
     elif isinstance(exp, Times):
         offset = config.rbp_offset.get() * config.OFFSET_AMT
 
+        config.rbp_offset.decrement()
         ret += f"{cgen(exp.lhs)}\n"
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
 
         ret += f"{cgen(exp.rhs)}\n"
+        config.rbp_offset.increment()
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {offset}({rbp}), {r14}\n\n"
@@ -291,7 +289,7 @@ def cgen(exp):
         succ_branch = config.jump_table.get()
         config.jump_table.increment()
         branch_info = f"l{succ_branch}"
-        #ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+
         ret += f"{cgen(exp.lhs)}\n"
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
@@ -364,16 +362,19 @@ def cgen(exp):
 
     # If
     elif isinstance(exp, IfBlock):
-        true_branch = config.jump_table.get()
-        false_branch = true_branch + 1
-        end_branch = false_branch + 1
-        config.jump_table.increment(3)
 
         # Handle predicate
         ret += f"{cgen(exp.predicate)}\n"
         ret += f"movq 24(%r13), {r13}\n"
         ret += f"cmpq $0, {r13}\n"
+        true_branch = config.jump_table.get()
         ret += f"jne l{true_branch}\n"
+        config.jump_table.increment()
+
+        # TODO: Where to move these
+        false_branch = true_branch + 1
+        end_branch = false_branch + 1
+        config.jump_table.increment(2)
 
         # Handle else
         branch_details = f"l{false_branch}"
@@ -522,10 +523,9 @@ def cgen(exp):
     # Let
     elif isinstance(exp, Let):
         cur_class = exp.in_class
-        cur_offset = 0
+        cur_offset = config.rbp_offset.get()
         for formal in exp.let_list:
             config.dynamic.increment()
-            config.rbp_offset.decrement()
 
             identifier = formal[1]
             id_type = formal[2]
@@ -550,6 +550,7 @@ def cgen(exp):
             ret += f"movq {r13}, {cur_offset * config.OFFSET_AMT}({rbp})\n"
 
             cur_offset -= 1
+            config.rbp_offset.decrement()
 
         ret += cgen(exp.let_body)
 
@@ -567,10 +568,6 @@ def cgen(exp):
 
     # Static
     elif isinstance(exp, StaticDispatch):
-        method_branch = config.jump_table.get()
-        config.jump_table.increment()
-        branch_info = f"l{method_branch}"
-
         config.string_tag.add(built_ins.static_dispatch_error(exp.lineno))
         offset = config.vtable_map.get_offset(exp.typename.name, exp.method_name.name)
         err_tag = f"string{config.string_tag.get_num(built_ins.static_dispatch_error(exp.lineno))}"
@@ -589,6 +586,9 @@ def cgen(exp):
         ret += f"movl $0, {edi}\n"
         ret += f"call exit\n"
 
+        method_branch = config.jump_table.get()
+        config.jump_table.increment()
+        branch_info = f"l{method_branch}"
         ret += f".globl {branch_info}\n"
         branch_info += ":"
         ret += f"{branch_info:24}pushq {r13}\n"
@@ -611,7 +611,7 @@ def cgen(exp):
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
         # TODO: Need to figure out why this is needed
-        if method_name in ["in_string", "in_int"]:
+        if method_name in ["abort", "substr", "in_string", "in_int"]: # TODO: WILL BE WRONG
             ret += f"pushq {r12}\n"
 
         for formal in exp.formals:
@@ -640,19 +640,18 @@ def cgen(exp):
 
     # Dynamic
     elif isinstance(exp, DynamicDispatch):
-        met_branch = config.jump_table.get()
-        config.jump_table.increment()
 
         ret += f"## {exp.obj_name.exp_print()}.{exp.method_name}(...)\n"
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
         for formal in exp.formals:
             ret += f"{cgen(formal)}\n"
-        if len(exp.formals) != 0:
             ret += f"pushq {r13}\n"
         ret += f"{cgen(exp.obj_name)}\n"
 
         # Check for error
+        met_branch = config.jump_table.get()
+        config.jump_table.increment()
         config.string_tag.add(built_ins.dynamic_dispatch_error(exp.lineno))
         error_tag = f"string{config.string_tag.get_num(built_ins.dynamic_dispatch_error(exp.lineno))}"
         ret += f"cmpq $0, {r13}\n"
