@@ -5,19 +5,50 @@ import config
 
 ABORT_STR = "abort\\n"
 
-CASE_BRANCH_ERROR = "ERROR: 58: Exception: case without matching branch\\n"
+def case_branch_error(lineno):
+        '''
+        Case branch error
+        '''
+        return f"ERROR: {lineno}: Exception: case without matching branch\\n"
 
-CASE_VOID_ERROR = "ERROR: 58: Exception: case on void\\n"
+def case_void_error(lineno):
+        '''
+        Case void error
+        '''
+        return f"ERROR: {lineno}: Exception: case on void\\n"
 
-DISPATCH_VOID_ERROR = "ERROR: 68: Exception: dispatch on void\\n"
+def divide_error(lineno):
+        '''
+        Divide by zero error
+        '''
+        return f"ERROR: {lineno}: Exception: division by zero\\n"
 
-SUBSTR_ERROR = "ERROR: 0: Exception: String.substr out of range\\n"
+def dynamic_dispatch_error(lineno):
+        '''
+        Dynamic dispatch error
+        '''
+        return f"ERROR: {lineno}: Exception: dispatch on void\\n"
+
+def static_dispatch_error(lineno):
+        '''
+        Static dispatch error 
+        '''
+        return f"ERROR: {lineno}: Exception: dispatch on void\\n"
+
+def substr_error(lineno):
+        '''
+        Substring error
+        '''
+        return f"ERROR: {lineno}: Exception: String.substr out of range\\n"
 
 def obj_abort():
         '''
         Object.abort built in
         '''
-        ret = """.globl Object.abort
+
+        str_loc = f"string{config.string_tag.get_num(ABORT_STR)}"
+
+        ret = f""".globl Object.abort
 Object.abort:           ## method definition
                         pushq %rbp
                         movq %rsp, %rbp
@@ -27,7 +58,7 @@ Object.abort:           ## method definition
                         subq %r14, %rsp
                         ## return address handling
                         ## method body begins
-                        movq $string14, %r13
+                        movq ${str_loc}, %r13
                         movq %r13, %rdi
 			call cooloutstr
                         movl $0, %edi
@@ -251,7 +282,7 @@ IO.out_int.end:         ## method body ends
                         popq %rbp
                         ret
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
-        
+
         return ret
 
 def io_out_string():
@@ -413,7 +444,7 @@ def str_substr():
         '''
         str.substr() built in
         '''
-        str_tag = config.string_tag.get_num(SUBSTR_ERROR)
+        str_tag = config.string_tag.get_num(substr_error(0))
         end_branch = config.jump_table.get()
         config.jump_table.increment()
         ret = f""".globl String.substr
