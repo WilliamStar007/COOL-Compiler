@@ -231,6 +231,12 @@ class Dispatch(Expression):
         # Parameters for the dispatch
         self.formals = _formals
 
+    def exp_print(self):
+        '''
+        TODO REMOVE
+        '''
+        return ""
+
 class DynamicDispatch(Dispatch):
     '''
     Dynamic dispatch object
@@ -398,6 +404,12 @@ class NewExp(Unary):
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nnew\n{self.rhs.lineno}\n{self.rhs}"
         return ret
+
+    def exp_print(self):
+        '''
+        Exp print
+        '''
+        return f"{self.rhs}"
 
 class Assign(Unary):
     '''
