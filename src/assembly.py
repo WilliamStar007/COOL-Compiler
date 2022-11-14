@@ -635,6 +635,7 @@ def cgen(exp):
             cur_size *= config.obj_size.get(exp.in_class, exp.in_class)
 
         ret += f"movq 16({r12}), {r14}\n" # TODO: less hard-coded
+
         method_offset = config.vtable_map.get_offset(exp.in_class, exp.method_name.name)
         ret += f"## look up {exp.method_name}() at offset {method_offset} in vtable\n"
         ret += f"movq {method_offset * config.OFFSET_AMT}({r14}), {r14}\n"
@@ -678,7 +679,10 @@ def cgen(exp):
         # TODO: Hardcoded 16
         ret += f"movq 16({r13}), {r14}\n"
 
-        method_offset = config.vtable_map.get_offset(exp.obj_name.type_of, exp.method_name.name)
+
+        tmp = exp.obj_name.type_of if exp.obj_name.type_of != "SELF_TYPE" else exp.in_class
+        print(f"{exp.obj_name.type_of}, {exp.method_name.name}\n")
+        method_offset = config.vtable_map.get_offset(tmp, exp.method_name.name)
         offset = method_offset * config.OFFSET_AMT
 
         ret += f"## look up {exp.method_name.name}() at offset {method_offset} in vtable\n"
@@ -845,8 +849,7 @@ def print_methods():
     '''
     Prints global methods
     '''
-
-    ordering = top_sort()
+    #ordering = top_sort()
 
     ret = ""
 
@@ -871,6 +874,10 @@ def print_methods():
         for feature in cls.feature_list:
             if not isinstance(feature, Method):
                 continue
+            print(f"{class_name}, {feature.identifier}\n")
+            if f"{feature.identifier}" == "print":
+                for key, val in config.vtable_map.fwd_dict.items():
+                    print(f"{key}, {val}\n")
             config.dynamic.reset()
 
             method_info = f"{class_name}.{feature.identifier.name}"
