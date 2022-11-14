@@ -681,7 +681,6 @@ def cgen(exp):
 
 
         tmp = exp.obj_name.type_of if exp.obj_name.type_of != "SELF_TYPE" else exp.in_class
-        print(f"{exp.obj_name.type_of}, {exp.method_name.name}\n")
         method_offset = config.vtable_map.get_offset(tmp, exp.method_name.name)
         offset = method_offset * config.OFFSET_AMT
 
@@ -851,33 +850,62 @@ def print_methods():
     '''
     #ordering = top_sort()
 
+    # name_to_obj = defaultdict(ClassObj)
+    # for cls in config.aast:
+    #     if isinstance(cls, ClassObj):
+    #         class_name = cls.class_info.name
+    #         name_to_obj[class_name] = cls
+
+    # ordering = get_base_classes()
+
+    # for key in config.class_map.keys():
+    #     if key not in ["Bool", "Int", "IO", "Object", "String"]:
+    #         ordering.append(name_to_obj[key])
+
+    # print(ordering)
+
+    ordering = get_ordering()
+
     ret = ""
 
-    for cls in ordering:
-        class_name = cls.class_info.name
+    for class_name, inner_dict in ordering.items():
+        for method_name, tpl in inner_dict.items():
 
-        if class_name == "IO":
-            ret += f"{built_ins.io_in_int()}\n{built_ins.io_in_string()}\n"
-            ret += f"{built_ins.io_out_int()}\n{built_ins.io_out_string()}\n"
-            continue
-        elif class_name == "Object":
-            config.string_tag.add(built_ins.ABORT_STR)
-            ret += f"{built_ins.obj_abort()}\n{built_ins.obj_copy()}\n"
-            ret += f"{built_ins.obj_type_name()}\n"
-            continue
-        elif class_name == "String":
-            config.string_tag.add(built_ins.substr_error(0))
-            ret += f"{built_ins.str_concat()}\n{built_ins.str_length()}\n"
-            ret += f"{built_ins.str_substr()}\n"
-            continue
+            orig_class = tpl[0]
+            feature = tpl[1]
 
-        for feature in cls.feature_list:
-            if not isinstance(feature, Method):
+            # CHECK BUILT-INS
+            # TODO: Put this somewhere else
+            if orig_class == "IO":
+                if method_name == "in_int":
+                    ret += f"{built_ins.io_in_int()}\n"
+                elif method_name == "in_string":
+                    ret += f"{built_ins.io_in_string()}\n"
+                elif method_name == "out_int":
+                    ret += f"{built_ins.io_out_int()}\n"
+                else:
+                    ret += f"{built_ins.io_out_string()}\n"
                 continue
-            print(f"{class_name}, {feature.identifier}\n")
-            if f"{feature.identifier}" == "print":
-                for key, val in config.vtable_map.fwd_dict.items():
-                    print(f"{key}, {val}\n")
+            elif orig_class == "Object":
+                if method_name == "abort":
+                    config.string_tag.add(built_ins.ABORT_STR)
+                    ret += f"{built_ins.obj_abort()}\n"
+                elif method_name == "copy":
+                    ret += f"{built_ins.obj_copy()}\n"
+                else:
+                    ret += f"{built_ins.obj_type_name()}\n"
+                continue
+            elif orig_class == "String":
+                if method_name == "concat":
+                    ret += f"{built_ins.str_concat()}\n"
+                elif method_name == "length":
+                    ret += f"{built_ins.str_length()}\n"
+                else:
+                    config.string_tag.add(built_ins.substr_error(0))
+                    ret += f"{built_ins.str_substr()}\n"
+
+                continue
+
             config.dynamic.reset()
 
             method_info = f"{class_name}.{feature.identifier.name}"
@@ -908,7 +936,7 @@ def print_methods():
                 tmp += f"## fp[{cur_offset}] holds argument {formal[0]} ({formal[1]})\n"
 
                 id_name = formal[0].name
-                config.symbol_table.add(class_name, id_name, cur_offset, rbp)
+                config.symbol_table.add(formal[0].in_class, id_name, cur_offset, rbp)
 
                 cur_offset -= 1
 
@@ -937,7 +965,7 @@ def print_methods():
                     continue
 
                 id_name = formal[0].name
-                config.symbol_table.pop(class_name, id_name)
+                config.symbol_table.pop(formal[0].in_class, id_name)
 
     return ret
 
@@ -1035,79 +1063,65 @@ def alpha_sort():
     return sorted(cls_map, key=lambda x: x[0])
 
 
-def top_sort():
+def get_ordering():
     '''
-    REPLACE TODO
+    Returns the proper ordering
     '''
     base_classes = get_base_classes()
 
-    classes = config.aast.copy()
-    classes.pop(0)
-    for cls in base_classes:
-        classes.append(cls)
-
-    return helper(classes)
-
-
-def helper(classes):
-    '''
-    Helper for toposort. TODO Clean this up
-    '''
-    incoming_edges = defaultdict(int)
-    graph = defaultdict(list)
     name_to_obj = defaultdict(ClassObj)
 
-    for cls in classes:
+    for cls in config.aast:
+        if isinstance(cls, ClassObj):
+            class_name = cls.class_info.name
+            name_to_obj[class_name] = cls
+
+    for cls in base_classes:
         class_name = cls.class_info.name
         name_to_obj[class_name] = cls
-        incoming_edges[class_name] = 0
 
-    for cls in classes:
-        class_name = cls.class_info.name
-        if class_name not in graph:
-            graph[class_name] = []
+    res = defaultdict(lambda : defaultdict(dict))
+    seen = set()
 
-        if class_name == "Main": # TODO: What if main inherits from another class?
-            graph["IO"].append(class_name)
-            graph["Object"].append(class_name)
-            incoming_edges[class_name] += 2
-        elif class_name == "Object":
+    for class_name in config.class_map.keys():
+        if class_name in ["Bool", "Int"]:
             continue
+        cur_class = name_to_obj[class_name]
+        stk = []
 
-        parent = "Object" if not cls.parent else cls.parent.name
-        if class_name not in graph[parent]:
-            graph[parent].append(class_name)
-            incoming_edges[class_name] += 1
+        cur = cur_class
+        while cur:
+            cur_name = cur.class_info.name
+            stk.append(cur_name)
 
-    queue = []
-    for key, val in incoming_edges.items():
-        if val == 0:
-            hq.heappush(queue, key)
+            if cur.parent:
+                parent_name = cur.parent.name
+                cur = name_to_obj[parent_name]
+            else:
+                cur = None
 
-    toposort = []
+        if class_name != "Object" and "Object" not in stk:
+            stk.append("Object")
 
-    while len(queue) != 0:
-        name = hq.heappop(queue)
-        toposort.append(name)
+        if class_name == "Main" and "IO" not in stk:
+            stk.append("IO")
 
-        for neighbor in graph[name]:
-            incoming_edges[neighbor] -= 1
-            if incoming_edges[neighbor] == 0:
-                hq.heappush(queue, neighbor)
+        stk.reverse()
 
-    for key, val in incoming_edges.items():
-        if not val == 0:
-            print("ERROR")
-            exit(1)
+        for cur_class in stk:
+            cls = name_to_obj[cur_class]
 
-    ret = []
+            for feature in cls.feature_list:
+                if isinstance(feature, Method):
+                    method_name = feature.identifier.name
+                    res[class_name][method_name] = (cur_class, feature)
 
-    for class_name in toposort:
-        ret.append(name_to_obj[class_name])
+        # TODO: ADD TO SEEN, REMOVE IF ALSO IN SEEN
 
-    return ret
+    return res
 
 
+# TODO: NEED TO ADD BOOL, INT
 def get_base_classes():
     '''
     Assembles the base classes
