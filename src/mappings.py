@@ -407,3 +407,33 @@ class Tracker(object):
         Reset
         '''
         self.amt = self.init
+
+
+class MinTracker(Tracker):
+    '''
+    Track that keeps absolute min
+    '''
+    def __init__(self, _amt = 0):
+        Tracker.__init__(self, _amt)
+        self.min = _amt
+
+    def decrement(self):
+        '''
+        Decrements
+        '''
+        super().decrement()
+        self.min = min(self.min, self.amt)
+        return self.amt
+
+    def get_min(self):
+        '''
+        Returns the min
+        '''
+        return self.min
+
+    def reset(self):
+        '''
+        Reset
+        '''
+        super().reset()
+        self.min = self.init

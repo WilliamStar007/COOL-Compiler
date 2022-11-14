@@ -16,5 +16,17 @@ config.py
 This file contained all global variables. `lines` was the lines of input that was read in. `aast` was the annotated abstract syntax tree. `class_map` was the classmap. `impl_map` was the implementation map. `parent_map` was the parent map. `class_tags` tracked the class identifying information. `string_tag` mapped a static string to a number and vice versa. `vtable_map` contained the offset of each method relative to each class inside the vtable. `attr_map` contained the offset of each class attribute relative to each class. `symbol_table` tracked the symbols and stored dynamic variables. The initial state of symbol_table was all class attributes. `obj_size` tracks the number of temporary registers required to create each class. `OFFSET_AMT` is the number of bits per 1 entry on the stack. `SPC` helped to format the code. `dynamic` tracked the number of dynamic variables created. `rbp_offset` tracked the rbp offset, which was required as temporaries werepushed to the stack for each let statement and operation. Lastly, `jump_table` tracked the current branch number and was used to acquire unique branches.
 
 built_ins.py
+This file contained all assembly for built in methods that are not included in the Cool source program. They were modified to have the correct string numbers and branch labels. They also include all error statements.
+
 memory.py
+This file has all register classes. This includes all registers used. They do not have too much use at the moment but may become useful as we transition to TAC and PA6.
+
 assembly.py
+This file contains several components: cgen, print_vtables, print_ctors, print_methods, and print_cool_globals.
+
+`cgen`
+cgen has unique code generate per given Cool expression. I'll now discuss each specific expression inside cgen.
+`Attribute`
+NOT FINISHED
+`Expression Terminals`
+An expression terminal consists of assembling a default value and then information unique to its type. Thus, each expression terminal calls cgen on its base `Expression` class, which calls the constructor for each unique class. Then, each terminal is handled differently. If the `Integer` is not none, its value is stored in a register before being stored at offset 24 relative to r13, which is where each integer value is stored.  If the `StringObj` is None, then it is the default value of `the.empty.string` and is stored at offset 24 from register r13. Otherwise, its unique string tag is mapped to the string and the value of the string is stored atoffset 24 from r13. Lastly, the default Expression 
