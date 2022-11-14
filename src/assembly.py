@@ -870,7 +870,8 @@ def print_methods():
 
     for class_name, inner_dict in ordering.items():
         for method_name, tpl in inner_dict.items():
-
+            if not tpl:
+                continue
             orig_class = tpl[0]
             feature = tpl[1]
 
@@ -1114,9 +1115,14 @@ def get_ordering():
             for feature in cls.feature_list:
                 if isinstance(feature, Method):
                     method_name = feature.identifier.name
-                    res[class_name][method_name] = (cur_class, feature)
-
-        # TODO: ADD TO SEEN, REMOVE IF ALSO IN SEEN
+                    if class_name not in res or class_name in res and method_name not in res[class_name]:
+                        res[class_name][method_name] = None
+                    if (cur_class, method_name) not in seen:
+                        if class_name in res and method_name in res[class_name] and res[class_name][method_name]:
+                            prev_class = res[class_name][method_name][0]
+                            seen.remove((prev_class, method_name))
+                        res[class_name][method_name] = (cur_class, feature)
+                        seen.add((cur_class, method_name))
 
     return res
 
