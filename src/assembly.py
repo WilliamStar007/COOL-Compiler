@@ -337,13 +337,13 @@ def cgen(exp):
 
         ret += f"pushq {r12}\n"
 
-        match exp:
-            case Less():
-                ret += "call lt_handler\n"
-            case LessOrEqual():
-                ret += "call le_handler\n"
-            case Equals():
-                ret += "call eq_handler\n"
+        
+        if isinstance(exp, Less):
+            ret += "call lt_handler\n"
+        elif isinstance(exp, LessOrEqual):
+            ret += "call le_handler\n"
+        else:
+            ret += "call eq_handler\n"
 
         # Hardcoded 24
         ret += f"addq $24, {rsp}\n"
@@ -536,15 +536,14 @@ def cgen(exp):
             config.symbol_table.add(cur_class, identifier.name, cur_offset, rbp)
 
             if not expr_type:
-                match id_type.name:
-                    case "Bool":
-                        expr_type = Bool(cur_class, 0, None)
-                    case "Int":
-                        expr_type = Integer(cur_class, 0, "Int", None)
-                    case "String":
-                        expr_type = StringObj(cur_class, 0, "String", None)
-                    case _:
-                        ret += f"movq $0, {r13}\n"
+                if id_type.name == "Bool":
+                    expr_type = Bool(cur_class, 0, None)
+                elif id_type.name == "Int":
+                    expr_type = Integer(cur_class, 0, "Int", None)
+                elif id_type.name == "String":
+                    expr_type = StringObj(cur_class, 0, "String", None)
+                else:
+                    ret += f"movq $0, {r13}\n"
             if expr_type:
                 ret += f"{cgen(expr_type)}\n"
             ret += f"movq {r13}, {cur_offset * config.OFFSET_AMT}({rbp})\n"
@@ -576,8 +575,15 @@ def cgen(exp):
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
 
+        for formal in exp.formals:
+            ret += f"{cgen(formal)}\n"
+            ret += f"pushq {r13}\n"
+
         ret += f"{cgen(exp.obj_name)}\n"
 
+        method_branch = config.jump_table.get()
+        config.jump_table.increment()
+        branch_info = f"l{method_branch}"
         ret += f"cmpq $0, {r13}\n"
         ret += f"jne {branch_info}\n"
         ret += f"movq ${err_tag}, {r13}\n"
@@ -586,8 +592,6 @@ def cgen(exp):
         ret += f"movl $0, {edi}\n"
         ret += f"call exit\n"
 
-        method_branch = config.jump_table.get()
-        config.jump_table.increment()
         branch_info = f"l{method_branch}"
         ret += f".globl {branch_info}\n"
         branch_info += ":"
@@ -598,8 +602,9 @@ def cgen(exp):
         ret += f"## look up {exp.method_name}() at offset {offset} in vtable\n"
         ret += f"movq {offset * config.OFFSET_AMT}({r14}), {r14}\n"
         ret += f"call *{r14}\n"
-        # TODO: Hardcoded 8
-        ret += f"addq $8, {rsp}\n"
+
+        # TODO Is below correct?
+        ret += f"addq ${offset * config.OFFSET_AMT}, {rsp}\n"
         ret += f"popq {rbp}\n"
         ret += f"popq {r12}"
 
