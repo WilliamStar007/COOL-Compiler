@@ -633,7 +633,7 @@ class Block(Expression):
         '''
         Print expression
         '''
-        return "BLOCK: NEED TO IMPL"
+        return "{ ... }"
 
 class Let(Expression):
     '''

@@ -688,7 +688,6 @@ def cgen(exp):
         ret += f"movq {offset}({r14}), {r14}\n"
         ret += f"call *{r14}\n"
 
-
         obj_size = config.obj_size.get(exp.in_class, exp.type_of) * config.OFFSET_AMT
 
         ret += f"addq ${obj_size}, {rsp}\n"
@@ -755,6 +754,7 @@ def print_ctors():
     config.obj_size.set("String", 2)
     config.obj_size.set("Bool", 1)
     config.obj_size.set("IO", 2)
+    config.obj_size.set("Object", 1)
 
     config.class_tags.assemble_dicts(class_names)
 
@@ -848,21 +848,6 @@ def print_methods():
     '''
     Prints global methods
     '''
-    #ordering = top_sort()
-
-    # name_to_obj = defaultdict(ClassObj)
-    # for cls in config.aast:
-    #     if isinstance(cls, ClassObj):
-    #         class_name = cls.class_info.name
-    #         name_to_obj[class_name] = cls
-
-    # ordering = get_base_classes()
-
-    # for key in config.class_map.keys():
-    #     if key not in ["Bool", "Int", "IO", "Object", "String"]:
-    #         ordering.append(name_to_obj[key])
-
-    # print(ordering)
 
     ordering = get_ordering()
 
@@ -975,9 +960,6 @@ def print_cool_globals():
     '''
     Prints cool globals
     '''
-
-    # config.string_tag.add(constant_prints.VOID_ERROR) # TODO: WHERE TO USE???
-
     ret = ""
     ret += f"## global string constants\n"
     ret += f"{built_ins.str_start()}\n"
