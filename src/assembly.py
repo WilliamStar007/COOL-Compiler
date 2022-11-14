@@ -615,7 +615,7 @@ def cgen(exp):
         method_name = exp.method_name.name
         ret += f"## {method_name}(...)\n"
         ret += f"pushq {r12}\n"
-        ret += f"pushq {rbp}\nRAJAY"
+        ret += f"pushq {rbp}\n"
         # TODO: Need to figure out why this is needed
         if method_name in ["abort", "substr", "in_string", "in_int"]: # TODO: WILL BE WRONG
             pass
