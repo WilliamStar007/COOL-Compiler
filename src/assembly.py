@@ -585,7 +585,7 @@ def cgen(exp):
         ret += f"{cgen(exp.obj_name)}\n"
 
         ret += f"cmpq $0, {r13}\n"
-        ret += f"jne {branch_info}\n"
+        #ret += f"jne {branch_info}\n"
         ret += f"movq ${err_tag}, {r13}\n"
         ret += f"movq {r13}, {rdi}\n"
         ret += f"call cooloutstr\n"
