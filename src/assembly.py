@@ -615,17 +615,18 @@ def cgen(exp):
         method_name = exp.method_name.name
         ret += f"## {method_name}(...)\n"
         ret += f"pushq {r12}\n"
-        ret += f"pushq {rbp}\n"
+        ret += f"pushq {rbp}\nRAJAY"
         # TODO: Need to figure out why this is needed
         if method_name in ["abort", "substr", "in_string", "in_int"]: # TODO: WILL BE WRONG
-            ret += f"pushq {r12}\n"
+            pass
+            # TODO: undo the comment if this leads to issues
+            #ret += f"pushq {r12}\n"
 
         for formal in exp.formals:
             ret += f"{cgen(formal)}\n"
             ret += f"pushq {r13}\n"
             # ret += f"pushq {r12}\n"
-        # RAJAY FIX
-        
+        # TODO: RAJAY FIX
         ret += f"pushq {r12}\n"
         ret += f"## obtain vtable for self object of type {exp.in_class}\n"
         vt_met = config.vtable_map.get_class(exp.in_class, method_name)
