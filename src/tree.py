@@ -409,7 +409,8 @@ class NewExp(Unary):
         '''
         Exp print
         '''
-        return f"{self.rhs}"
+        # TODO: RAJAY FIX
+        return f"new {self.rhs}"
 
 class Assign(Unary):
     '''

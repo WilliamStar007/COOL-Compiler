@@ -625,6 +625,7 @@ def cgen(exp):
             ret += f"pushq {r13}\n"
             # ret += f"pushq {r12}\n"
         # RAJAY FIX
+        
         ret += f"pushq {r12}\n"
         ret += f"## obtain vtable for self object of type {exp.in_class}\n"
         vt_met = config.vtable_map.get_class(exp.in_class, method_name)
