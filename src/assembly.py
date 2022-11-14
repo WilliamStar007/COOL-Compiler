@@ -43,8 +43,8 @@ def cgen(exp):
 
         else:
             if exp.typename.name in ["Bool", "Int", "String"]:
-                return cgen(Expression(exp.in_class, 0, exp.typename.name))
-            else: # i.e. is an identifier
+                ret += cgen(Expression(exp.in_class, 0, exp.typename.name))
+            else:
                 ret += f"movq $0, {r13}"
 
     # ***** EXPRESSION TERMINALS *****
@@ -496,12 +496,13 @@ def cgen(exp):
         ret += f"## case expression: branches\n"
 
         # Branches
+        cur_offset = config.rbp_offset.get()
         for i, case_expr in enumerate(exp.exps):
             identifier = case_expr[0]
             id_type = case_expr[1]
             exp_rem = case_expr[2]
             num = i + void_branch + 1
-            config.symbol_table.add(exp.in_class, identifier.name, 1, 2)
+            config.symbol_table.add(exp.in_class, identifier.name, cur_offset, rbp)
 
             branch_info = f"l{num}"
             ret += f".globl {branch_info}\n"
@@ -616,7 +617,8 @@ def cgen(exp):
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
         # TODO: Need to figure out why this is needed
-        if method_name in ["abort", "substr", "in_string", "in_int"]: # TODO: WILL BE WRONG
+        #if method_name in ["abort", "substr", "in_string", "in_int"]: # TODO: WILL BE WRONG
+        if method_name not in ["out_int", "out_string"]:
             ret += f"pushq {r12}\n"
 
         for formal in exp.formals:
@@ -755,6 +757,7 @@ def print_ctors():
     config.obj_size.set("Bool", 1)
     config.obj_size.set("IO", 2)
     config.obj_size.set("Object", 1)
+    config.obj_size.set("Int", 1)
 
     config.class_tags.assemble_dicts(class_names)
 
@@ -848,7 +851,6 @@ def print_methods():
     '''
     Prints global methods
     '''
-
     ordering = get_ordering()
 
     ret = ""
@@ -894,7 +896,7 @@ def print_methods():
 
             config.dynamic.reset()
 
-            method_info = f"{class_name}.{feature.identifier.name}"
+            method_info = f"{orig_class}.{feature.identifier.name}"
 
             ret += f".globl {method_info}\n"
             temp = method_info + ":"
