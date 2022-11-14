@@ -39,6 +39,12 @@ class Attribute(Feature):
     def __repr__(self):
         ret = f"{self.identifier.lineno}\n{self.identifier}\n{self.typename.lineno}\n{self.typename.name}\n"
         return ret
+    
+    def exp_print(self):
+        '''
+        Print expression
+        '''
+        return "ATTRIBUTE: NEED TO IMPL"
 
 class Method(Feature):
     '''
@@ -82,6 +88,7 @@ class Expression(object):
         self.lineno = _lineno
         self.type_of = _type_of
 
+
 class Identifier(object):
     '''
     Identifier object
@@ -100,6 +107,7 @@ class Identifier(object):
         Exp print
         '''
         return self.name
+
 
 class IdentifierExp(Expression):
     '''
@@ -121,6 +129,7 @@ class IdentifierExp(Expression):
         ret = f"{self.identifier}"
         return ret
 
+
 class Integer(Expression):
     '''
     Integer expression object
@@ -140,6 +149,7 @@ class Integer(Expression):
         ret = f"{self.value}"
         return ret
 
+
 class StringObj(Expression):
     '''
     String expression object
@@ -158,6 +168,7 @@ class StringObj(Expression):
         '''
         ret = f"\"{self.value}\""
         return ret
+
 
 class Bool(Expression):
     '''
@@ -189,11 +200,6 @@ class Dispatch(Expression):
         self.method_name = _method_name
         self.formals = _formals
 
-    def exp_print(self):
-        '''
-        TODO REMOVE
-        '''
-        return ""
 
 class DynamicDispatch(Dispatch):
     '''
@@ -217,6 +223,13 @@ class DynamicDispatch(Dispatch):
                     ret += "\n"
 
         return ret
+
+    def exp_print(self):
+        '''
+        Print expression
+        '''
+        return "DYNAMIC DISP: NEED TO IMPL"
+
 
 class StaticDispatch(Dispatch):
     '''
@@ -324,7 +337,7 @@ class IsVoid(Unary):
         '''
         Print expr
         '''
-        ret = f"isvoid {self.rhs.value}"
+        ret = f"isvoid {self.rhs.exp_print()}"
         return ret
 
 class Negate(Unary):
@@ -337,7 +350,7 @@ class Negate(Unary):
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nnegate\n{self.rhs}"
         return ret
-    
+
     def exp_print(self):
         '''
         Print expr
@@ -354,6 +367,12 @@ class NotExpr(Unary):
 
     def __repr__(self):
         return self.print()
+
+    def exp_print(self):
+        '''
+        Print expression
+        '''
+        return "NOT: NEED TO IMPL"
 
 class NewExp(Unary):
     '''
@@ -384,6 +403,12 @@ class Assign(Unary):
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nassign\n{self.var.lineno}\n{self.var}\n{self.rhs}"
         return ret
+
+    def exp_print(self):
+        '''
+        Print expression
+        '''
+        return "ASSIGN: NEED TO IMPL"
 
 # *** BINARY EXPRESSIONS ***
 class Plus(Binary):
@@ -421,6 +446,7 @@ class Minus(Binary):
         ret = f"{self.lhs.exp_print()} - {self.rhs.exp_print()}"
         return ret
 
+
 class Times(Binary):
     '''
     Times binary expression
@@ -438,6 +464,7 @@ class Times(Binary):
         ret = f"{self.lhs.exp_print()} * {self.rhs.exp_print()}"
         return ret
 
+
 class Divide(Binary):
     '''
     Divide binary expression
@@ -447,13 +474,14 @@ class Divide(Binary):
 
     def __repr__(self):
         return self.print()
-    
+
     def exp_print(self):
         '''
         Print expr
         '''
         ret = f"{self.lhs.exp_print()} / {self.rhs.exp_print()}"
         return ret
+
 
 class Less(Binary):
     '''
@@ -472,6 +500,7 @@ class Less(Binary):
         ret = f"{self.lhs.exp_print()} < {self.rhs.exp_print()}"
         return ret
 
+
 class LessOrEqual(Binary):
     '''
     Le binary expression
@@ -481,13 +510,14 @@ class LessOrEqual(Binary):
 
     def __repr__(self):
         return self.print()
-    
+
     def exp_print(self):
         '''
         Print expr
         '''
         ret = f"{self.lhs.exp_print()} <= {self.rhs.exp_print()}"
         return ret
+
 
 class Equals(Binary):
     '''
@@ -505,6 +535,7 @@ class Equals(Binary):
         '''
         ret = f"{self.lhs.exp_print()} = {self.rhs.exp_print()}"
         return ret
+
 
 # *** BLOCK STATEMENTS ***
 class IfBlock(Expression):
@@ -555,6 +586,12 @@ class CaseBlock(Expression):
 
         return ret
 
+    def exp_print(self):
+        '''
+        Print expression
+        '''
+        return "CASE: NEED TO IMPL"
+
 class LoopBlock(Expression):
     '''
     Loop block statement
@@ -592,6 +629,12 @@ class Block(Expression):
                 ret += "\n"
         return ret
 
+    def exp_print(self):
+        '''
+        Print expression
+        '''
+        return "BLOCK: NEED TO IMPL"
+
 class Let(Expression):
     '''
     Let expression
@@ -624,5 +667,5 @@ class Let(Expression):
         '''
         Print exp
         '''
-        ret = f"let ... in ..."
+        ret = "let ... in ..."
         return ret
