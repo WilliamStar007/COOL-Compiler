@@ -610,7 +610,8 @@ def cgen(exp):
         ret += f"call *{r14}\n"
 
         # TODO Is below correct?
-        ret += f"addq ${offset * config.OFFSET_AMT}, {rsp}\n"
+        stk_reset = max(-config.rbp_offset.get_min(), 1) * config.OFFSET_AMT# offset * config.OFFSET_AMT
+        ret += f"addq ${stk_reset}, {rsp}\n"
         ret += f"popq {rbp}\n"
         ret += f"popq {r12}"
 
@@ -636,18 +637,20 @@ def cgen(exp):
         cur_size = config.OFFSET_AMT
 
         # TODO: WRONG
-        if vt_met in ["IO"]:
-            cur_size *= config.obj_size.get(exp.in_class, exp.type_of)
-        else:
-            cur_size *= config.obj_size.get(exp.in_class, exp.in_class)
+        #if vt_met in ["IO"]:
+        #    cur_size *= 2
+        #else:
+        #    cur_size *= config.obj_size.get(exp.in_class, exp.in_class)
 
-        ret += f"movq 16({r12}), {r14}\n" # TODO: less hard-coded
+        ret += f"movq 16({r12}), {r14}\n"
 
         method_offset = config.vtable_map.get_offset(exp.in_class, exp.method_name.name)
         ret += f"## look up {exp.method_name}() at offset {method_offset} in vtable\n"
         ret += f"movq {method_offset * config.OFFSET_AMT}({r14}), {r14}\n"
         ret += f"call *{r14}\n"
-        ret += f"addq ${cur_size}, {rsp}\n"
+
+        stk_reset = max(-config.rbp_offset.get_min(), 1) * config.OFFSET_AMT# offset * config.OFFSET_AMT
+        ret += f"addq ${stk_reset}, {rsp}\n"
         ret += f"popq {rbp}\n"
         ret += f"popq {r12}"
 
@@ -695,7 +698,8 @@ def cgen(exp):
 
         obj_size = config.obj_size.get(exp.in_class, exp.type_of) * config.OFFSET_AMT
 
-        ret += f"addq ${obj_size}, {rsp}\n"
+        stk_reset = max(-config.rbp_offset.get_min(), 1) * config.OFFSET_AMT# offset * config.OFFSET_AMT
+        ret += f"addq ${stk_reset}, {rsp}\n"
         ret += f"popq {rbp}\n"
         ret += f"popq {r12}"
 
