@@ -206,16 +206,39 @@ def cgen(exp):
 
     # ***** EXPRESSION BINARY OPS *****
 
-    # Minus
-    elif isinstance(exp, Minus):
+    # Plus
+    elif isinstance(exp, Plus):
         offset = config.rbp_offset.get() * config.OFFSET_AMT
 
-        config.rbp_offset.decrement()
         ret += f"{cgen(exp.lhs)}\n"
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
 
+        config.rbp_offset.decrement()
+        ret += f"{cgen(exp.rhs)}\n"
+        config.rbp_offset.increment()
+
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq {offset}({rbp}), {r14}\n"
+        ret += f"addq {r14}, {r13}\n"
+        ret += f"movq {r13}, {offset}({rbp})\n"
+
+        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+        ret += f"movq {offset}({rbp}), {r14}\n"
+        ret += f"movq {r14}, 24({r13})"
+
+
+    # Minus
+    elif isinstance(exp, Minus):
+        offset = config.rbp_offset.get() * config.OFFSET_AMT
+
+        ret += f"{cgen(exp.lhs)}\n"
+
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq {r13}, {offset}({rbp})\n"
+
+        config.rbp_offset.decrement()
         ret += f"{cgen(exp.rhs)}\n"
         config.rbp_offset.increment()
 
@@ -231,36 +254,17 @@ def cgen(exp):
         ret += f"movq {offset}({rbp}), {r14}\n"
         ret += f"movq {r14}, 24({r13})"
 
-    # Plus
-    elif isinstance(exp, Plus):
-        offset = config.rbp_offset.get() * config.OFFSET_AMT
-
-        ret += f"{cgen(exp.lhs)}\n"
-
-        ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq {r13}, {offset}({rbp})\n"
-
-        ret += f"{cgen(exp.rhs)}\n"
-
-        ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq {offset}({rbp}), {r14}\n"
-        ret += f"addq {r14}, {r13}\n"
-        ret += f"movq {r13}, {offset}({rbp})\n"
-
-        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
-        ret += f"movq {offset}({rbp}), {r14}\n"
-        ret += f"movq {r14}, 24({r13})"
 
     # Times
     elif isinstance(exp, Times):
         offset = config.rbp_offset.get() * config.OFFSET_AMT
 
-        config.rbp_offset.decrement()
         ret += f"{cgen(exp.lhs)}\n"
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
 
+        config.rbp_offset.decrement()
         ret += f"{cgen(exp.rhs)}\n"
         config.rbp_offset.increment()
 
@@ -281,6 +285,8 @@ def cgen(exp):
     elif isinstance(exp, Divide):
         offset = config.rbp_offset.get() * config.OFFSET_AMT
 
+        ret += f"{cgen(exp.lhs)}\n"
+
         # Handle error branching
         error_str = built_ins.divide_error(exp.lineno)
         config.string_tag.add(error_str)
@@ -289,11 +295,13 @@ def cgen(exp):
         config.jump_table.increment()
         branch_info = f"l{succ_branch}"
 
-        ret += f"{cgen(exp.lhs)}\n"
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
 
+        config.rbp_offset.decrement()
         ret += f"{cgen(exp.rhs)}\n"
+        config.rbp_offset.increment()
+
         ret += f"movq 24({r13}), {r14}\n"
 
         ret += f"cmpq $0, {r14}\n"
