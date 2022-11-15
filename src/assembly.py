@@ -749,6 +749,8 @@ def print_ctors():
     '''
     Print program constructors
     '''
+    config.rbp_offset.reset()
+
     ret = ""
 
     class_names = []
@@ -784,6 +786,43 @@ def print_ctors():
         else:
             cur_size = max(name_to_obj[key].temp, 1)
 
+        tmp = ""
+
+        if len(val) != 0:
+            tmp += "## initialize attributes\n"
+            cur_offset = 3
+            for attr in val:
+                tmp += f"## self[{cur_offset}] holds field {attr.identifier} ({attr.typename})\n"
+
+                tmp += f"{cgen(attr)}\n"
+
+                tmp += f"movq {r13}, {cur_offset * config.OFFSET_AMT}({r12})\n"
+                config.attr_map.set_offset(key, attr, cur_offset)
+                config.symbol_table.add(key, attr.identifier.name, cur_offset, r12)
+
+                r12.update_offset(r12.offset + 8)
+                cur_offset += 1
+
+        self_offset = 3
+        for attr in val:
+            tmp += f"## self[{self_offset}] {attr.identifier} initializer "
+            if not attr.expr:
+                tmp += "-- none\n"
+            else:
+                if isinstance(attr.expr, StringObj):
+                    tmp += f"<- \"{attr.expr.value}\"\n"
+                else:
+                    tmp += f"<- {attr.expr.exp_print()}\n"
+                tmp += f"{cgen(attr.expr)}\n"
+                tpl = config.symbol_table.top(key, attr.identifier.name)
+                offset = tpl[0] * config.OFFSET_AMT
+                reg = tpl[1]
+                tmp += f"movq {r13}, {offset}({reg})\n"
+            self_offset += 1
+
+            r12.update_offset()
+
+        cur_size = max(-1 * config.rbp_offset.get_min(), 1)
         config.obj_size.set(key, cur_size)
 
         ret += f"## stack room for temporaries: {cur_size}\n"
@@ -816,39 +855,8 @@ def print_ctors():
         ret += f"movq {r14}, {r12.pwo()}\n"
         r12.update_offset(24)
 
-        if len(val) != 0:
-            ret += "## initialize attributes\n"
-            cur_offset = 3
-            for attr in val:
-                ret += f"## self[{cur_offset}] holds field {attr.identifier} ({attr.typename})\n"
+        ret += tmp
 
-                ret += f"{cgen(attr)}\n"
-
-                ret += f"movq {r13}, {r12.pwo()}\n"
-                config.attr_map.set_offset(key, attr, cur_offset)
-                config.symbol_table.add(key, attr.identifier.name, cur_offset, r12)
-
-                r12.update_offset(r12.offset + 8)
-                cur_offset += 1
-
-        self_offset = 3
-        for attr in val:
-            ret += f"## self[{self_offset}] {attr.identifier} initializer "
-            if not attr.expr:
-                ret += "-- none\n"
-            else:
-                if isinstance(attr.expr, StringObj):
-                    ret += f"<- \"{attr.expr.value}\"\n"
-                else:
-                    ret += f"<- {attr.expr.exp_print()}\n"
-                ret += f"{cgen(attr.expr)}\n"
-                tpl = config.symbol_table.top(key, attr.identifier.name)
-                offset = tpl[0] * config.OFFSET_AMT
-                reg = tpl[1]
-                ret += f"movq {r13}, {offset}({reg})\n"
-            self_offset += 1
-
-            r12.update_offset()
 
         ret += f"movq {r12}, {r13}\n"
         ret += f"## return address handling\n"
@@ -870,6 +878,7 @@ def print_methods():
 
     for class_name, inner_dict in ordering.items():
         for method_name, tpl in inner_dict.items():
+            config.rbp_offset.reset()
             if not tpl:
                 continue
             orig_class = tpl[0]
@@ -941,7 +950,9 @@ def print_methods():
 
             tmp += f"## method body begins\n"
             tmp += f"{cgen(feature.body)}\n"
-            offset = max(config.method_map.get_method(class_name, method_name).temp, 1)
+            # offset = max(config.method_map.get_method(class_name, method_name).temp, 1)
+            offset = cur_size = max(-1 * config.rbp_offset.get_min(), 1)
+
             ret += f"## stack room for temporaries: {offset}\n"
             ret += f"movq ${offset * config.OFFSET_AMT}, {r14}\n"
             ret += f"subq {r14}, {rsp}\n"

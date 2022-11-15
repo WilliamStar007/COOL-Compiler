@@ -626,8 +626,8 @@ class CaseBlock(Expression):
         self.exps = _exps
         self.temp = 0
         for exp in self.exps:
-            if exp.temp > self.temp:
-                self.temp = exp.temp
+            if exp[2].temp > self.temp:
+                self.temp = exp[2].temp
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\ncase\n{self.case_exp}\n{len(self.exps)}\n"
