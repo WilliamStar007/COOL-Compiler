@@ -623,7 +623,7 @@ def cgen(exp):
         ret += f"pushq {rbp}\n"
         # TODO: Need to figure out why this is needed
         #if method_name in ["abort", "substr", "in_string", "in_int"]: # TODO: WILL BE WRONG
-        if method_name in ["in_int", "in_string"]:
+        if method_name in ["abort", "in_int", "in_string"]:
             ret += f"pushq {r12}\n"
 
         for formal in exp.formals:
@@ -784,7 +784,7 @@ def print_ctors():
         if key in ["Bool", "Int", "String", "IO", "Object"]:
             cur_size = max(math.ceil(len(val) / config.OFFSET_AMT), 1)
         else:
-            cur_size = max(name_to_obj[key].temp, 1)
+            cur_size = name_to_obj[key].temp
 
         tmp = ""
 
