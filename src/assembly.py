@@ -67,7 +67,6 @@ def cgen(exp):
 
             return ret
 
-
         if exp.value not in config.string_tag.vals():
             config.string_tag.add(exp.value)
 
@@ -337,7 +336,7 @@ def cgen(exp):
 
         ret += f"pushq {r12}\n"
 
-        
+
         if isinstance(exp, Less):
             ret += "call lt_handler\n"
         elif isinstance(exp, LessOrEqual):
@@ -371,7 +370,6 @@ def cgen(exp):
         ret += f"jne l{true_branch}\n"
         config.jump_table.increment()
 
-        # TODO: Where to move these
         false_branch = true_branch + 1
         end_branch = false_branch + 1
         config.jump_table.increment(2)
@@ -526,8 +524,6 @@ def cgen(exp):
         cur_class = exp.in_class
         cur_offset = config.rbp_offset.get()
         for formal in exp.let_list:
-            config.dynamic.increment()
-
             identifier = formal[1]
             id_type = formal[2]
             expr_type = formal[3]
@@ -648,7 +644,6 @@ def cgen(exp):
 
     # Dynamic
     elif isinstance(exp, DynamicDispatch):
-
         ret += f"## {exp.obj_name.exp_print()}.{exp.method_name}(...)\n"
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
@@ -680,7 +675,6 @@ def cgen(exp):
 
         # TODO: Hardcoded 16
         ret += f"movq 16({r13}), {r14}\n"
-
 
         tmp = exp.obj_name.type_of if exp.obj_name.type_of != "SELF_TYPE" else exp.in_class
         method_offset = config.vtable_map.get_offset(tmp, exp.method_name.name)
@@ -719,15 +713,15 @@ def print_vtables():
     assemble_orig_vtable()
 
     str_num = 1
-    ret = "\t\t\t## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
+    ret = "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
 
     for key, val in config.impl_map.iterables():
         ret += f".globl {key}..vtable\n"
 
         tmp = f"{key}..vtable:"
         ret += f"{tmp:24}## virtual function table for {key}\n"
-        ret += f"\t\t\t.quad string{str_num}\n"
-        ret += f"\t\t\t.quad {key}..new\n"
+        ret += f".quad string{str_num}\n"
+        ret += f".quad {key}..new\n"
 
         cur_offset = 2
 
@@ -736,10 +730,11 @@ def print_vtables():
             config.vtable_map.set_offset(key, method, cur_offset)
             cur_offset += 1
 
-        ret += "\t\t\t## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
+        ret += "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
         str_num += 1
 
     return ret
+
 
 def print_ctors():
     '''
@@ -752,7 +747,7 @@ def print_ctors():
         class_names.append(key)
         config.string_tag.add(key)
 
-    # TODO ???
+    # TODO Needs to be removed
     config.obj_size.set("String", 2)
     config.obj_size.set("Bool", 1)
     config.obj_size.set("IO", 2)
@@ -760,6 +755,12 @@ def print_ctors():
     config.obj_size.set("Int", 1)
 
     config.class_tags.assemble_dicts(class_names)
+
+    name_to_obj = defaultdict(ClassObj)
+    for cls in config.aast:
+        if isinstance(cls, ClassObj):
+            class_name = cls.class_info.name
+            name_to_obj[class_name] = cls
 
     for key, val in config.class_map.iterables():
         ret += f".globl {key}..new\n"
@@ -769,21 +770,25 @@ def print_ctors():
         ret += f"pushq {rbp}\n"
         ret += f"movq {rsp}, {rbp}\n"
 
-        cur_size = max(math.ceil(len(val) / config.OFFSET_AMT), 1)
+        if key in ["Bool", "Int", "String", "IO", "Object"]:
+            cur_size = max(math.ceil(len(val) / config.OFFSET_AMT), 1)
+        else:
+            cur_size = max(name_to_obj[key].temp, 1)
+
         config.obj_size.set(key, cur_size)
 
         ret += f"## stack room for temporaries: {cur_size}\n"
         ret += f"movq ${cur_size * config.OFFSET_AMT}, {r14}\n"
         ret += f"subq {r14}, {rsp}\n"
 
-        ret += f"## return address handling\n"
+        ret += "## return address handling\n"
         ret += f"movq ${3 + len(val)}, {r12}\n"
         ret += f"movq $8, {rsi}\n"
         ret += f"movq {r12}, {rdi}\n"
-        ret += f"call calloc\n"
+        ret += "call calloc\n"
         ret += f"movq {rax}, {r12}\n"
 
-        ret += f"## store class tag, object size and vtable pointer\n"
+        ret += "## store class tag, object size and vtable pointer\n"
 
         # Class tag
         r12.update_offset(0)
@@ -798,13 +803,12 @@ def print_ctors():
         r12.update_offset(16)
 
         # Vtable
-        # TODO: Don't include vtable if DNE?
         ret += f"movq ${key}..vtable, {r14}\n"
         ret += f"movq {r14}, {r12.pwo()}\n"
         r12.update_offset(24)
 
         if len(val) != 0:
-            ret += f"## initialize attributes\n"
+            ret += "## initialize attributes\n"
             cur_offset = 3
             for attr in val:
                 ret += f"## self[{cur_offset}] holds field {attr.identifier} ({attr.typename})\n"
@@ -812,7 +816,7 @@ def print_ctors():
                 ret += f"{cgen(attr)}\n"
 
                 ret += f"movq {r13}, {r12.pwo()}\n"
-                config.attr_map.set_offset(key, attr, cur_offset) # TODO: Not needed. Is a bit redundant
+                config.attr_map.set_offset(key, attr, cur_offset)
                 config.symbol_table.add(key, attr.identifier.name, cur_offset, r12)
 
                 r12.update_offset(r12.offset + 8)
@@ -894,8 +898,6 @@ def print_methods():
 
                 continue
 
-            config.dynamic.reset()
-
             method_info = f"{orig_class}.{feature.identifier.name}"
 
             ret += f".globl {method_info}\n"
@@ -930,7 +932,7 @@ def print_methods():
 
             tmp += f"## method body begins\n"
             tmp += f"{cgen(feature.body)}\n"
-            offset = max(config.dynamic.get(), 1)
+            offset = max(config.method_map.get_method(class_name, method_name).temp, 1)
             ret += f"## stack room for temporaries: {offset}\n"
             ret += f"movq ${offset * config.OFFSET_AMT}, {r14}\n"
             ret += f"subq {r14}, {rsp}\n"
@@ -1099,6 +1101,7 @@ def get_ordering():
             for feature in cls.feature_list:
                 if isinstance(feature, Method):
                     method_name = feature.identifier.name
+                    config.method_map.append_obj(cur_class, feature)
                     if class_name not in res or class_name in res and method_name not in res[class_name]:
                         res[class_name][method_name] = None
                     if (cur_class, method_name) not in seen:
