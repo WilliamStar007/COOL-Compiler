@@ -291,9 +291,6 @@ def cgen(exp):
         error_str = built_ins.divide_error(exp.lineno)
         config.string_tag.add(error_str)
         str_tag = f"string{config.string_tag.get_num(error_str)}"
-        succ_branch = config.jump_table.get()
-        config.jump_table.increment()
-        branch_info = f"l{succ_branch}"
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
@@ -303,6 +300,10 @@ def cgen(exp):
         config.rbp_offset.increment()
 
         ret += f"movq 24({r13}), {r14}\n"
+
+        succ_branch = config.jump_table.get()
+        config.jump_table.increment()
+        branch_info = f"l{succ_branch}"
 
         ret += f"cmpq $0, {r14}\n"
         ret += f"jne {branch_info}\n"
@@ -622,7 +623,7 @@ def cgen(exp):
         ret += f"pushq {rbp}\n"
         # TODO: Need to figure out why this is needed
         #if method_name in ["abort", "substr", "in_string", "in_int"]: # TODO: WILL BE WRONG
-        if method_name not in ["out_int", "out_string"]:
+        if method_name in ["in_int", "in_string"]:
             ret += f"pushq {r12}\n"
 
         for formal in exp.formals:
