@@ -81,7 +81,7 @@ class Method(Feature):
         self.body = _body
         self.temp = 0
         if self.body is not None:
-            self.temp = self.body.temp
+            self.temp = max(self.body.temp, 1)
 
     def __repr__(self):
         ret = f"{self.identifier}\n{self.formals_list}\n{self.typename}\n{self.body}\n"
@@ -357,7 +357,7 @@ class Binary(Unary):
         Unary.__init__(self, _in_class, _lineno, _type_of, _rhs)
         self.operation = _operation
         self.lhs = _lhs
-        self.temp = self.lhs.temp + self.rhs.temp
+        self.temp = max(self.lhs.temp, 1 + self.rhs.temp)
 
     def print(self):
         ret = f"{self.lineno}\n{self.type_of}\n{self.operation}\n{self.lhs}\n{self.rhs}"
@@ -370,7 +370,7 @@ class IsVoid(Unary):
     '''
     def __init__(self, _in_class, _lineno, _type_of, _rhs):
         Unary.__init__(self, _in_class, _lineno, _type_of, _rhs)
-        self.temp = 0
+        self.temp = self.rhs.temp
 
     def __repr__(self):
         return self.print()
@@ -388,7 +388,7 @@ class Negate(Unary):
     '''
     def __init__(self, _in_class, _lineno, _type_of, _rhs):
         Unary.__init__(self, _in_class, _lineno, _type_of, _rhs)
-        self.temp = 0
+        self.temp = self.rhs.temp
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nnegate\n{self.rhs}"
@@ -407,7 +407,7 @@ class NotExpr(Unary):
     '''
     def __init__(self, _in_class, _lineno, _type_of, _rhs):
         Unary.__init__(self, _in_class, _lineno, _type_of, _rhs)
-        self.temp = 0
+        self.temp = self.rhs.temp
 
     def __repr__(self):
         return self.print()
@@ -424,7 +424,7 @@ class NewExp(Unary):
     '''
     def __init__(self, _in_class, _lineno, _type_of, _rhs):
         Unary.__init__(self, _in_class, _lineno, _type_of, _rhs)
-        self.temp = 0
+        self.temp = self.rhs.temp
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nnew\n{self.rhs.lineno}\n{self.rhs}"
@@ -715,7 +715,8 @@ class Let(Expression):
             else:
                 formal_temp += 1
         
-        self.temp = formal_temp + max(self.let_body.temp, 1)
+        body_temp = 1 + self.let_body.temp
+        self.temp = formal_temp + body_temp
 
     def __repr__(self):
         ret = f"{self.lineno}\n{self.type_of}\nlet\n{len(self.let_list)}\n"
