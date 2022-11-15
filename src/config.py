@@ -5,6 +5,7 @@ All global variables
 # Imports
 from mappings import Tracker, \
                      ClassMap,\
+                     MethodMap, \
                      ClassTag,\
                      StringTag,\
                      ImplementationMap, \
@@ -22,6 +23,7 @@ aast = []
 
 # Mappings
 class_map = ClassMap()
+method_map = MethodMap()
 impl_map = ImplementationMap()
 parent_map = ParentMap()
 
@@ -34,7 +36,6 @@ symbol_table = SymbolTable()
 obj_size = ObjSize()
 
 # Trackers
-dynamic = Tracker(0)
 rbp_offset = MinTracker(0)
 jump_table = Tracker(1)
 

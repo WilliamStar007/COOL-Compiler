@@ -524,8 +524,6 @@ def cgen(exp):
         cur_class = exp.in_class
         cur_offset = config.rbp_offset.get()
         for formal in exp.let_list:
-            config.dynamic.increment()
-
             identifier = formal[1]
             id_type = formal[2]
             expr_type = formal[3]
@@ -758,6 +756,12 @@ def print_ctors():
 
     config.class_tags.assemble_dicts(class_names)
 
+    name_to_obj = defaultdict(ClassObj)
+    for cls in config.aast:
+        if isinstance(cls, ClassObj):
+            class_name = cls.class_info.name
+            name_to_obj[class_name] = cls
+
     for key, val in config.class_map.iterables():
         ret += f".globl {key}..new\n"
         tmp = f"{key}..new:"
@@ -766,7 +770,11 @@ def print_ctors():
         ret += f"pushq {rbp}\n"
         ret += f"movq {rsp}, {rbp}\n"
 
-        cur_size = max(math.ceil(len(val) / config.OFFSET_AMT), 1)
+        if key in ["Bool", "Int", "String", "IO", "Object"]:
+            cur_size = max(math.ceil(len(val) / config.OFFSET_AMT), 1)
+        else:
+            cur_size = max(name_to_obj[key].temp, 1)
+
         config.obj_size.set(key, cur_size)
 
         ret += f"## stack room for temporaries: {cur_size}\n"
@@ -890,8 +898,6 @@ def print_methods():
 
                 continue
 
-            config.dynamic.reset()
-
             method_info = f"{orig_class}.{feature.identifier.name}"
 
             ret += f".globl {method_info}\n"
@@ -926,7 +932,7 @@ def print_methods():
 
             tmp += f"## method body begins\n"
             tmp += f"{cgen(feature.body)}\n"
-            offset = max(config.dynamic.get(), 1)
+            offset = max(config.method_map.get_method(class_name, method_name).temp, 1)
             ret += f"## stack room for temporaries: {offset}\n"
             ret += f"movq ${offset * config.OFFSET_AMT}, {r14}\n"
             ret += f"subq {r14}, {rsp}\n"
@@ -1095,6 +1101,7 @@ def get_ordering():
             for feature in cls.feature_list:
                 if isinstance(feature, Method):
                     method_name = feature.identifier.name
+                    config.method_map.append_obj(cur_class, feature)
                     if class_name not in res or class_name in res and method_name not in res[class_name]:
                         res[class_name][method_name] = None
                     if (cur_class, method_name) not in seen:
