@@ -558,14 +558,14 @@ def cgen(exp):
 
         ret += cgen(exp.let_body)
 
-
-        config.rbp_offset.reset()
         for formal in exp.let_list:
             identifier = formal[1].name
             id_type = formal[2]
             expr_type = formal[3]
 
             config.symbol_table.pop(cur_class, identifier)
+
+            config.rbp_offset.increment()
 
 
     # ***** EXPRESSION DISPATCHES *****
