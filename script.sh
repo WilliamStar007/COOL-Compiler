@@ -7,17 +7,16 @@ mkdir -p ./gen
 
 chmod +x ./tests/*.cl
 
-for f in ./tests/*cl;
+for f in ./tests/*.cl;
 do
    ./cool.exe --out ./type/$(basename $f .cl) --type $f
    ./cool.exe --out ./x86/$(basename $f .cl) --x86 $f
 done
 
-
 for f in ./type/*cl-type;
 do
-    py ./src/main.py $f
+    python3 ./src/main.py $f
     mv ./type/$(basename $f .cl-type).s ./gen
 done
 
-diff -r ./gen ./x86
+diff -qr ./gen ./x86

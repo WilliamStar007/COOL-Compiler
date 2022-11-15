@@ -26,49 +26,14 @@ def main():
     # Assembles the maps and the AAST
     read_input()
 
-    # if len(sys.argv) == 3:
-    #     print("TESTING SUITE")
+    output = []
 
-    #     output_filename = "test.cl-type"
+    output.append(print_vtables())
+    output.append(print_ctors())
+    output.append(print_methods())
+    output.append(print_cool_globals())
 
-    #     test_str = ""
-    #     match sys.argv[2]:
-    #         case 'class_map':
-    #             test_str = f"{config.class_map}"
-    #         case 'impl_map':
-    #             test_str = f"{config.impl_map}"
-    #         case 'aast':
-    #             test_str = f"{config.class_map}\n{config.impl_map}\n{config.parent_map}\n"
-    #             test_str += f"{config.aast}"
-    #         case _:
-    #             print("INVALID")
-    #             sys.exit(1)
-
-    #     outfile = open(output_filename, 'w', encoding="utf-8")
-    #     outfile.write(test_str)
-    #     outfile.close()
-
-    #     sys.exit(0)
-
-    # Assemble symbol table
-
-    # Assemble vtable
-
-
-
-    # Output logic
-    output_str = ""
-
-    # Print globals
-        # Vtables
-        # Constructors
-        # Method bodies
-    # Explore rest
-
-    output_str += print_vtables()
-    output_str += print_ctors()
-    output_str += print_methods()
-    output_str += print_cool_globals()
+    output_str = "".join(output)
 
     # Output file logic
     output_filename = sys.argv[1]

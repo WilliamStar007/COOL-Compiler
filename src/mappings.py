@@ -21,11 +21,11 @@ class Mapping(object):
         if class_name not in self.dict:
             self.dict[class_name] = []
 
-    def append_obj(self, class_name, obj):
+    def append_obj(self, name, obj):
         '''
         Append an object to the mapping's list
         '''
-        self.dict[class_name].append(obj)
+        self.dict[name].append(obj)
 
     def pop_obj(self, class_name):
         '''
@@ -87,6 +87,23 @@ class ClassMap(Mapping):
                     out_str += f"{attr.init}\n"
 
         return out_str
+
+
+class MethodMap(Mapping):
+    '''
+    AAST class map
+    A mapping of a class to a list of attributes
+    '''
+    def __init__(self):
+        Mapping.__init__(self)
+    
+    def get_method(self, class_name, method_name):
+        '''
+        Returns a method
+        '''
+        for method in self.dict[class_name]:
+            if method.identifier.name == method_name:
+                return method
 
 
 class ImplementationMap(Mapping):
@@ -407,3 +424,33 @@ class Tracker(object):
         Reset
         '''
         self.amt = self.init
+
+
+class MinTracker(Tracker):
+    '''
+    Track that keeps absolute min
+    '''
+    def __init__(self, _amt = 0):
+        Tracker.__init__(self, _amt)
+        self.min = _amt
+
+    def decrement(self):
+        '''
+        Decrements
+        '''
+        super().decrement()
+        self.min = min(self.min, self.amt)
+        return self.amt
+
+    def get_min(self):
+        '''
+        Returns the min
+        '''
+        return self.min
+
+    def reset(self):
+        '''
+        Reset
+        '''
+        super().reset()
+        self.min = self.init
