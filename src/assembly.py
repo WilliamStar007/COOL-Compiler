@@ -951,7 +951,7 @@ def print_methods():
             tmp += f"## method body begins\n"
             tmp += f"{cgen(feature.body)}\n"
             # offset = max(config.method_map.get_method(class_name, method_name).temp, 1)
-            offset = cur_size = max(-1 * config.rbp_offset.get_min(), 1)
+            offset = max(-1 * config.rbp_offset.get_min(), 1)
 
             ret += f"## stack room for temporaries: {offset}\n"
             ret += f"movq ${offset * config.OFFSET_AMT}, {r14}\n"
