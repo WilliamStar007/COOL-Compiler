@@ -5,12 +5,14 @@ All global variables
 # Imports
 from mappings import Tracker, \
                      ClassMap,\
+                     MethodMap, \
                      ClassTag,\
                      StringTag,\
-                     ImplementationMap,\
+                     ImplementationMap, \
+                     MinTracker, \
                      ObjSize, \
-                     OffsetMap,\
-                     ParentMap,\
+                     OffsetMap, \
+                     ParentMap, \
                      SymbolTable, \
                      VTableMap
 
@@ -21,6 +23,7 @@ aast = []
 
 # Mappings
 class_map = ClassMap()
+method_map = MethodMap()
 impl_map = ImplementationMap()
 parent_map = ParentMap()
 
@@ -32,11 +35,9 @@ attr_map = OffsetMap()
 symbol_table = SymbolTable()
 obj_size = ObjSize()
 
+# Trackers
+rbp_offset = MinTracker(0)
+jump_table = Tracker(1)
+
 OFFSET_AMT = 8
 SPC = f"{'':24}"
-
-dynamic = Tracker(0)
-
-rbp_offset = Tracker(0)
-
-jump_table = Tracker(1)
