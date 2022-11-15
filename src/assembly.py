@@ -622,7 +622,7 @@ def cgen(exp):
         ret += f"pushq {rbp}\n"
         # TODO: Need to figure out why this is needed
         #if method_name in ["abort", "substr", "in_string", "in_int"]: # TODO: WILL BE WRONG
-        if method_name not in ["out_int", "out_string"]:
+        if method_name in ["abort", "in_int", "in_string"]:
             ret += f"pushq {r12}\n"
 
         for formal in exp.formals:
@@ -781,7 +781,7 @@ def print_ctors():
         if key in ["Bool", "Int", "String", "IO", "Object"]:
             cur_size = max(math.ceil(len(val) / config.OFFSET_AMT), 1)
         else:
-            cur_size = max(name_to_obj[key].temp, 1)
+            cur_size = name_to_obj[key].temp
 
         config.obj_size.set(key, cur_size)
 
@@ -940,7 +940,7 @@ def print_methods():
 
             tmp += f"## method body begins\n"
             tmp += f"{cgen(feature.body)}\n"
-            offset = max(config.method_map.get_method(class_name, method_name).temp, 1)
+            offset = config.method_map.get_method(class_name, method_name).temp
             ret += f"## stack room for temporaries: {offset}\n"
             ret += f"movq ${offset * config.OFFSET_AMT}, {r14}\n"
             ret += f"subq {r14}, {rsp}\n"
