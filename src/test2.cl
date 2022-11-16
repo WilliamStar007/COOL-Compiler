@@ -17,6 +17,9 @@ class Main inherits IO {
 
 	fact(n : Int) : Int {
 		{
+			out_string("Fact: ");
+			out_int(n);
+			out_string("\n");
 			if n = 0 then 1 else n * fact(n - 1) fi;
 		}
 
@@ -24,19 +27,47 @@ class Main inherits IO {
 	main() : Object {{
     
 		-- TEST: void comparision and void with non void comparison
-		if one = two then out_string("True") else out_string("FALSE") fi;
-		if one =  three then out_string("TRUE") else out_string("FALSE") fi;
+		if one = two then temp <- temp + 1 else temp <- temp * 10 fi;
+		out_string("temp : ");
+		out_int(temp);
+		out_string("\n");
+		if one =  three then temp <- 7 * 7 + 7 else temp <- 77 * 18 + 5 / 2 fi;
+		out_string("temp : ");
+		out_int(temp);
+		out_string("\n");
 		-- TEST substring ok
 		"test".substr(0, 4);
 		-- TEST: string comparison, non-void comparison
-		if numOne = hello then out_string("True") else out_string("FALSE") fi;
-		if hello =  "hello" then out_string("TRUE") else out_string("FALSE") fi;
-		if hello =  "HELLO" then out_string("TRUE") else out_string("FALSE") fi;
+		if numOne = hello then temp <- 7 * 7 + 5 * 2 else temp <- 5 / 2 + 5 * 10 fi;
+		out_string("temp : ");
+		out_int(temp);
+		out_string("\n");
+		if hello =  "hello" then temp <- 1 * 2 * 3 + 5 *7 else temp <- 1 * 2 + 888 fi;
+		out_string("temp : ");
+		out_int(temp);
+		out_string("\n");
+		if hello =  "HELLO" then temp <- 7 * 7 + 2 else temp <- 7 * 6 + 2 + 4 fi;
+		out_string("temp : ");
+		out_int(temp);
+		out_string("\n");
 		-- diff scope
-		let x  : Int <- 5 in x + 5;
-		let x  : String <- "hELLO" in x.concat("Goodbye");
-		let x  : Int <- 8 in x + 5;
-		let x  : String <- "Hi" in x.concat("Howdy");
+		let x  : Int <- 5 in temp <- x + 5;
+		out_string("temp : ");
+		out_int(temp);
+		out_string("\n");
+		let x  : String <- "hELLO" in hello.concat(x);
+		out_string("hello : ");
+		out_string(hello);
+		out_string("\n");
+		let x  : Int <- 8 in temp <- x + 5;
+		out_string("temp : ");
+		out_int(temp);
+		out_string("\n");
+		let x  : String <- "Hi" in hello.concat(x);
+		out_string("hello : ");
+		out_string(hello);
+		out_string("\n");
+
 		let x  : Int <- 9 in x + 5;
 		let x  : String <- "Howdy" in x.concat("Matey");
 		let x  : Int <- 10 in x + 5;

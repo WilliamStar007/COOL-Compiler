@@ -1,20 +1,34 @@
 -- Bad Tests: Test3.cl
 
+(*
 
+A dispatch (static or dynamic) on void.
+A case on void.
+Execution of a case statement without a matching branch.
+Division by zero.
+Substring out of range. (This error is always reported on line 0, since it occurs inside an "internal" library function.)
+Heap overflow. (You do not need to implement this runtime error.)
+Stack overflow.
 
-class OverFlow {
-  a : Int;
-  b : Int;
-  -- STACK OVERFLOW
-  aOver : OverFlow <- new OverFlow;
-
-  makeOverFlow2() : OverFlow2 {(new OverFlow2)};
-};
+*)
 
 class OverFlow2 inherits OverFlow {
   c : Int;
   d : Int;
+  init(valC : Int, valD : Int) : SELF_TYPE {self.init(valC, valD)};
 };
+
+class OverFlow {
+  a : Int;
+  b : Int;
+  -- STACK OVERFLOWS
+  aOver : OverFlow <- new OverFlow;
+  aOVer2 : OverFlow2 <- new OverFlow2;
+
+  makeOverFlow2() : OverFlow2 {(new OverFlow2)};
+};
+
+
 class Main inherits IO {
   y : String <- "hello";
   theA : A;
@@ -39,35 +53,53 @@ class Main inherits IO {
 	--TEST: Division by zero. DONE
   out_string("5 / 0");
 		x <- 5 / 0;
+    out_int(x);
     x <- 5 / (5 - 5);
+    out_int(x);
     x <- 0 / 5;
+    out_int(x);
     x <- 10 / ( 10 * 0);
+    out_int(x);
     x <- 10 / ( 0 / 10);
+    out_int(x);
     x <- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) + (10 / 0);
-
+    out_int(x);
 
     x <- (10 / 0) + 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) + (10 / 0);
-
+    out_int(x);
 
     x <- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + (10 / 0) +  22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) + (10 / 0);
+    out_int(x);
+    x <- 5 / (5 * 0);
+    out_int(x);
+    x <- 5 / ( 5 / 0);
+    out_int(x);
+
   -- TEST: subtring out of range. DONE
    "testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".substr(0,50);
+   out_string("testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
    "testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".substr(0, 10).substr(0, 1);
+   out_string("testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
    "testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".substr(50, 9);
+   out_string("testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
    "test".substr(4, 5);
+   out_string("test");
    "testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".substr(0, 10).substr(1, 10).substr(2, 10).substr(3, 10).substr(4, 10).substr(9, 12);
+   "".substr(1,10);
+   "".substr(0, 1000000);
+
   -- TEST: dynamic dispatch on void. DONE
     theB.copy();
     voidWord.copy();

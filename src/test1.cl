@@ -26,57 +26,161 @@ class Main inherits IO {
 
 
 	-- TEST STRING INTERNALS
-
+	out_int(x);
 	test4.someFunc();
 	string1 <- string2.concat(string3);
 	string1 <- string1.concat("HELLOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
 	x <- string1.length();
+	out_string("x : ");
+	out_int(x);
+	out_string("\n");
 	string11 <- string1.concat(string2).concat(string3).concat(string4).concat(string5).concat(string6).concat(string7).concat(string8).concat(string9).concat(string10).concat(string11);
+	out_string("string11 : ");
+	out_string(string11);
+	out_string("\n");
 	x <- string11.length();
+	out_string("x : ");
+	out_int(x);
+	out_string("\n");
 	string5 <- string11.substr(0, 10).substr(0,9).substr(0, 8).substr(0, 7).substr(0, 6).substr(0, 5).substr(0, 4).substr(0, 3).substr(0, 2).substr(0, 1);
+	out_string("string5 : ");
+	out_string(string5);
+	out_string("\n");
 	x <- string5.length();
+	out_string("x : ");
+	out_int(x);
+	out_string("\n");
   -- TEST ASSIGNMENTS
 		-- big expression
 	x <-	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29;
+	out_int(x);
 		-- Arithmetic
 		-- Many expressions
 		x <-5 + 5;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
 		x <- 7 / 5;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		
 		x <- 6 * 2;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
 		x <- 5 - 2;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
 		x <- 5 - 2 + 7 * 5;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
 	x <-	2 / 7;
+	out_string("x : ");
+	out_int(x);
+	out_string("\n");
 		x <-1 / 7;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
 		x <-2 + 2;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
 		x <-7 /2;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
 		x <-1 / 8;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
 		x <-1 / 9; 
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
 		x <-1 / 10;
-		1 / 11;
-		1 / 12;
-		1 / 13;
-		1/ 14;
-		1 / 15;
-		1 / 16;
-		1 / 17;
-		1 / 18;
-		1 / 19;
-		1 / 20;
-		1 / 21;
-		1 / 22;
-		1 / 23;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		x <- 1 / 11;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		x <- 1 / 12;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		x <- 1 / 13;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		x <- 1/ 14;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		x <- 1 / 15;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		x <- 1 / 16;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		x <- 1 / 17;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		x <- 1 / 18;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		x  <- 1 * 19;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		x <- 1  * 20;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		x <- 1 *  21;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		x <- 1 * 22;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		x <- 1 * 23;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
 		x <- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 		- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29);
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
 		-- TEST: bool assigned in bool
 		let some_bool: Bool <- true in some_bool;
 
 		-- TEST: bool comparison
-		if true_bool = false_bool then out_string("WRONG") else out_string("CORRECT") fi;
-		if true_bool = true then out_string("CORRECT") else out_string("WRONG") fi;
-		if false_bool = false then out_string("CORRECT") else out_string("WRONG") fi;
+		if true_bool = false_bool then x <- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4  else x <- 5 * 5 + 7 / 2 - 5 * 1 - 2  fi;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		if true_bool = true then x <- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4  else x <- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4  fi;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
+		if false_bool = false then x <- 10 else x <- 77 fi;
+		out_string("x : ");
+		out_int(x);
+		out_string("\n");
 		-- TEST: copy self dispatch
 		copy();
 
@@ -116,18 +220,31 @@ class Main inherits IO {
 	else out_string("=(\n").out_string((new TestNew).getB())
 	fi;
 
-	if not (not(true_bool = false_bool)) then out_string("WRONG") else out_string("CORRECT") fi;
-	if not(not (not (true_bool = true))) then out_string("CORRECT") else out_string("WRONG") fi;
-	if not(not(not(not (not (false_bool = false))))) then out_string("CORRECT") else out_string("WRONG") fi;
+	if not (not(true_bool = false_bool)) then x <- 10 * 10 * 10 + 5 / 2 else x <- 10 * 10 fi;
+	out_string("x : ");
+	out_int(x);
+	out_string("\n");
+	if not(not (not (true_bool = true))) then x <- 1 else x <- 10122432 fi;
+	out_string("x : ");
+	out_int(x);
+	out_string("\n");
+	if not(not(not(not (not (false_bool = false))))) then x <- 2 else x <- 4 fi;
+	out_string("x : ");
+	out_int(x);
+	out_string("\n");
+
 	
 
 	-- TEST: one nested expression with arith ops
 	-- TEST: eval order arith
-	(5 * 5 + 7 / 2- 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / (29 + (	5 * 5 + 7 / 2 - (5 * (1 - (2 + (3 / (4 * (5 + 6) - 7)* 8 / 9) + 10) - 11) * 12) / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	x <- (5 * 5 + 7 / 2- 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / (29 + (	5 * 5 + 7 / 2 - (5 * (1 - (2 + (3 / (4 * (5 + 6) - 7)* 8 / 9) + 10) - 11) * 12) / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 	* (	5 * 5 + (7 / (2 - (5 * (1 - 2) + 3) / 4 )* 5) + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
 	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / (17 + (18 - (19 * (20 / (21 + (22 - 23) * 24) / 25) + 26) - 27) * 28) / 29)
 	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29))
 	- (	5 * 5 + (7 / 2 - (5 * (1 - (2 + 3 / 4 )* 5 )+ 6) - 7) * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / (17 + (18 - 19 * 20 / 21 + 22 - 23) * 24) / 25 + 26 - 27  * 28 / 29));
+	out_string("x : ");
+	out_int(x);
+	out_string("\n");
 	-- TEST abort()
 	abort();
 	out_string("Hello");
@@ -170,8 +287,12 @@ class TestNew inherits IO{
 	b : String <- "New";
 	init(valA : String, valB : String) : TestNew {
 		{
+		out_string(a);
+		out_string(b);
 		a = valA;
 		b = valB;
+		out_string(a);
+		out_string(b);
 		self;
 		}
 	};
@@ -181,30 +302,56 @@ class TestNew inherits IO{
 	};
 	testThis(): TestNew {
 		{
+		out_string(a);
 		a <- "Hi";
+		out_string(a);
 		self;
 		}
 	};
 
 	testThat(): TestNew {
 		{
+		out_string(b);
 		b <- "Hello";
+		out_string(b);
 		self;
 		}
 	};
 	testThose() : TestNew {
 		{
+			
+			
+			out_string("a : ");
+			out_string(a);
+			out_string("\n");
+			out_string("b : ");
+			out_string(b);
+			out_string("\n");
 			a <- "Hello";
 			b <- "New";
+			out_string("a : ");
+			out_string(a);
+			out_string("\n");
+			out_string("b : ");
+			out_string(b);
+			out_string("\n");
+
 			self;
 		}
 	};
 
-	getA() : String {
-		a
-	};
-	getB() : String {
-		b
+	getA() : String {{
+		out_string("a : ");
+		out_string(a);
+		out_string("\n");
+		a;
+	}};
+	getB() : String { {
+		out_string("b : ");
+		out_string(b);
+		out_string("\n");
+		b;
+	}
 	};
 	
 
@@ -245,21 +392,59 @@ class Test4 inherits TestNew {
 
 				-- TEST STRING INTERNALS
 	string12 <- string13.concat(string14);
+	out_string("string12 : ");
+	out_string(string12);
+	out_string("\n");
 	string12 <- string12.concat("HELLOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+	out_string("string12 : ");
+	out_string(string12);
+	out_string("\n");
 	x <- string12.length();
+	out_string("class Test4 x : ");
+	out_int(x);
+	out_string("\n");
 	string22 <- string12.concat(string13).concat(string14).concat(string15).concat(string16).concat(string17).concat(string18).concat(string19).concat(string20).concat(string21).concat(string22);
+	out_string("string22 : ");
+	out_string(string22);
+	out_string("\n");
+
 	x <- string22.length();
+	out_string("class Test 4 x: ");
+	out_int(x);
+	out_string("\n");
 	string16 <- string22.substr(0, 10).substr(0,9).substr(0, 8).substr(0, 7).substr(0, 6).substr(0, 5).substr(0, 4).substr(0, 3).substr(0, 2).substr(0, 1);
+	out_string("string16: ");
+	out_string(string16);
+	out_string("\n");
+
 	x <- string16.length();
+	out_string("class Test 4 x: ");
+	out_int(x);
+	out_string("\n");
 	out_string("TEST 4");
 
 	string1 <- string2.concat(string3);
 	string1 <- string1.concat("HELLOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
 	x <- string1.length();
+	out_string("class Test4 x : ");
+	out_int(x);
+	out_string("\n");
 	string11 <- string1.concat(string2).concat(string3).concat(string4).concat(string5).concat(string6).concat(string7).concat(string8).concat(string9).concat(string10).concat(string11);
+	out_string("class Test4 string11 : ");
+	out_string(string11);
+	out_string("\n");
 	x <- string11.length();
+	out_string("class Test4 x : ");
+	out_int(x);
+	out_string("\n");
 	string5 <- string11.substr(0, 10).substr(0,9).substr(0, 8).substr(0, 7).substr(0, 6).substr(0, 5).substr(0, 4).substr(0, 3).substr(0, 2).substr(0, 1);
+	out_string("class Test4 string5 : ");
+	out_string(string5);
+	out_string("\n");
 	x <- string5.length();
+	out_string("class Test4 x : ");
+	out_int(x);
+	out_string("\n");
 	shallowCopy <- string11.copy().concat((new String)).copy();
 	theDeepCopy <- deepCopy.copy1();
 
@@ -289,9 +474,6 @@ class Test4 inherits TestNew {
 	else theDeepCopy.printSomething("nonVoid is less than void1") fi;
 	if void1 = nonVoid then theDeepCopy.printSomething("void1 is equal to nonVoid")
 	else theDeepCopy.printSomething("void1 is not equal to nonVoid") fi;
-
-
-
 		}
 	};
 
@@ -310,24 +492,77 @@ init(valA : Int, valB : Int, valC : Int) : SELF_TYPE {
 		self;
 	}
 };
- copy1() : Copy {(self).init(a, b, c)};
+ copy1() : Copy {{
+	
+	out_string("class Copy a: ");
+	out_int(a);
+	out_string("\n");
+	out_string("class Copy b: ");
+	out_int(b);
+	out_string("\n");
+	out_string("class Copy c: ");
+	out_int(c);
+	out_string("\n");
+	(self).init(a, b, c);
+
+}};
 
  printA() : Object {out_int(a)};
 
- getA()  : Int {a};
- getB() : Int {b};
- getC() : Int {c};
- printSomething(output: String) : Object {out_string(output)};
+ getA()  : Int {{
+	out_string("class Copy a: ");
+	out_int(a);
+	out_string("\n");
+	a;
+
+}};
+ getB() : Int {{
+	out_string("class Copy b: ");
+	out_int(b);
+	out_string("\n");
+	b;
+
+}};
+ getC() : Int {{
+	out_string("class Copy c: ");
+	out_int(c);
+	out_string("\n");
+	c;
+}};
+ printSomething(output: String) : Object {{
+	
+	out_string("class Copy a: ");
+	out_int(a);
+	out_string("\n");
+	out_string("class Copy b: ");
+	out_int(b);
+	out_string("\n");
+	out_string("class Copy c: ");
+	out_int(c);
+	out_string("\n");
+	out_string(output);}};
 
 };
 
-class Person {
+class Person inherits IO {
 	name : String;
 	age : Int;
 	init(nameVal : String, ageVal : Int) : SELF_TYPE {
 		{
+			out_string("class Person name: ");
+		  out_string(name);
+		  out_string("\n");
+			out_string("class Person age: ");
+		  out_int(age);
+		  out_string("\n");
 			name <- nameVal;
 			age <- ageVal;
+			out_string("class Person name: ");
+		  out_string(name);
+		  out_string("\n");
+			out_string("class Person age: ");
+		  out_int(age);
+		  out_string("\n");
 			self;
 		}
 	};
@@ -338,10 +573,30 @@ class Employee inherits Person {
 	salary : Int;
 	init1(nameVal : String, ageVal: Int, salaryVal: Int) : SELF_TYPE {
 		{
+			out_string("class Person name: ");
+		  out_string(name);
+		  out_string("\n");
+			out_string("class Person age: ");
+		  out_int(age);
+		  out_string("\n");
+			out_string("class Person salary: ");
+		  out_int(salary);
+		  out_string("\n");
+
 		name <- nameVal;
 		ageVal <- ageVal;
 		salary <- salaryVal;
-		self;
+
+			out_string("class Person name: ");
+		  out_string(name);
+		  out_string("\n");
+			out_string("class Person age: ");
+		  out_int(age);
+		  out_string("\n");
+			out_string("class Person salary: ");
+		  out_int(salary);
+		  out_string("\n");
+			self;
 		}
 
 	};
