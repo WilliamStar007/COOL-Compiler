@@ -98,13 +98,24 @@ class Three  inherits IO {};
 class TestA {
 
 	-- TEST calls with same formal name
+	-- TEST self attributes
+	dattr4: Int <- 4;
+	cattr3: Int <- 3;
+	battr2: Int <- 2;
+	attr1 : Int <- 1;
 	same_form_name1(a : Int) : TestA {self};
 	same_form_name2(a : Int) : TestA {self};
 	same_form_name3(a : Int) : TestA {self};
 	same_form_name4(a : Int) : Int {a};
 };
 class TestB inherits TestA {
-	same_formname1(a : Int) : Int {a};
+	iattr9: Int <- 9;
+	hattr8: Int <- 8;
+	gattr7: Int <- 7;
+	fattr6: Int <- 6;
+	eattr5: Int <- 5;
+	
+	same_form_name1(a : Int) : TestA {self};
 	eval_method(a : Int, b : Int, c : Int, d : Int): Int { a + b * c - d};
 	eval_method2(d : Int, c : Int, b : Int,  a : Int): Int {d - c * b + a};
 
@@ -112,7 +123,16 @@ class TestB inherits TestA {
 
 
 
-class TestC inherits TestB {};
+class TestC inherits TestB {
+
+	-- TEST attribute init super
+	iattr14: Int <- 14;
+	hattr13: Int <- 13;
+	gattr12: Int <- 12;
+	fattr11: Int <- 11;
+	eattr10: Int <- 10;
+
+};
 class TestD inherits TestC {};
 class TestE inherits TestD {};
 class TestF inherits TestE {};
@@ -139,16 +159,35 @@ class TestZ inherits TestY {};
 
 
 
-class FromIO1 inherits IO {};
-class FromIO2 inherits IO {};
-class FromIO3 inherits IO {};
-class FromIO4 inherits IO {};
-class FromIO5 inherits IO {};
-class FromIO6 inherits IO {};
-class FromIO7 inherits IO {};
-class FromIO8 inherits IO {};
-class FromIO9 inherits IO {};
-class FromIO10 inherits IO {};
+class FromIO1 inherits IO {
+
+
+	copy() : SELF_TYPE {self};
+};
+class FromIO2 inherits IO {
+	copy() : SELF_TYPE {self};
+};
+class FromIO3 inherits IO {
+	copy() : SELF_TYPE {self};
+};
+class FromIO4 inherits IO {
+	copy() : SELF_TYPE {self};
+};
+class FromIO5 inherits IO {
+	copy() : SELF_TYPE {self};
+};
+class FromIO6 inherits IO 
+{copy() : SELF_TYPE {self};};
+class FromIO7 inherits IO {
+	copy() : SELF_TYPE {self};
+};
+class FromIO8 inherits IO {
+	copy() : SELF_TYPE {self};
+};
+class FromIO9 inherits IO {
+	copy() : SELF_TYPE {self};
+};
+class FromIO10 inherits IO {copy() : SELF_TYPE {self};};
 class FromIO11 inherits IO {};
 class FromIO12 inherits IO {};
 class FromIO13 inherits IO {};
