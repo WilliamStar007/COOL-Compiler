@@ -232,6 +232,10 @@ class Test4 inherits TestNew {
 	copy3 : Copy;
 	someCopy: Copy <- (new Copy).init(4, 5, 6);
 	otherCopy : Copy <- (new Copy).init(7, 8, 9);
+
+	void1 : Copy;
+	void2 : Copy;
+	nonVoid : Copy <- otherCopy;
 	someFunc() :  Object {
 
 
@@ -263,7 +267,26 @@ class Test4 inherits TestNew {
 	copy2 <- someCopy.copy1().copy1().copy1().copy1();
 	copy3 <- (new Copy).init(copy2.getA(), deepCopy.copy1().getB(), otherCopy.copy1().getC());
 	copy3.printA();
-	
+
+
+	-- Object comparison
+	if theDeepCopy < someCopy then theDeepCopy.printSomething("Deep Copy less")
+	else someCopy.printSomething("Shallow copy less") fi;
+	if theDeepCopy = someCopy then theDeepCopy.printSomething("Deeep and shallow equal")
+	else someCopy.printSomething("Not equal") fi;
+
+	if void1 < void2 then theDeepCopy.printSomething("void1 is less") else 
+	theDeepCopy.printSomething("void2 is less") fi;
+	if void1 = void2 then theDeepCopy.printSomething("void1 equals void2") else 
+	theDeepCopy.printSomething("void1 does not equal void2") fi;
+	if void1 < theDeepCopy then  theDeepCopy.printSomething("void1 is less than deep copy")
+	else theDeepCopy.printSomething("void1 is greater than deep copy") fi;
+	if void1 = theDeepCopy then  theDeepCopy.printSomething("void1 is equal to deep copy")
+	else theDeepCopy.printSomething("void1 is not equal to deep copy") fi;
+	if void1 < nonVoid then theDeepCopy.printSomething("void1 is less than nonVoid")
+	else theDeepCopy.printSomething("nonVoid is less than void1") fi;
+	if void1 = nonVoid then theDeepCopy.printSomething("void1 is equal to nonVoid")
+	else theDeepCopy.printSomething("void1 is not equal to nonVoid") fi;
 
 
 
@@ -292,5 +315,6 @@ init(valA : Int, valB : Int, valC : Int) : SELF_TYPE {
  getA()  : Int {a};
  getB() : Int {b};
  getC() : Int {c};
+ printSomething(output: String) : Object {out_string(output)};
 
 };
