@@ -41,3 +41,4 @@ jump_table = Tracker(1)
 
 OFFSET_AMT = 8
 SPC = f"{'':24}"
+BUILT_INS = {"abort", "in_int", "in_string", "type_name", "copy", "length"}
