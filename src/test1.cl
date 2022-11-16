@@ -20,11 +20,14 @@ class Main inherits IO {
 	string10 : String <- "Bro";
 	string11 : String <- "Aye";
 	x : Int;
+	test4 : Test4 <- new Test4;
 	getA() : String {theNewTest.getA()};
 	main() : Object {{
 
 
 	-- TEST STRING INTERNALS
+
+	test4.someFunc();
 	string1 <- string2.concat(string3);
 	string1 <- string1.concat("HELLOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
 	x <- string1.length();
@@ -151,6 +154,18 @@ class Test1 inherits IO {
 
 class TestNew inherits IO{
 
+	string1 : String <- "hello";
+	string2 : String <- "world";
+	string3 : String <- "Hello";
+	string4 : String <- "World";
+	string5 : String <- "HELLO";
+	string6 : String <- "WORLD";
+	string7 : String <- "HI";
+	string8 : String <- "THERE";
+	string9 : String <- "Howdy";
+	string10 : String <- "Bro";
+	string11 : String <- "Aye";
+
 	a : String <- "Test";
 	b : String <- "New";
 	init(valA : String, valB : String) : TestNew {
@@ -193,5 +208,49 @@ class TestNew inherits IO{
 	};
 	
 
+
+};
+
+class Test4 inherits TestNew {
+
+	string12 : String <- "hola";
+	string13 : String <- "el mundo";
+	string14: String <- "Hola";
+	string15: String <- "El mundo";
+	string16: String <- "HOLA";
+	string17: String <- "EL MUNDO";
+	string18 : String <- "holA";
+	string19: String <- "Buenos ";
+	string20: String <- "Buenas Tardes";
+	string21 : String <- "Hola a todos ";
+	string22 : String <- "Hola a TODOS";
+	x : Int;
+
+	someFunc() :  Object {
+
+
+		{
+
+				-- TEST STRING INTERNALS
+	string12 <- string13.concat(string14);
+	string12 <- string12.concat("HELLOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+	x <- string12.length();
+	string22 <- string12.concat(string13).concat(string14).concat(string15).concat(string16).concat(string17).concat(string18).concat(string19).concat(string20).concat(string21).concat(string22);
+	x <- string22.length();
+	string16 <- string22.substr(0, 10).substr(0,9).substr(0, 8).substr(0, 7).substr(0, 6).substr(0, 5).substr(0, 4).substr(0, 3).substr(0, 2).substr(0, 1);
+	x <- string16.length();
+	out_string("TEST 4");
+
+	string1 <- string2.concat(string3);
+	string1 <- string1.concat("HELLOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+	x <- string1.length();
+	string11 <- string1.concat(string2).concat(string3).concat(string4).concat(string5).concat(string6).concat(string7).concat(string8).concat(string9).concat(string10).concat(string11);
+	x <- string11.length();
+	string5 <- string11.substr(0, 10).substr(0,9).substr(0, 8).substr(0, 7).substr(0, 6).substr(0, 5).substr(0, 4).substr(0, 3).substr(0, 2).substr(0, 1);
+	x <- string5.length();
+
+
+		}
+	};
 
 };
