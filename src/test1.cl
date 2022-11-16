@@ -228,7 +228,10 @@ class Test4 inherits TestNew {
 	shallowCopy : String <- "copy";
 	deepCopy : Copy <- (new Copy).init(1, 2, 3);
 	theDeepCopy : Copy;
-
+	copy2 : Copy;
+	copy3 : Copy;
+	someCopy: Copy <- (new Copy).init(4, 5, 6);
+	otherCopy : Copy <- (new Copy).init(7, 8, 9);
 	someFunc() :  Object {
 
 
@@ -257,6 +260,9 @@ class Test4 inherits TestNew {
 	theDeepCopy.printA();
 	theDeepCopy.printA();
 	deepCopy.printA();
+	copy2 <- someCopy.copy1().copy1().copy1().copy1();
+	copy3 <- (new Copy).init(copy2.getA(), deepCopy.copy1().getB(), otherCopy.copy1().getC());
+	copy3.printA();
 	
 
 
@@ -282,5 +288,9 @@ init(valA : Int, valB : Int, valC : Int) : SELF_TYPE {
  copy1() : Copy {(new Copy).init(a, b, c)};
 
  printA() : Object {out_int(a)};
+
+ getA()  : Int {a};
+ getB() : Int {b};
+ getC() : Int {c};
 
 };
