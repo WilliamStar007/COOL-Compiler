@@ -285,7 +285,7 @@ init(valA : Int, valB : Int, valC : Int) : SELF_TYPE {
 		self;
 	}
 };
- copy1() : Copy {(new Copy).init(a, b, c)};
+ copy1() : Copy {(self).init(a, b, c)};
 
  printA() : Object {out_int(a)};
 
