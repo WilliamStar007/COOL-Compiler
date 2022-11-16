@@ -623,7 +623,7 @@ def cgen(exp):
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
 
-        if method_name in ["abort", "in_int", "in_string", "type_name", "copy"]:
+        if method_name in config.BUILT_INS:
             ret += f"pushq {r12}\n"
 
         for formal in exp.formals:
@@ -771,14 +771,43 @@ def print_ctors():
 
     config.class_tags.assemble_dicts(class_names)
 
+    temp = ["abort", "in_int", "in_string", "type_name", "copy", "length"]
+    def recurse_check(exp):
+        if isinstance(exp, Dispatch):
+            for formal in exp.formals:
+                recurse_check(formal)
+            if str(exp.method_name) in temp:
+                config.BUILT_INS.add(str(feature.identifier))
+        elif isinstance(exp, Block):
+            for expr in exp.exps:
+                recurse_check(expr)
+        elif isinstance(exp, IfBlock):
+            recurse_check(exp.predicate)
+            recurse_check(exp.then_body)
+            recurse_check(exp.else_body)
+        elif isinstance(exp, LoopBlock):
+            recurse_check(exp.predicate)
+            recurse_check(exp.body)
+        elif isinstance(exp, Let):
+            for binding in exp.let_list:
+                recurse_check(binding[3])
+            recurse_check(exp.let_body)
+        elif isinstance(exp, Binary):
+            recurse_check(exp.lhs)
+            recurse_check(exp.rhs)
+        elif isinstance(exp, Unary):
+            recurse_check(exp.rhs)
+        elif isinstance(exp, CaseBlock):
+            recurse_check(exp.case_exp)
+            for branch in exp.exps:
+                recurse_check(branch[2])
+
+    for cls in config.aast[1:]:
+        for feature in cls.feature_list:
+            if isinstance(feature, Method):
+                recurse_check(feature.body)
+
     ret = ""
-
-    name_to_obj = defaultdict(ClassObj)
-    for cls in config.aast:
-        if isinstance(cls, ClassObj):
-            class_name = cls.class_info.name
-            name_to_obj[class_name] = cls
-
     for key, val in config.class_map.iterables():
         ret += f".globl {key}..new\n"
         tmp = f"{key}..new:"
