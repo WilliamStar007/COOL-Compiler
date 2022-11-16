@@ -24,6 +24,35 @@ class Main inherits IO {
 		if numOne = hello then out_string("True") else out_string("FALSE") fi;
 		if hello =  "hello" then out_string("TRUE") else out_string("FALSE") fi;
 		if hello =  "HELLO" then out_string("TRUE") else out_string("FALSE") fi;
+		-- diff scope
+		let x  : Int <- 5 in x + 5;
+		let x  : String <- "hELLO" in x.concat("Goodbye");
+		let x  : Int <- 8 in x + 5;
+		let x  : String <- "Hi" in x.concat("Howdy");
+		let x  : Int <- 9 in x + 5;
+		let x  : String <- "Howdy" in x.concat("Matey");
+		let x  : Int <- 10 in x + 5;
+		let x  : String <- "Different X" in {
+			 x.concat("And different Y");
+			 let x : Int <- 0 in
+			 		x <- x + 5;
+					 let x : Int <- 7 in
+			 				x <- x + 5;
+							let x : Int <- 8 in
+									x <- x + 5;
+									let x : Int <- 9 in
+			 									x <- x + 5;
+												let x : Int <- 10 in
+															x <- x + 6;
+															let x : Int <- 15 in
+																		x <- x + 6;
+			 };
+														
+
+
+					
+	
+		
 
 
 		-- Case Test
@@ -88,21 +117,13 @@ class Main inherits IO {
 
          aNumber <- aNumber + 1;
 				 temp <- aNumber;
-
-
-
         while not (0 = aNumber)  loop 
           aNumber <- aNumber / 4
         pool; 
 				aNumber <- temp;      
       } 
-    pool;
-
-
-
-		
+    pool;		
 	}
-
 	};
 
 };
