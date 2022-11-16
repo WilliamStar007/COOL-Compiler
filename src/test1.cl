@@ -4,6 +4,8 @@ class Main inherits IO {
 	false_bool : Bool <- false;
 	one : Int <- 1;
 	helloThere : String <- "Hello There";
+	theNewTest : TestNew <- (new TestNew).init("Howdy", "Bros");
+	getA() : String {theNewTest.getA()};
 	main() : Object {{
     
 		-- big expression
@@ -70,6 +72,14 @@ class Main inherits IO {
  helloThere.copy(); 
  true_bool.copy(); 
 	helloThere.length();
+
+	-- TEST NEW and test New self dispatch
+	theNewTest <- new TestNew;
+	getA();
+	if theNewTest.testThis().testThat().testThose().getA() = theNewTest.getB()
+	then out_string("=)\n").out_string((new TestNew).getA())
+	else out_string("=(\n").out_string((new TestNew).getB())
+	fi;
 		
 	}
 
@@ -77,8 +87,59 @@ class Main inherits IO {
 
 };
 
-class A inherits IO {
+class Test1 inherits IO {
+
+		-- TEST: new and self type
+		some_number: Int <- helloThere(new SELF_TYPE);
+		helloThere(value:Test1):Int { 5000 };
 	other_main(): SELF_TYPE {
  out_string("Hello, World.\n")
 	};
+};
+
+class TestNew inherits IO{
+
+	a : String <- "Test";
+	b : String <- "New";
+	init(valA : String, valB : String) : TestNew {
+		{
+		a = valA;
+		b = valB;
+		self;
+		}
+	};
+
+	exihbit(): Object {
+		out_int(1).out_string(a).out_string(b).out_int(1)
+	};
+	testThis(): TestNew {
+		{
+		a <- "Hi";
+		self;
+		}
+	};
+
+	testThat(): TestNew {
+		{
+		b <- "Hello";
+		self;
+		}
+	};
+	testThose() : TestNew {
+		{
+			a <- "Hello";
+			b <- "New";
+			self;
+		}
+	};
+
+	getA() : String {
+		a
+	};
+	getB() : String {
+		b
+	};
+	
+
+
 };
