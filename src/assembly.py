@@ -635,7 +635,6 @@ def cgen(exp):
             ret += f"pushq {r12}\n"
 
         ret += f"## obtain vtable for self object of type {exp.in_class}\n"
-        vt_met = config.vtable_map.get_class(exp.in_class, method_name)
 
         ret += f"movq 16({r12}), {r14}\n"
 
@@ -678,10 +677,8 @@ def cgen(exp):
         branch_info += ":"
         ret += f"{branch_info:24}pushq {r13}\n"
 
-        # TODO: What is r1
         ret += f"## obtain vtable from object in r1 with static type {exp.obj_name.type_of}\n"
 
-        # TODO: Hardcoded 16
         ret += f"movq 16({r13}), {r14}\n"
 
         tmp = exp.obj_name.type_of if exp.obj_name.type_of != "SELF_TYPE" else exp.in_class
@@ -699,7 +696,8 @@ def cgen(exp):
 
 
     # ***** EXPRESSION BASE CLASS *****
-        # Expression base class
+
+    # Expression base class
     elif isinstance(exp, Expression):
         if exp.type_of in ["Bool", "Int", "String"]:
             ret += f"## new {exp.type_of}\n"
@@ -717,8 +715,6 @@ def print_vtables():
     '''
     Print program vtables
     '''
-    assemble_orig_vtable()
-
     str_num = 1
     ret = "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
 
@@ -756,7 +752,6 @@ def print_ctors():
         class_names.append(key)
         config.string_tag.add(key)
 
-    # TODO Needs to be removed
     config.obj_size.set("String", 2)
     config.obj_size.set("Bool", 1)
     config.obj_size.set("IO", 2)
@@ -942,7 +937,7 @@ def print_methods():
 
             tmp += f"## method body begins\n"
             tmp += f"{cgen(feature.body)}\n"
-            # offset = max(config.method_map.get_method(class_name, method_name).temp, 1)
+
             offset = max(-1 * config.rbp_offset.get_min(), 1)
 
             ret += f"## stack room for temporaries: {offset}\n"
@@ -1002,51 +997,6 @@ def print_cool_globals():
     ret += f"{built_ins.program_info()}\n"
 
     return ret
-
-def assemble_orig_vtable():
-    '''
-    Assembles map of cur_class -> method -> orig class
-    '''
-    base_classes = get_base_classes()
-    classes = config.aast.copy()
-    classes.pop(0)
-
-    name_to_obj = defaultdict(ClassObj)
-
-    for cls in base_classes:
-        classes.append(cls)
-
-    for cls in classes:
-        class_name = cls.class_info.name
-        name_to_obj[class_name] = cls
-
-    stk = []
-    for cls in classes:
-        orig_cls = cls.class_info.name
-        stk.append(cls)
-
-        cur = cls.parent
-        while cur:
-            cur = cur.name
-            cur = name_to_obj[cur]
-            stk.append(cur)
-            cur = cur.parent
-
-        # TODO: lol
-        if not cls.parent and orig_cls != "Object":
-            stk.append(name_to_obj["Object"])
-        if orig_cls == "Main":
-            stk.append(name_to_obj["IO"])
-
-
-        while len(stk) != 0:
-            top = stk.pop()
-            cls_name = top.class_info.name
-
-            for feature in top.feature_list:
-                if isinstance(feature, Method):
-                    method_name = feature.identifier.name
-                    config.vtable_map.set_class(orig_cls, method_name, cls_name)
 
 
 def alpha_sort():
