@@ -6,6 +6,11 @@ class Main inherits IO {
 	three : Three <- new Three;
 	numOne : String <- "1";
 	hello : String <- "hello";
+	someA : TestA <- new TestA;
+	otherA : TestA;
+	someB : TestB <- new TestB;
+	someZ : TestZ <- new TestZ;
+	indexI : Int <- 0;
 	main() : Object {{
     
 		-- TEST: void comparision and void with non void comparison
@@ -17,11 +22,204 @@ class Main inherits IO {
 		if numOne = hello then out_string("True") else out_string("FALSE") fi;
 		if hello =  "hello" then out_string("TRUE") else out_string("FALSE") fi;
 		if hello =  "HELLO" then out_string("TRUE") else out_string("FALSE") fi;
+
+
+		-- Case Test
+
+		-- TEST: case order
+    case someA of
+      b : TestD => 1;
+      c : TestC => 2;
+      d : TestB => 3;
+			a : TestA => 4;
+      esac;
+		while indexI < 10000 loop
+		{
+			case someZ of
+      a : TestA => 1;
+      b : TestB => 2;
+			c : TestC => 3;
+			d : TestD => 4;
+			e : TestE => 1;
+      f : TestF => 2;
+			g : TestG => 3;
+			h : TestH => 4;
+			i : TestJ => 1;
+      k : TestK => 2;
+			l : TestL => 3;
+			m : TestM => 4;
+			n : TestN => 1;
+      o : TestP => 2;
+			q : TestQ => 3;
+			r : TestR => 4;
+			s : TestS => 1;
+      t : TestT => 2;
+			u : TestU => 3;
+			v : TestV => 4;
+      esac;
+			indexI <- indexI + 1;
+		}
+		
+		pool;
+
+		someA.same_form_name1(5).same_form_name2(3).same_form_name3(2).same_form_name4(8);
+		otherA <- new TestB;
+		-- TEST dynamic dispatch override.
+		otherA.same_form_name1(5);
+		-- TEST static dispatch override.
+		otherA@TestA.same_form_name1(5);
+		-- TEST eval arg order
+		someB.eval_method(7 * 8 + 5, 1 + 2 * 5 / 2, 77 * 77 + 2, 11 * 11 + 88 - 3);
+		someB.eval_method(11 * 11 + 88 - 3, 77 * 77 + 2, 1 + 2 * 5 / 2 , 7 * 8 + 5 );
+		someB.eval_method2(7 * 8 + 5, 1 + 2 * 5 / 2, 77 * 77 + 2, 11 * 11 + 88 - 3);
+		someB.eval_method2(11 * 11 + 88 - 3, 77 * 77 + 2, 1 + 2 * 5 / 2 , 7 * 8 + 5 );
+
+		case someZ of
+      b : TestA => 1;
+      c : TestB => 3;
+			d : TestC => 2;
+			a : TestD => 1;
+      esac;
+
+	-- TEST: init order self
+
+
+	-- TEST: init order super
+		
 	}
 
 	};
 
 };
-class One {};
-class Two {};
-class Three {};
+class One inherits IO{};
+class Two inherits IO{};
+class Three  inherits IO {};
+
+class TestA {
+
+	-- TEST calls with same formal name
+	same_form_name1(a : Int) : TestA {self};
+	same_form_name2(a : Int) : TestA {self};
+	same_form_name3(a : Int) : TestA {self};
+	same_form_name4(a : Int) : Int {a};
+};
+class TestB inherits TestA {
+	same_formname1(a : Int) : Int {a};
+	eval_method(a : Int, b : Int, c : Int, d : Int): Int { a + b * c - d};
+	eval_method2(d : Int, c : Int, b : Int,  a : Int): Int {d - c * b + a};
+
+	};
+
+
+
+class TestC inherits TestB {};
+class TestD inherits TestC {};
+class TestE inherits TestD {};
+class TestF inherits TestE {};
+class TestG inherits TestF {};
+class TestH inherits TestG {};
+class TestI inherits TestH {};
+class TestJ inherits TestI {};
+class TestK inherits TestJ {};
+class TestL inherits TestK {};
+class TestM inherits TestL {};
+class TestN inherits TestM {};
+class TestO inherits TestN {};
+class TestP inherits TestO {};
+class TestQ inherits TestP {};
+class TestR inherits TestQ {};
+class TestS inherits TestR {};
+class TestT inherits TestS {};
+class TestU inherits TestT {};
+class TestV inherits TestU {};
+class TestW inherits TestV {};
+class TestX inherits TestW {};
+class TestY inherits TestX {};
+class TestZ inherits TestY {};
+
+
+
+class FromIO1 inherits IO {};
+class FromIO2 inherits IO {};
+class FromIO3 inherits IO {};
+class FromIO4 inherits IO {};
+class FromIO5 inherits IO {};
+class FromIO6 inherits IO {};
+class FromIO7 inherits IO {};
+class FromIO8 inherits IO {};
+class FromIO9 inherits IO {};
+class FromIO10 inherits IO {};
+class FromIO11 inherits IO {};
+class FromIO12 inherits IO {};
+class FromIO13 inherits IO {};
+class FromIO14 inherits IO {};
+class FromIO15 inherits IO {};
+class FromIO16 inherits IO {};
+class FromIO17 inherits IO {};
+class FromIO18 inherits IO {};
+class FromIO19 inherits IO {};
+class FromIO20 inherits IO {};
+class FromIO21 inherits IO {};
+class FromIO22 inherits IO {};
+class FromIO23 inherits IO {};
+class FromIO24 inherits IO {};
+class FromIO25 inherits IO {};
+class FromIO26 inherits IO {};
+class FromIO27 inherits IO {};
+class FromIO28 inherits IO {};
+class FromIO29 inherits IO {};
+class FromIO30 inherits IO {};
+class FromIO31 inherits IO {};
+class FromIO32 inherits IO {};
+class FromIO33 inherits IO {};
+class FromIO34 inherits IO {};
+class FromIO35 inherits IO {};
+class FromIO36 inherits IO {};
+class FromIO37 inherits IO {};
+class FromIO38 inherits IO {};
+class FromIO39 inherits IO {};
+class FromIO40 inherits IO {};
+class FromIO41 inherits IO {};
+class FromIO42 inherits IO {};
+class FromIO43 inherits IO {};
+class FromIO44 inherits IO {};
+class FromIO45 inherits IO {};
+class FromIO46 inherits IO {};
+class FromIO47 inherits IO {};
+class FromIO48 inherits IO {};
+class FromIO49 inherits IO {};
+class FromIO50 inherits IO {};
+class FromIO51 inherits IO {};
+class FromIO52 inherits IO {};
+class FromIO53 inherits IO {};
+class FromIO54 inherits IO {};
+class FromIO55 inherits IO {};
+class FromIO56 inherits IO {};
+class FromIO57 inherits IO {};
+class FromIO58 inherits IO {};
+class FromIO59 inherits IO {};
+class FromIO60 inherits IO {};
+class FromIO61 inherits IO {};
+class FromIO62 inherits IO {};
+class FromIO63 inherits IO {};
+class FromIO64 inherits IO {};
+class FromIO65 inherits IO {};
+class FromIO66 inherits IO {};
+class FromIO67 inherits IO {};
+class FromIO68 inherits IO {};
+class FromIO69 inherits IO {};
+class FromIO70 inherits IO {};
+class FromIO71 inherits IO {};
+class FromIO72 inherits IO {};
+class FromIO73 inherits IO {};
+class FromIO74 inherits IO {};
+class FromIO75 inherits IO {};
+class FromIO76 inherits IO {};
+class FromIO77 inherits IO {};
+class FromIO78 inherits IO {};
+class FromIO79 inherits IO {};
+class FromIO80 inherits IO {};
+class FromIO81 inherits IO {};
+class FromIO82 inherits IO {};
+class FromIO83 inherits IO {};
+class FromIO84 inherits IO {};
