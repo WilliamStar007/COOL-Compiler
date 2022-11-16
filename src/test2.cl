@@ -11,6 +11,8 @@ class Main inherits IO {
 	someB : TestB <- new TestB;
 	someZ : TestZ <- new TestZ;
 	indexI : Int <- 0;
+	aNumber : Int <- 0;
+	temp : Int;
 	main() : Object {{
     
 		-- TEST: void comparision and void with non void comparison
@@ -81,10 +83,23 @@ class Main inherits IO {
 			a : TestD => 1;
       esac;
 
-	-- TEST: init order self
+			while aNumber < 10000 loop 
+      {
+
+         aNumber <- aNumber + 1;
+				 temp <- aNumber;
 
 
-	-- TEST: init order super
+
+        while not (0 = aNumber)  loop 
+          aNumber <- aNumber / 4
+        pool; 
+				aNumber <- temp;      
+      } 
+    pool;
+
+
+
 		
 	}
 
