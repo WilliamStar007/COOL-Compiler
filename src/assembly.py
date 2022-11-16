@@ -609,7 +609,6 @@ def cgen(exp):
         ret += f"movq {offset * config.OFFSET_AMT}({r14}), {r14}\n"
         ret += f"call *{r14}\n"
 
-        # TODO Is below correct?
         stk_reset = (len(exp.formals)+1) * config.OFFSET_AMT
         ret += f"addq ${stk_reset}, {rsp}\n"
         ret += f"popq {rbp}\n"
@@ -623,13 +622,11 @@ def cgen(exp):
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
 
-        if method_name in config.BUILT_INS:
-            ret += f"pushq {r12}\n"
-
         for formal in exp.formals:
             ret += f"{cgen(formal)}\n"
             ret += f"pushq {r13}\n"
-            ret += f"pushq {r12}\n"
+
+        ret += f"pushq {r12}\n"
 
         ret += f"## obtain vtable for self object of type {exp.in_class}\n"
 
@@ -771,41 +768,6 @@ def print_ctors():
 
     config.class_tags.assemble_dicts(class_names)
 
-    temp = ["abort", "in_int", "in_string", "type_name", "copy", "length"]
-    def recurse_check(exp):
-        if isinstance(exp, Dispatch):
-            for formal in exp.formals:
-                recurse_check(formal)
-            if str(exp.method_name) in temp:
-                config.BUILT_INS.add(str(feature.identifier))
-        elif isinstance(exp, Block):
-            for expr in exp.exps:
-                recurse_check(expr)
-        elif isinstance(exp, IfBlock):
-            recurse_check(exp.predicate)
-            recurse_check(exp.then_body)
-            recurse_check(exp.else_body)
-        elif isinstance(exp, LoopBlock):
-            recurse_check(exp.predicate)
-            recurse_check(exp.body)
-        elif isinstance(exp, Let):
-            for binding in exp.let_list:
-                recurse_check(binding[3])
-            recurse_check(exp.let_body)
-        elif isinstance(exp, Binary):
-            recurse_check(exp.lhs)
-            recurse_check(exp.rhs)
-        elif isinstance(exp, Unary):
-            recurse_check(exp.rhs)
-        elif isinstance(exp, CaseBlock):
-            recurse_check(exp.case_exp)
-            for branch in exp.exps:
-                recurse_check(branch[2])
-
-    for cls in config.aast[1:]:
-        for feature in cls.feature_list:
-            if isinstance(feature, Method):
-                recurse_check(feature.body)
 
     ret = ""
     for key, val in config.class_map.iterables():
@@ -1015,6 +977,9 @@ def print_cool_globals():
         temp = cur_str[0] + ":"
         if "\\n" in cur_str[1]:
             tmp_str = cur_str[1][:len(cur_str[1])-2] + "\\\\n"
+            ret += f"{temp:24}# \"{tmp_str}\"\n"
+        elif "\\t" in cur_str[1]:
+            tmp_str = cur_str[1][:len(cur_str[1])-2] + "\\\\t"
             ret += f"{temp:24}# \"{tmp_str}\"\n"
         else:
             ret += f"{temp:24}# \"{cur_str[1]}\"\n"

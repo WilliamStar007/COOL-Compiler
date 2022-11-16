@@ -21,7 +21,7 @@ def main():
         print("Specify .cl-type input file")
         sys.exit(1)
     with open(sys.argv[1], encoding="utf-8") as f:
-        config.lines = [l.rstrip() for l in f.readlines()]
+        config.lines = [l.strip('\n') for l in f.readlines()]
 
     # Assembles the maps and the AAST
     read_input()
