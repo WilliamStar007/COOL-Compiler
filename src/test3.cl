@@ -81,33 +81,65 @@ class Main inherits IO {
       b : B => 1;
       c : C => 2;
       d : D => 3;
+      e : TestE => let x  : Int <- 9 in x + 5;
+			f : TestF => let x  : String <- "Howdy" in x.concat("Matey");
+			g : TestG => let x  : Int <- 10 in x + 5;
+			h : TestH => 4;
+			i : TestJ => 1;
+			k : TestK => 2;
+			l : TestL => 3;
+			m : TestM => 4;
+			n : TestN => 1;
+			o : TestP => 2;
+			q : TestQ => 3;
+			r : TestR => 4;
+			s : TestS => 1;
+			t : TestT => 2;
+			u : TestU => 3;
+			v : TestV => 4;
       esac;
+
+    -- More case without matching branch
+    case y of 
+    a : Int => 0;
+    b : Bool => 1;
+    c : IO => 2;
+    esac;
 -- TEST: case on void
     case theB of
     a : A => 0;
       b : B => 1;
       c : C => 2;
       d : D => 3;
-      esac;
+      esac; 
+      case theA of
+      a : A => 0;
+        b : B => 1;
+        c : C => 2;
+        d : D => 3;
+        esac; 
 
-   
-
-    
+        case theC of
+        a : A => 0;
+          b : B => 1;
+          c : C => 2;
+          d : D => 3;
+          esac; 
+          case theD of
+          a : A => 0;
+            b : B => 1;
+            c : C => 2;
+            d : D => 3;
+            esac; 
 	}
-
-
 	};
-
 };
 
 class A inherits IO {
-
   myLetter() : String {"A"};
   printA() : Object {out_string("A")};
 };
 class B inherits A {
-
-
   myLetter() : String {"B"};
 };
 class C inherits B {
@@ -115,6 +147,27 @@ class C inherits B {
   myLetter() : String {"C"};
 };
 class D inherits C {
-
   myLetter() : String {"D"};
 };
+
+class TestE inherits D {};
+class TestF inherits TestE {};
+class TestG inherits TestF {};
+class TestH inherits TestG {};
+class TestI inherits TestH {};
+class TestJ inherits TestI {};
+class TestK inherits TestJ {};
+class TestL inherits TestK {};
+class TestM inherits TestL {};
+class TestN inherits TestM {};
+class TestO inherits TestN {};
+class TestP inherits TestO {};
+class TestQ inherits TestP {};
+class TestR inherits TestQ {};
+class TestS inherits TestR {};
+class TestT inherits TestS {};
+class TestU inherits TestT {};
+class TestV inherits TestU {};
+class TestW inherits TestV {};
+class TestX inherits TestW {};
+class TestY inherits TestX {};
