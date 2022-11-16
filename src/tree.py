@@ -56,7 +56,7 @@ class Attribute(Feature):
         self.typename = _typename
         self.expr = _expr
 
-        self.temp = 0
+        self.temp = 1
         if self.expr is not None:
             self.temp = self.expr.temp
 
@@ -79,7 +79,7 @@ class Method(Feature):
         self.formals_list = _formals_list
         self.typename = _typename
         self.body = _body
-        self.temp = 0
+        self.temp = 1
         if self.body is not None:
             self.temp = max(self.body.temp, 1)
 
@@ -236,8 +236,7 @@ class Dispatch(Expression):
 
         self.temp = 0
         for formal in self.formals:
-            if formal.temp > self.temp:
-                self.temp = formal.temp
+            self.temp += formal.temp 
 
 
 class DynamicDispatch(Dispatch):

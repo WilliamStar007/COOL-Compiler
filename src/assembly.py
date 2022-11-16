@@ -340,9 +340,12 @@ def cgen(exp):
         ret += f"pushq {rbp}\n"
         ret += f"{cgen(exp.lhs)}\n"
         ret += f"pushq {r13}\n"
-        ret += f"{cgen(exp.rhs)}\n"
-        ret += f"pushq {r13}\n"
 
+        config.rbp_offset.decrement()
+        ret += f"{cgen(exp.rhs)}\n"
+        config.rbp_offset.increment()
+        
+        ret += f"pushq {r13}\n"
         ret += f"pushq {r12}\n"
 
 
@@ -610,7 +613,7 @@ def cgen(exp):
         ret += f"call *{r14}\n"
 
         # TODO Is below correct?
-        stk_reset = max(-config.rbp_offset.get_min(), 1) * config.OFFSET_AMT# offset * config.OFFSET_AMT
+        stk_reset = (len(exp.formals)+1) * config.OFFSET_AMT
         ret += f"addq ${stk_reset}, {rsp}\n"
         ret += f"popq {rbp}\n"
         ret += f"popq {r12}"
@@ -622,10 +625,8 @@ def cgen(exp):
         ret += f"## {method_name}(...)\n"
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
-        # TODO: Need to figure out why this is needed
-        #if method_name in ["abort", "substr", "in_string", "in_int"]: # TODO: WILL BE WRONG
-        if method_name in ["abort", "in_int", "in_string"]:
-            ret += f"pushq {r12}\n"
+
+        ret += f"pushq {r12}\n"
 
         for formal in exp.formals:
             ret += f"{cgen(formal)}\n"
@@ -634,13 +635,6 @@ def cgen(exp):
 
         ret += f"## obtain vtable for self object of type {exp.in_class}\n"
         vt_met = config.vtable_map.get_class(exp.in_class, method_name)
-        cur_size = config.OFFSET_AMT
-
-        # TODO: WRONG
-        #if vt_met in ["IO"]:
-        #    cur_size *= 2
-        #else:
-        #    cur_size *= config.obj_size.get(exp.in_class, exp.in_class)
 
         ret += f"movq 16({r12}), {r14}\n"
 
@@ -649,8 +643,9 @@ def cgen(exp):
         ret += f"movq {method_offset * config.OFFSET_AMT}({r14}), {r14}\n"
         ret += f"call *{r14}\n"
 
-        stk_reset = max(-config.rbp_offset.get_min(), 1) * config.OFFSET_AMT# offset * config.OFFSET_AMT
+        stk_reset = (len(exp.formals)+1) * config.OFFSET_AMT
         ret += f"addq ${stk_reset}, {rsp}\n"
+        ret += f"popq {r12}\n"
         ret += f"popq {rbp}\n"
         ret += f"popq {r12}"
 
@@ -698,7 +693,7 @@ def cgen(exp):
 
         obj_size = config.obj_size.get(exp.in_class, exp.type_of) * config.OFFSET_AMT
 
-        stk_reset = max(-config.rbp_offset.get_min(), 1) * config.OFFSET_AMT# offset * config.OFFSET_AMT
+        stk_reset = (len(exp.formals)+1) * config.OFFSET_AMT
         ret += f"addq ${stk_reset}, {rsp}\n"
         ret += f"popq {rbp}\n"
         ret += f"popq {r12}"
@@ -785,13 +780,7 @@ def print_ctors():
         ret += f"pushq {rbp}\n"
         ret += f"movq {rsp}, {rbp}\n"
 
-        if key in ["Bool", "Int", "String", "IO", "Object"]:
-            cur_size = max(math.ceil(len(val) / config.OFFSET_AMT), 1)
-        else:
-            cur_size = name_to_obj[key].temp
-
         tmp = ""
-
         if len(val) != 0:
             tmp += "## initialize attributes\n"
             cur_offset = 3
