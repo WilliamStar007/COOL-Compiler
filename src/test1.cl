@@ -236,6 +236,8 @@ class Test4 inherits TestNew {
 	void1 : Copy;
 	void2 : Copy;
 	nonVoid : Copy <- otherCopy;
+
+	worker : Employee <- (new Employee).init1("The rain", 1000, 100000000);
 	someFunc() :  Object {
 
 
@@ -317,4 +319,30 @@ init(valA : Int, valB : Int, valC : Int) : SELF_TYPE {
  getC() : Int {c};
  printSomething(output: String) : Object {out_string(output)};
 
+};
+
+class Person {
+	name : String;
+	age : Int;
+	init(nameVal : String, ageVal : Int) : SELF_TYPE {
+		{
+			name <- nameVal;
+			age <- ageVal;
+			self;
+		}
+	};
+
+};
+
+class Employee inherits Person {
+	salary : Int;
+	init1(nameVal : String, ageVal: Int, salaryVal: Int) : SELF_TYPE {
+		{
+		name <- nameVal;
+		ageVal <- ageVal;
+		salary <- salaryVal;
+		self;
+		}
+
+	};
 };
