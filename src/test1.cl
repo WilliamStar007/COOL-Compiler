@@ -6,9 +6,32 @@ class Main inherits IO {
 	one : Int <- 1;
 	helloThere : String <- "Hello There";
 	theNewTest : TestNew <- (new TestNew).init("Howdy", "Bros");
+
+	-- TEST STRING INTERNALS
+	string1 : String <- "hello";
+	string2 : String <- "world";
+	string3 : String <- "Hello";
+	string4 : String <- "World";
+	string5 : String <- "HELLO";
+	string6 : String <- "WORLD";
+	string7 : String <- "HI";
+	string8 : String <- "THERE";
+	string9 : String <- "Howdy";
+	string10 : String <- "Bro";
+	string11 : String <- "Aye";
 	x : Int;
 	getA() : String {theNewTest.getA()};
 	main() : Object {{
+
+
+	-- TEST STRING INTERNALS
+	string1 <- string2.concat(string3);
+	string1 <- string1.concat("HELLOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+	x <- string1.length();
+	string11 <- string1.concat(string2).concat(string3).concat(string4).concat(string5).concat(string6).concat(string7).concat(string8).concat(string9).concat(string10).concat(string11);
+	x <- string11.length();
+	string5 <- string11.substr(0, 10).substr(0,9).substr(0, 8).substr(0, 7).substr(0, 6).substr(0, 5).substr(0, 4).substr(0, 3).substr(0, 2).substr(0, 1);
+	x <- string5.length();
   -- TEST ASSIGNMENTS
 		-- big expression
 	x <-	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29;
