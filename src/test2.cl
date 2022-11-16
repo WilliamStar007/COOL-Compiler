@@ -142,7 +142,7 @@ class Main inherits IO {
 	-- TEST let case
 			let indexK : Int <- 0, newZ : TestZ <- new TestZ in
 {
-			while indexK < 10000 loop
+			while indexK < 1000 loop
 			{
 				case newZ of
 				a : TestA => 1;
@@ -243,7 +243,18 @@ class TestV inherits TestU {};
 class TestW inherits TestV {};
 class TestX inherits TestW {};
 class TestY inherits TestX {};
-class TestZ inherits TestY {};
+class TestZ inherits TestY {
+		someA : TestA <- new TestA;
+		-- TEST case attrbutes
+		num1 : Int <-  case someA of
+		b : TestD => 1;
+		c : TestC => 2;
+		d : TestB => 3;
+		a : TestA => 4;
+		esac;
+
+
+};
 
 
 
