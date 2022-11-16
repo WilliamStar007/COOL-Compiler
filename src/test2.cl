@@ -13,6 +13,14 @@ class Main inherits IO {
 	indexI : Int <- 0;
 	aNumber : Int <- 0;
 	temp : Int;
+
+
+	fact(n : Int) : Int {
+		{
+			if n = 0 then 1 else n * fact(n - 1) fi;
+		}
+
+	};
 	main() : Object {{
     
 		-- TEST: void comparision and void with non void comparison
@@ -123,6 +131,12 @@ class Main inherits IO {
 				aNumber <- temp;      
       } 
     pool;		
+
+	-- TEST: perform factorial
+	
+	out_int(fact(15));
+
+
 	}
 	};
 
