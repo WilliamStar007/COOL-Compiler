@@ -763,6 +763,8 @@ def print_ctors():
     temp = ["abort", "in_int", "in_string", "type_name", "copy", "length"]
     def recurse_check(exp):
         if isinstance(exp, Dispatch):
+            for formal in exp.formals:
+                recurse_check(formal)
             if str(exp.method_name) in temp:
                 config.BUILT_INS.add(str(feature.identifier))
         elif isinstance(exp, Block):
@@ -775,6 +777,19 @@ def print_ctors():
         elif isinstance(exp, LoopBlock):
             recurse_check(exp.predicate)
             recurse_check(exp.body)
+        elif isinstance(exp, Let):
+            for binding in exp.let_list:
+                recurse_check(binding[3])
+            recurse_check(exp.let_body)
+        elif isinstance(exp, Binary):
+            recurse_check(exp.lhs)
+            recurse_check(exp.rhs)
+        elif isinstance(exp, Unary):
+            recurse_check(exp.rhs)
+        elif isinstance(exp, CaseBlock):
+            recurse_check(exp.case_exp)
+            for branch in exp.exps:
+                recurse_check(branch[2])
 
     for cls in config.aast[1:]:
         for feature in cls.feature_list:
