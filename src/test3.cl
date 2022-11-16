@@ -1,4 +1,20 @@
 -- Bad Tests: Test3.cl
+
+
+
+class OverFlow {
+  a : Int;
+  b : Int;
+  -- STACK OVERFLOW
+  aOver : OverFlow <- new OverFlow;
+
+  makeOverFlow2() : OverFlow2 {(new OverFlow2)};
+};
+
+class OverFlow2 inherits OverFlow {
+  c : Int;
+  d : Int;
+};
 class Main inherits IO {
   y : String <- "hello";
   theA : A;
@@ -11,8 +27,15 @@ class Main inherits IO {
   voidInput: IO;
   voidObj: Object;
   x : Int;
+  aOver : OverFlow <- new OverFlow;
+  
+  --TEST Stack Overflow
+  fact(n : Int) : Int { n * fact(n - 1)};
+
 	main() : Object {{
-    
+  -- TEST Stack overflow
+  fact(5);
+   
 	--TEST: Division by zero. DONE
   out_string("5 / 0");
 		x <- 5 / 0;
@@ -171,3 +194,4 @@ class TestV inherits TestU {};
 class TestW inherits TestV {};
 class TestX inherits TestW {};
 class TestY inherits TestX {};
+
