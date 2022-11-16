@@ -80,8 +80,19 @@ class Main inherits IO {
 	then out_string("=)\n").out_string((new TestNew).getA())
 	else out_string("=(\n").out_string((new TestNew).getB())
 	fi;
-		
+
+	-- TEST not expression
+	if not (theNewTest.testThis().testThat().testThose().getA() = theNewTest.getB())
+	then out_string("=)\n").out_string((new TestNew).getA())
+	else out_string("=(\n").out_string((new TestNew).getB())
+	fi;
+
+	if not (not(true_bool = false_bool)) then out_string("WRONG") else out_string("CORRECT") fi;
+	if not(not (not (true_bool = true))) then out_string("CORRECT") else out_string("WRONG") fi;
+	if not(not(not(not (not (false_bool = false))))) then out_string("CORRECT") else out_string("WRONG") fi;
 	}
+
+
 
 	};
 
