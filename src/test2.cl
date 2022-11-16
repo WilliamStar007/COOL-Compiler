@@ -171,7 +171,7 @@ class Main inherits IO {
 			
 			pool;};
 		
-			
+
 			 
 
 
@@ -255,6 +255,21 @@ class TestZ inherits TestY {
 
 		-- TEST attribute formals
 		num2 : Int <- incrementNum(num1);
+
+		num3 : Int <- let x : Int <- 0 in
+										{
+											x <- x + 5;
+												let y : Int <- 7 in
+														y <- x + 5;
+															 let x : Int <- 8 in
+																	 x <- x + 5;
+																	 let x : Int <- 9 in
+																				x <- x + 5;
+								 														let x : Int <- 10 in
+											 														x <- x + 6;
+											 																let x : Int <- x + 15 + x in
+																															 x;
+										};
 
 		incrementNum(num2: Int) : Int {num1 + 1};
 
