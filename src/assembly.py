@@ -807,6 +807,7 @@ def print_ctors():
             if isinstance(feature, Method):
                 recurse_check(feature.body)
 
+    ret = ""
     for key, val in config.class_map.iterables():
         ret += f".globl {key}..new\n"
         tmp = f"{key}..new:"
