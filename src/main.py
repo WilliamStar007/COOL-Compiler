@@ -6,7 +6,7 @@ Main file
 import sys
 import config
 from reader import read_input
-from assembly import print_vtables, print_ctors, print_methods, print_cool_globals
+from assembly import print_assembly
 
 def main():
     '''
@@ -26,14 +26,7 @@ def main():
     # Assembles the maps and the AAST
     read_input()
 
-    output = []
-
-    output.append(print_vtables())
-    output.append(print_ctors())
-    output.append(print_methods())
-    output.append(print_cool_globals())
-
-    output_str = "".join(output)
+    output_str = print_assembly()
 
     # Output file logic
     output_filename = sys.argv[1]
