@@ -139,7 +139,37 @@ class Main inherits IO {
 	-- TEST let let
 			let y : Int <- 5 in 
 				let x: Int <- 5 + y in x;
-
+	-- TEST let case
+			let indexK : Int <- 0, newZ : TestZ <- new TestZ in
+{
+			while indexK < 10000 loop
+			{
+				case newZ of
+				a : TestA => 1;
+				b : TestB => 2;
+				c : TestC => 3;
+				d : TestD => 4;
+				e : TestE => 1;
+				f : TestF => 2;
+				g : TestG => 3;
+				h : TestH => 4;
+				i : TestJ => 1;
+				k : TestK => 2;
+				l : TestL => 3;
+				m : TestM => 4;
+				n : TestN => 1;
+				o : TestP => 2;
+				q : TestQ => 3;
+				r : TestR => 4;
+				s : TestS => 1;
+				t : TestT => 2;
+				u : TestU => 3;
+				v : TestV => 4;
+				esac;
+				indexK <- indexK + 1;
+			}
+			
+			pool;};
 		
 			
 			 
