@@ -63,6 +63,12 @@ class Mapping(object):
         '''
         return len(self.dict[class_name])
 
+    def exists(self, class_name, method_name):
+        '''
+        Find if it exists
+        '''
+        return class_name in self.dict and method_name in self.dict[class_name]
+
 
 class ClassMap(Mapping):
     '''
@@ -265,31 +271,6 @@ class StringTag(object):
     def __len__(self):
         return len(self.fwd_dict)
 
-class ObjSize(object):
-    '''
-    Maps object to its size
-    '''
-    def __init__(self):
-        self.dict = defaultdict(int)
-
-    def set(self, class_name, amt):
-        '''
-        Set size
-        '''
-        if class_name not in self.dict:
-            self.dict[class_name] = amt
-
-    def get(self, cur_class, class_name):
-        '''
-        Get size
-        '''
-        if class_name == "SELF_TYPE":
-            class_name = cur_class
-        if class_name not in self.dict:
-            print("OBJ SIZE ERROR")
-            sys.exit(1)
-        return self.dict[class_name]
-
 
 class OffsetMap(object):
     '''
@@ -454,3 +435,15 @@ class MinTracker(Tracker):
         '''
         super().reset()
         self.min = self.init
+
+class TaggedMethods(Mapping):
+    '''
+    Mapping of class -> names of methods that are tagged
+    '''
+    def __init__(self):
+        Mapping.__init__(self)
+
+    def exists(self, class_name, method_name):
+        if class_name not in self.dict: # TODO: BROKEN. NEED TO MAKE SURE IT INHERITS
+            self.dict[class_name] = ["abort", "in_int", "in_string", "type_name", "copy", "length"]
+        return class_name in self.dict and method_name in self.dict[class_name]

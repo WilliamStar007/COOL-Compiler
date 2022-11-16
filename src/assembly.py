@@ -623,7 +623,7 @@ def cgen(exp):
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
 
-        if method_name in config.BUILT_INS:
+        if config.tagged_methods.exists(exp.in_class, method_name):
             ret += f"pushq {r12}\n"
 
         for formal in exp.formals:
@@ -771,41 +771,6 @@ def print_ctors():
 
     config.class_tags.assemble_dicts(class_names)
 
-    temp = ["abort", "in_int", "in_string", "type_name", "copy", "length"]
-    def recurse_check(exp):
-        if isinstance(exp, Dispatch):
-            for formal in exp.formals:
-                recurse_check(formal)
-            if str(exp.method_name) in temp:
-                config.BUILT_INS.add(str(feature.identifier))
-        elif isinstance(exp, Block):
-            for expr in exp.exps:
-                recurse_check(expr)
-        elif isinstance(exp, IfBlock):
-            recurse_check(exp.predicate)
-            recurse_check(exp.then_body)
-            recurse_check(exp.else_body)
-        elif isinstance(exp, LoopBlock):
-            recurse_check(exp.predicate)
-            recurse_check(exp.body)
-        elif isinstance(exp, Let):
-            for binding in exp.let_list:
-                recurse_check(binding[3])
-            recurse_check(exp.let_body)
-        elif isinstance(exp, Binary):
-            recurse_check(exp.lhs)
-            recurse_check(exp.rhs)
-        elif isinstance(exp, Unary):
-            recurse_check(exp.rhs)
-        elif isinstance(exp, CaseBlock):
-            recurse_check(exp.case_exp)
-            for branch in exp.exps:
-                recurse_check(branch[2])
-
-    for cls in config.aast[1:]:
-        for feature in cls.feature_list:
-            if isinstance(feature, Method):
-                recurse_check(feature.body)
 
     ret = ""
     for key, val in config.class_map.iterables():
@@ -1016,6 +981,9 @@ def print_cool_globals():
         if "\\n" in cur_str[1]:
             tmp_str = cur_str[1][:len(cur_str[1])-2] + "\\\\n"
             ret += f"{temp:24}# \"{tmp_str}\"\n"
+        elif "\\t" in cur_str[1]:
+            tmp_str = cur_str[1][:len(cur_str[1])-2] + "\\\\t"
+            ret += f"{temp:24}# \"{tmp_str}\"\n"
         else:
             ret += f"{temp:24}# \"{cur_str[1]}\"\n"
         for ch in cur_str[1]:
@@ -1043,6 +1011,47 @@ def alpha_sort():
         cls_map.append((key, config.class_tags.get_tag(key)))
 
     return sorted(cls_map, key=lambda x: x[0])
+
+
+def recurse_check(class_name, exp):
+    '''
+    Recursive checker
+    '''
+    if isinstance(exp, Dispatch):
+        for formal in exp.formals:
+            if recurse_check(class_name, formal):
+                return True
+        if isinstance(exp, (DynamicDispatch, StaticDispatch)):
+            if recurse_check(class_name, exp.obj_name):
+                return True
+        return config.tagged_methods.exists(class_name, exp.method_name.name)
+    elif isinstance(exp, Block):
+        for expr in exp.exps:
+            if recurse_check(class_name, expr):
+                return True
+    elif isinstance(exp, IfBlock):
+        return recurse_check(class_name, exp.predicate) or \
+               recurse_check(class_name, exp.then_body) or \
+               recurse_check(class_name, exp.else_body)
+    elif isinstance(exp, LoopBlock):
+        return recurse_check(class_name, exp.predicate) or recurse_check(class_name, exp.body)
+    elif isinstance(exp, Let):
+        for binding in exp.let_list:
+            if recurse_check(class_name, binding[3]):
+                return True
+        return recurse_check(class_name, exp.let_body)
+    elif isinstance(exp, Binary):
+        return recurse_check(class_name, exp.lhs) or recurse_check(class_name, exp.rhs)
+    elif isinstance(exp, Unary):
+        return recurse_check(class_name, exp.rhs)
+    elif isinstance(exp, CaseBlock):
+        if recurse_check(class_name, exp.case_exp):
+            return True
+        for branch in exp.exps:
+            if recurse_check(class_name, branch[2]):
+                return True
+
+    return False
 
 
 def get_ordering():
@@ -1106,6 +1115,9 @@ def get_ordering():
                         res[class_name][method_name] = (cur_class, feature)
                         seen.add((cur_class, method_name))
 
+                    if recurse_check(class_name, method_name):
+                        config.tagged_methods.append_obj(class_name, method_name)
+ 
     return res
 
 
