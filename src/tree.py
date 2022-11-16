@@ -13,7 +13,6 @@ class ClassObj(object):
         self.check_inherits = _check_inherits
         self.parent = _parent
         self.feature_list = _feature_list
-                
 
     def __repr__(self):
         ret = f"CLASS: {self.class_info.name}"
@@ -42,7 +41,7 @@ class Attribute(Feature):
     def __repr__(self):
         ret = f"{self.identifier.lineno}\n{self.identifier}\n{self.typename.lineno}\n{self.typename.name}\n"
         return ret
-    
+
     def exp_print(self):
         '''
         Print expression
@@ -214,18 +213,14 @@ class DynamicDispatch(Dispatch):
         self.obj_name = _obj_name
 
     def __repr__(self):
-        ret = f"{self.lineno}\n{self.type_of}\ndynamic_dispatch\n{self.obj_name}\n"
-        ret += f"{self.method_name.lineno}\n{self.method_name}\n{len(self.formals)}"
+        ret = []
+        ret.append(f"{self.lineno}\n{self.type_of}\ndynamic_dispatch\n{self.obj_name}")
+        ret.append(f"{self.method_name.lineno}\n{self.method_name}\n{len(self.formals)}")
 
-        if len(self.formals) != 0:
-            ret += "\n"
+        for formal in self.formals:
+            ret.append(f"{formal}")
 
-            for i, formal in enumerate(self.formals):
-                ret += f"{formal}"
-                if i != len(self.formals) - 1:
-                    ret += "\n"
-
-        return ret
+        return "\n".join(ret)
 
     def exp_print(self):
         '''

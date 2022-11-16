@@ -736,9 +736,8 @@ def print_vtables():
     '''
     Print program vtables
     '''
-    str_num = 1
     ret = "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
-
+    str_num = 1
     for key, val in config.impl_map.iterables():
         ret += f".globl {key}..vtable\n"
 
@@ -746,6 +745,8 @@ def print_vtables():
         ret += f"{tmp:24}## virtual function table for {key}\n"
         ret += f".quad string{str_num}\n"
         ret += f".quad {key}..new\n"
+
+        str_num += 1
 
         cur_offset = 2
 
@@ -755,7 +756,6 @@ def print_vtables():
             cur_offset += 1
 
         ret += "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
-        str_num += 1
 
     return ret
 
@@ -764,16 +764,14 @@ def print_ctors():
     '''
     Print program constructors
     '''
-    config.rbp_offset.reset()
-
-    ret = ""
-
     class_names = []
     for key, _ in config.class_map.iterables():
         class_names.append(key)
         config.string_tag.add(key)
 
     config.class_tags.assemble_dicts(class_names)
+
+    ret = ""
 
     name_to_obj = defaultdict(ClassObj)
     for cls in config.aast:
@@ -879,8 +877,6 @@ def print_methods():
             orig_class = tpl[0]
             feature = tpl[1]
 
-            # CHECK BUILT-INS
-            # TODO: Put this somewhere else
             if orig_class == "IO":
                 if method_name == "in_int":
                     ret += f"{built_ins.io_in_int()}\n"
