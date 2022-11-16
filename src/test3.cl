@@ -1,7 +1,7 @@
 -- Bad Tests: Test3.cl
 class Main inherits IO {
   y : String <- "hello";
-  theA ; A;
+  theA : A;
   theB : B;
   theC : C;
   theD : D;
