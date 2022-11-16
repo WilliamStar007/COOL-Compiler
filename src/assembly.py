@@ -626,7 +626,8 @@ def cgen(exp):
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
 
-        ret += f"pushq {r12}\n"
+        if method_name in ["abort", "in_int", "in_string", "type_name", "copy"]:
+            ret += f"pushq {r12}\n"
 
         for formal in exp.formals:
             ret += f"{cgen(formal)}\n"
@@ -645,7 +646,7 @@ def cgen(exp):
 
         stk_reset = (len(exp.formals)+1) * config.OFFSET_AMT
         ret += f"addq ${stk_reset}, {rsp}\n"
-        ret += f"popq {r12}\n"
+
         ret += f"popq {rbp}\n"
         ret += f"popq {r12}"
 
@@ -690,8 +691,6 @@ def cgen(exp):
         ret += f"## look up {exp.method_name.name}() at offset {method_offset} in vtable\n"
         ret += f"movq {offset}({r14}), {r14}\n"
         ret += f"call *{r14}\n"
-
-        obj_size = config.obj_size.get(exp.in_class, exp.type_of) * config.OFFSET_AMT
 
         stk_reset = (len(exp.formals)+1) * config.OFFSET_AMT
         ret += f"addq ${stk_reset}, {rsp}\n"
