@@ -6,7 +6,7 @@ Main file
 import sys
 import config
 from reader import read_input
-from assembly import print_vtables, print_ctors, print_methods, print_cool_globals
+from assembly import print_assembly
 
 def main():
     '''
@@ -21,19 +21,12 @@ def main():
         print("Specify .cl-type input file")
         sys.exit(1)
     with open(sys.argv[1], encoding="utf-8") as f:
-        config.lines = [l.rstrip() for l in f.readlines()]
+        config.lines = [l.strip('\n') for l in f.readlines()]
 
     # Assembles the maps and the AAST
     read_input()
 
-    output = []
-
-    output.append(print_vtables())
-    output.append(print_ctors())
-    output.append(print_methods())
-    output.append(print_cool_globals())
-
-    output_str = "".join(output)
+    output_str = print_assembly()
 
     # Output file logic
     output_filename = sys.argv[1]

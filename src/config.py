@@ -10,7 +10,6 @@ from mappings import Tracker, \
                      StringTag,\
                      ImplementationMap, \
                      MinTracker, \
-                     ObjSize, \
                      OffsetMap, \
                      ParentMap, \
                      SymbolTable, \
@@ -20,6 +19,8 @@ from mappings import Tracker, \
 lines = []
 # Annotated abstract syntax tree
 aast = []
+# Output lines
+output = []
 
 # Mappings
 class_map = ClassMap()
@@ -33,7 +34,6 @@ string_tag = StringTag()
 vtable_map = VTableMap()
 attr_map = OffsetMap()
 symbol_table = SymbolTable()
-obj_size = ObjSize()
 
 # Trackers
 rbp_offset = MinTracker(0)

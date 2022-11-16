@@ -1,110 +1,39 @@
-class Main {
+class A {
+    abc : Int;
+    bcd : Int;
+};
+
+class B inherits A {
+    asfge : Int;
+    ave : Main;
+};
+
+class Main inherits IO {
     coinhqeifuvnweg : Int;
-    main() : Int {
-        5
-    };
-};
-
-class AAAAA {
-
-};
-
-class ALFNWEOINGOIWE {
-
-};
-
-class Z inherits Main {
-    z : Bool;
-    var : Int;
-    tmp : Int;
-    x : String;
+    main() : Int {{
+        5 / let x : Int <- 10, y : Int <- 100 in 200 + 3 / 10 * let x : Int <- 200 in y;
+        let x : Int <- 10, y : Int in
+        5 + 10 + 15 + 20 + 30 + 50 + 40 + 20 + 10 + 20 + 30 - 10 - 20 - 11 - 12 * 10 * 12 * 30 * 14 * 10 * 11 / 11/ 12 / 30 / let x : Int in 5 / 50 / 30 / 1 + let y : Int in 10 / 39 * 30 / 30 / 10 * 10;
 
 
+        "sooasdo".substr(0, 1);
+        "asd".concat("abc");
+        "abc".length();
 
-    x() : Int {
-        10
-    };
-};
+        in_int();
+        in_string();
 
-class ANV {
-    abc : Int <- 10;
-    obj : Z;
-    asdmf : Z;
-    asncejc : Int <- 101204;
-    vjnsvwone : Z;
-    goirngoierng : String <- " fadsf";
-    zav : Bool;
-    ascinevon : Object <- while zav loop abc pool;
-    noienovweiovn : Object <- while true loop 10 pool;
-    vaingeingwe : Object <- let gj4i : Int in 5;
-    avoirw : Int <- if true then 5 else 10 fi;
-    cnofewf : Int <- 1023;
-    ijoinvreg : Int <- abc - abc;
-    asndfogeniw : String <- "Asdefw";
-    ldnclgwen : Main;
-    b(abc : String, fml : String, asd : Z, asdlkn : Bool, adhfei : Main) : Int {{
-        fml.concat(fml);
-        5;
-    }};
-    a(sc : Int) : Object {{
-        --a(abc);
-        let abc  : Z, done : Bool <- false, sdin : Bool <- true, acwqv : String <- "hi", asdinog : String, sdguiegu : Int in "Hi";
-        5;
-        new String;
-        -- "s".concat("y");
-        while true loop 5 pool;
-        "BREAK";
-        while false loop 10 pool;
+        out_int(10);
+        out_string("hello");
 
-        (*
-        case sc of
-            a : Int => 5;
-            b : String => "tmpstr";
-            c : Bool => "false";
-        esac;
-        *)
+        type_name();
 
-        a(5);
-        a(abc);
-        obj.x();
-        obj@Main.main();
-        abc <- 10;
-        abc <- new Int;
-        obj <- new Z;
-        abc <- 100;
-        abc <- cnofewf;
-        10 = 500;
-        abc = cnofewf;
+        copy();
 
-        --5 + 5;
+        abort();
 
-        abc < cnofewf;
-
-        abc <= cnofewf;
-
-        10 + 100;
-
+        let x : Int <- 1, y : Int <- 2 in let x : Int <- 3, z : Int <- 4, abc : Int in let a : A in let b : B in 10; 
+        
         10;
-
-        not true;
-
-        10 / 100;
-
-        10;
-
-    }};
-};
-
-class D {
-    var : Int <- 5;
-    a : Int <- 1;
-    b : Int <- 2;
-
-    binaryTest(num1 : Int, num2 : Int) : Int {{
-            "test".copy();
-            let x : Int, num2 : Int in
-	 
-            var <- num1 / b;
-	 
     }};
 };

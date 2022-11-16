@@ -1,13 +1,9 @@
 '''
 This file has all assembly logic
 '''
-
 from collections import defaultdict
-import heapq as hq
-import math
 import config
-from config import SPC
-from memory import RSP, RBP, RSI, RDI, RNum, RXX, EDI, R13D, EAX
+from memory import RSP, RBP, RSI, RDI, RNum, RXX, EDI, EAX
 from tree import *
 import built_ins
 
@@ -26,7 +22,6 @@ r15 = RNum(15)
 
 edi = EDI()
 eax = EAX()
-r13d = R13D()
 
 def cgen(exp):
     '''
@@ -196,9 +191,6 @@ def cgen(exp):
             
         ret += f"{cgen(exp.rhs)}\n"
 
-        offset = None
-        reg = None
-
         tpl = config.symbol_table.top(exp.in_class, exp.var.name)
         offset = tpl[0] * config.OFFSET_AMT
         reg = tpl[1]
@@ -207,19 +199,40 @@ def cgen(exp):
 
 
     # ***** EXPRESSION BINARY OPS *****
-    
-    
-    # Minus
-    elif isinstance(exp, Minus):
-    
+
+    # Plus
+    elif isinstance(exp, Plus):
         offset = config.rbp_offset.get() * config.OFFSET_AMT
 
-        config.rbp_offset.decrement()
         ret += f"{cgen(exp.lhs)}\n"
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
 
+        config.rbp_offset.decrement()
+        ret += f"{cgen(exp.rhs)}\n"
+        config.rbp_offset.increment()
+
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq {offset}({rbp}), {r14}\n"
+        ret += f"addq {r14}, {r13}\n"
+        ret += f"movq {r13}, {offset}({rbp})\n"
+
+        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+        ret += f"movq {offset}({rbp}), {r14}\n"
+        ret += f"movq {r14}, 24({r13})"
+
+
+    # Minus
+    elif isinstance(exp, Minus):
+        offset = config.rbp_offset.get() * config.OFFSET_AMT
+
+        ret += f"{cgen(exp.lhs)}\n"
+
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq {r13}, {offset}({rbp})\n"
+
+        config.rbp_offset.decrement()
         ret += f"{cgen(exp.rhs)}\n"
         config.rbp_offset.increment()
 
@@ -235,48 +248,27 @@ def cgen(exp):
         ret += f"movq {offset}({rbp}), {r14}\n"
         ret += f"movq {r14}, 24({r13})"
 
-    # Plus
-    elif isinstance(exp, Plus):
-        
-        offset = config.rbp_offset.get() * config.OFFSET_AMT
-
-        ret += f"{cgen(exp.lhs)}\n"
-
-        ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq {r13}, {offset}({rbp})\n"
-       # print(exp.lhs)
-        ret += f"{cgen(exp.rhs)}\n"
-        
-
-        ret += f"movq 24({r13}), {r13}\n"
-        ret += f"movq {offset}({rbp}), {r14}\n"
-        ret += f"addq {r14}, {r13}\n"
-        ret += f"movq {r13}, {offset}({rbp})\n"
-
-        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
-        ret += f"movq {offset}({rbp}), {r14}\n"
-        ret += f"movq {r14}, 24({r13})"
 
     # Times
     elif isinstance(exp, Times):
         offset = config.rbp_offset.get() * config.OFFSET_AMT
 
-        config.rbp_offset.decrement()
         ret += f"{cgen(exp.lhs)}\n"
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
 
+        config.rbp_offset.decrement()
         ret += f"{cgen(exp.rhs)}\n"
         config.rbp_offset.increment()
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {offset}({rbp}), {r14}\n\n"
         ret += f"movq {r14}, {rax}\n"
-        ret += f"imull {r13d}, {eax}\n"
+        ret += f"imull {r13}d, {eax}\n"
         ret += f"shlq $32, {rax}\n"
         ret += f"shrq $32, {rax}\n"
-        ret += f"movl {eax}, {r13d}\n"
+        ret += f"movl {eax}, {r13}d\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
 
         ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
@@ -287,20 +279,25 @@ def cgen(exp):
     elif isinstance(exp, Divide):
         offset = config.rbp_offset.get() * config.OFFSET_AMT
 
+        ret += f"{cgen(exp.lhs)}\n"
+
         # Handle error branching
         error_str = built_ins.divide_error(exp.lineno)
         config.string_tag.add(error_str)
         str_tag = f"string{config.string_tag.get_num(error_str)}"
-        succ_branch = config.jump_table.get()
-        config.jump_table.increment()
-        branch_info = f"l{succ_branch}"
 
-        ret += f"{cgen(exp.lhs)}\n"
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
 
+        config.rbp_offset.decrement()
         ret += f"{cgen(exp.rhs)}\n"
+        config.rbp_offset.increment()
+
         ret += f"movq 24({r13}), {r14}\n"
+
+        succ_branch = config.jump_table.get()
+        config.jump_table.increment()
+        branch_info = f"l{succ_branch}"
 
         ret += f"cmpq $0, {r14}\n"
         ret += f"jne {branch_info}\n"
@@ -323,7 +320,7 @@ def cgen(exp):
         ret += f"movq $0, {rdx}\n"
         ret += f"movq {r14}, {rax}\n"
         ret += "cdq\n"
-        ret += f"idivl {r13d}\n" # TODO: do we need this extra reg? Prob an identifier
+        ret += f"idivl {r13}d\n" # TODO: do we need this extra reg? Prob an identifier
         ret += f"movq {rax}, {r13}\n"
 
         ret += f"movq {r13}, {offset}({rbp})\n"
@@ -337,11 +334,13 @@ def cgen(exp):
         ret += f"pushq {rbp}\n"
         ret += f"{cgen(exp.lhs)}\n"
         ret += f"pushq {r13}\n"
+
+        config.rbp_offset.decrement()
         ret += f"{cgen(exp.rhs)}\n"
+        config.rbp_offset.increment()
+        
         ret += f"pushq {r13}\n"
-
         ret += f"pushq {r12}\n"
-
 
         if isinstance(exp, Less):
             ret += "call lt_handler\n"
@@ -414,9 +413,8 @@ def cgen(exp):
         ret += f"{branch_details:24}## while conditional check\n"
 
         # Predicate
-        # TODO: Must be bool or identifier that rets bool
         ret += f"{cgen(exp.predicate)}\n"
-        ret += f"movq 24(%r13), {r13}\n" # TODO Identifiers must be fixed
+        ret += f"movq 24(%r13), {r13}\n"
         ret += f"cmpq $0, {r13}\n"
         ret += f"je l{end_branch}\n"
 
@@ -424,6 +422,7 @@ def cgen(exp):
         ret += f"{cgen(exp.body)}\n"
         ret += f"jmp l{init_branch}\n"
 
+        # End branch
         branch_details = f"l{end_branch}"
         ret += f".globl {branch_details}\n"
         branch_details += ":"
@@ -441,10 +440,10 @@ def cgen(exp):
         ret += "## case expression begins\n"
         ret += f"{cgen(exp.case_exp)}\n"
 
-        ret += f"cmpq $0, {r13}\n" # Check void
+        ret += f"cmpq $0, {r13}\n"
         ret += f"je l{void_branch}\n"
         ret += f"movq {r13}, 0({rbp})\n"
-        ret += f"movq 0({r13}), {r13}\n" # TODO ??
+        ret += f"movq 0({r13}), {r13}\n"
 
         valid_branches = defaultdict(int)
         for i, case_expr in enumerate(exp.exps):
@@ -556,8 +555,6 @@ def cgen(exp):
 
         ret += cgen(exp.let_body)
 
-
-        config.rbp_offset.reset()
         for formal in exp.let_list:
             identifier = formal[1].name
             id_type = formal[2]
@@ -565,6 +562,7 @@ def cgen(exp):
 
             config.symbol_table.pop(cur_class, identifier)
 
+            config.rbp_offset.increment()
 
     # ***** EXPRESSION DISPATCHES *****
 
@@ -591,9 +589,9 @@ def cgen(exp):
         #ret += f"jne {branch_info}\n"
         ret += f"movq ${err_tag}, {r13}\n"
         ret += f"movq {r13}, {rdi}\n"
-        ret += f"call cooloutstr\n"
+        ret += "call cooloutstr\n"
         ret += f"movl $0, {edi}\n"
-        ret += f"call exit\n"
+        ret += "call exit\n"
 
         branch_info = f"l{method_branch}"
         ret += f".globl {branch_info}\n"
@@ -606,8 +604,8 @@ def cgen(exp):
         ret += f"movq {offset * config.OFFSET_AMT}({r14}), {r14}\n"
         ret += f"call *{r14}\n"
 
-        # TODO Is below correct?
-        ret += f"addq ${offset * config.OFFSET_AMT}, {rsp}\n"
+        stk_reset = (len(exp.formals)+1) * config.OFFSET_AMT
+        ret += f"addq ${stk_reset}, {rsp}\n"
         ret += f"popq {rbp}\n"
         ret += f"popq {r12}"
 
@@ -618,39 +616,25 @@ def cgen(exp):
         ret += f"## {method_name}(...)\n"
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
-        # TODO: Need to figure out why this is needed
-        if method_name in ["abort", "substr", "in_string", "in_int"]: # TODO: WILL BE WRONG
-            pass
-            # TODO: undo the comment if this leads to issues
-            #ret += f"pushq {r12}\n"
-            
-        # #if method_name in ["abort", "substr", "in_string", "in_int"]: # TODO: WILL BE WRONG
-        # if method_name not in ["out_int", "out_string"]:
-        #     ret += f"pushq {r12}\n"
 
         for formal in exp.formals:
             ret += f"{cgen(formal)}\n"
             ret += f"pushq {r13}\n"
-            # ret += f"pushq {r12}\n"
-        # TODO: RAJAY FIX
+
         ret += f"pushq {r12}\n"
+
         ret += f"## obtain vtable for self object of type {exp.in_class}\n"
-        vt_met = config.vtable_map.get_class(exp.in_class, method_name)
-        cur_size = config.OFFSET_AMT
 
-        # TODO: WRONG
-        if vt_met in ["IO"]:
-            cur_size *= config.obj_size.get(exp.in_class, exp.type_of)
-        else:
-            cur_size *= config.obj_size.get(exp.in_class, exp.in_class)
-
-        ret += f"movq 16({r12}), {r14}\n" # TODO: less hard-coded
+        ret += f"movq 16({r12}), {r14}\n"
 
         method_offset = config.vtable_map.get_offset(exp.in_class, exp.method_name.name)
         ret += f"## look up {exp.method_name}() at offset {method_offset} in vtable\n"
         ret += f"movq {method_offset * config.OFFSET_AMT}({r14}), {r14}\n"
         ret += f"call *{r14}\n"
-        ret += f"addq ${cur_size}, {rsp}\n"
+
+        stk_reset = (len(exp.formals)+1) * config.OFFSET_AMT
+        ret += f"addq ${stk_reset}, {rsp}\n"
+
         ret += f"popq {rbp}\n"
         ret += f"popq {r12}"
 
@@ -682,10 +666,8 @@ def cgen(exp):
         branch_info += ":"
         ret += f"{branch_info:24}pushq {r13}\n"
 
-        # TODO: What is r1
         ret += f"## obtain vtable from object in r1 with static type {exp.obj_name.type_of}\n"
 
-        # TODO: Hardcoded 16
         ret += f"movq 16({r13}), {r14}\n"
 
         tmp = exp.obj_name.type_of if exp.obj_name.type_of != "SELF_TYPE" else exp.in_class
@@ -696,15 +678,15 @@ def cgen(exp):
         ret += f"movq {offset}({r14}), {r14}\n"
         ret += f"call *{r14}\n"
 
-        obj_size = config.obj_size.get(exp.in_class, exp.type_of) * config.OFFSET_AMT
-
-        ret += f"addq ${obj_size}, {rsp}\n"
+        stk_reset = (len(exp.formals)+1) * config.OFFSET_AMT
+        ret += f"addq ${stk_reset}, {rsp}\n"
         ret += f"popq {rbp}\n"
         ret += f"popq {r12}"
 
 
     # ***** EXPRESSION BASE CLASS *****
-        # Expression base class
+
+    # Expression base class
     elif isinstance(exp, Expression):
         if exp.type_of in ["Bool", "Int", "String"]:
             ret += f"## new {exp.type_of}\n"
@@ -717,16 +699,37 @@ def cgen(exp):
 
     return ret
 
+def write_line(line):
+    '''
+    Writes a line
+    '''
+    config.output.append(line)
+
+
+def print_cmd(cmd, lhs, rhs):
+    '''
+    Prints a command
+    '''
+    write_line(cmd)
+    if lhs:
+        write_line(lhs)
+    if rhs:
+        write_line(rhs)
+
+
+def print_assembly():
+    '''
+    Prints all assembly code
+    '''
+    return print_vtables() + print_ctors() + print_methods() + print_cool_globals()
+
 
 def print_vtables():
     '''
     Print program vtables
     '''
-    assemble_orig_vtable()
-
-    str_num = 1
     ret = "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
-
+    str_num = 1
     for key, val in config.impl_map.iterables():
         ret += f".globl {key}..vtable\n"
 
@@ -734,6 +737,8 @@ def print_vtables():
         ret += f"{tmp:24}## virtual function table for {key}\n"
         ret += f".quad string{str_num}\n"
         ret += f".quad {key}..new\n"
+
+        str_num += 1
 
         cur_offset = 2
 
@@ -743,7 +748,6 @@ def print_vtables():
             cur_offset += 1
 
         ret += "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
-        str_num += 1
 
     return ret
 
@@ -752,28 +756,15 @@ def print_ctors():
     '''
     Print program constructors
     '''
-    ret = ""
-
     class_names = []
     for key, _ in config.class_map.iterables():
         class_names.append(key)
         config.string_tag.add(key)
 
-    # TODO Needs to be removed
-    config.obj_size.set("String", 2)
-    config.obj_size.set("Bool", 1)
-    config.obj_size.set("IO", 2)
-    config.obj_size.set("Object", 1)
-    config.obj_size.set("Int", 1)
-
     config.class_tags.assemble_dicts(class_names)
 
-    name_to_obj = defaultdict(ClassObj)
-    for cls in config.aast:
-        if isinstance(cls, ClassObj):
-            class_name = cls.class_info.name
-            name_to_obj[class_name] = cls
 
+    ret = ""
     for key, val in config.class_map.iterables():
         ret += f".globl {key}..new\n"
         tmp = f"{key}..new:"
@@ -782,12 +773,42 @@ def print_ctors():
         ret += f"pushq {rbp}\n"
         ret += f"movq {rsp}, {rbp}\n"
 
-        if key in ["Bool", "Int", "String", "IO", "Object"]:
-            cur_size = max(math.ceil(len(val) / config.OFFSET_AMT), 1)
-        else:
-            cur_size = max(name_to_obj[key].temp, 1)
+        tmp = ""
+        if len(val) != 0:
+            tmp += "## initialize attributes\n"
+            cur_offset = 3
+            for attr in val:
+                tmp += f"## self[{cur_offset}] holds field {attr.identifier} ({attr.typename})\n"
 
-        config.obj_size.set(key, cur_size)
+                tmp += f"{cgen(attr)}\n"
+
+                tmp += f"movq {r13}, {cur_offset * config.OFFSET_AMT}({r12})\n"
+                config.attr_map.set_offset(key, attr, cur_offset)
+                config.symbol_table.add(key, attr.identifier.name, cur_offset, r12)
+
+                r12.update_offset(r12.offset + 8)
+                cur_offset += 1
+
+        self_offset = 3
+        for attr in val:
+            tmp += f"## self[{self_offset}] {attr.identifier} initializer "
+            if not attr.expr:
+                tmp += "-- none\n"
+            else:
+                if isinstance(attr.expr, StringObj):
+                    tmp += f"<- \"{attr.expr.value}\"\n"
+                else:
+                    tmp += f"<- {attr.expr.exp_print()}\n"
+                tmp += f"{cgen(attr.expr)}\n"
+                tpl = config.symbol_table.top(key, attr.identifier.name)
+                offset = tpl[0] * config.OFFSET_AMT
+                reg = tpl[1]
+                tmp += f"movq {r13}, {offset}({reg})\n"
+            self_offset += 1
+
+            r12.update_offset()
+
+        cur_size = max(-1 * config.rbp_offset.get_min(), 1)
 
         ret += f"## stack room for temporaries: {cur_size}\n"
         ret += f"movq ${cur_size * config.OFFSET_AMT}, {r14}\n"
@@ -803,62 +824,25 @@ def print_ctors():
         ret += "## store class tag, object size and vtable pointer\n"
 
         # Class tag
-        r12.update_offset(0)
         ret += f"movq ${config.class_tags.get_tag(key)}, {r14}\n"
-        ret += f"movq {r14}, {r12.pwo()}\n"
-
-        r12.update_offset(8)
+        ret += f"movq {r14}, 0({r12})\n"
 
         # Object size
         ret += f"movq ${3 + len(val)}, {r14}\n"
-        ret += f"movq {r14}, {r12.pwo()}\n"
-        r12.update_offset(16)
+        ret += f"movq {r14}, 8({r12})\n"
 
         # Vtable
         ret += f"movq ${key}..vtable, {r14}\n"
-        ret += f"movq {r14}, {r12.pwo()}\n"
-        r12.update_offset(24)
+        ret += f"movq {r14}, 16({r12})\n"
 
-        if len(val) != 0:
-            ret += "## initialize attributes\n"
-            cur_offset = 3
-            for attr in val:
-                ret += f"## self[{cur_offset}] holds field {attr.identifier} ({attr.typename})\n"
-
-                ret += f"{cgen(attr)}\n"
-
-                ret += f"movq {r13}, {r12.pwo()}\n"
-                config.attr_map.set_offset(key, attr, cur_offset)
-                config.symbol_table.add(key, attr.identifier.name, cur_offset, r12)
-
-                r12.update_offset(r12.offset + 8)
-                cur_offset += 1
-
-        self_offset = 3
-        for attr in val:
-            ret += f"## self[{self_offset}] {attr.identifier} initializer "
-            if not attr.expr:
-                ret += "-- none\n"
-            else:
-                if isinstance(attr.expr, StringObj):
-                    ret += f"<- \"{attr.expr.value}\"\n"
-                else:
-                    ret += f"<- {attr.expr.exp_print()}\n"
-                ret += f"{cgen(attr.expr)}\n"
-                tpl = config.symbol_table.top(key, attr.identifier.name)
-                offset = tpl[0] * config.OFFSET_AMT
-                reg = tpl[1]
-                ret += f"movq {r13}, {offset}({reg})\n"
-            self_offset += 1
-
-            r12.update_offset()
+        ret += tmp
 
         ret += f"movq {r12}, {r13}\n"
-        ret += f"## return address handling\n"
+        ret += "## return address handling\n"
         ret += f"movq {rbp}, {rsp}\n"
         ret += f"popq {rbp}\n"
-        ret += f"ret\n"
-        ret += f"## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
+        ret += "ret\n"
+        ret += "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
 
     return ret
 
@@ -873,13 +857,12 @@ def print_methods():
 
     for class_name, inner_dict in ordering.items():
         for method_name, tpl in inner_dict.items():
+            config.rbp_offset.reset()
             if not tpl:
                 continue
             orig_class = tpl[0]
             feature = tpl[1]
 
-            # CHECK BUILT-INS
-            # TODO: Put this somewhere else
             if orig_class == "IO":
                 if method_name == "in_int":
                     ret += f"{built_ins.io_in_int()}\n"
@@ -944,7 +927,9 @@ def print_methods():
 
             tmp += f"## method body begins\n"
             tmp += f"{cgen(feature.body)}\n"
-            offset = max(config.method_map.get_method(class_name, method_name).temp, 1)
+
+            offset = max(-1 * config.rbp_offset.get_min(), 1)
+
             ret += f"## stack room for temporaries: {offset}\n"
             ret += f"movq ${offset * config.OFFSET_AMT}, {r14}\n"
             ret += f"subq {r14}, {rsp}\n"
@@ -988,6 +973,9 @@ def print_cool_globals():
         if "\\n" in cur_str[1]:
             tmp_str = cur_str[1][:len(cur_str[1])-2] + "\\\\n"
             ret += f"{temp:24}# \"{tmp_str}\"\n"
+        elif "\\t" in cur_str[1]:
+            tmp_str = cur_str[1][:len(cur_str[1])-2] + "\\\\t"
+            ret += f"{temp:24}# \"{tmp_str}\"\n"
         else:
             ret += f"{temp:24}# \"{cur_str[1]}\"\n"
         for ch in cur_str[1]:
@@ -1002,51 +990,6 @@ def print_cool_globals():
     ret += f"{built_ins.program_info()}\n"
 
     return ret
-
-def assemble_orig_vtable():
-    '''
-    Assembles map of cur_class -> method -> orig class
-    '''
-    base_classes = get_base_classes()
-    classes = config.aast.copy()
-    classes.pop(0)
-
-    name_to_obj = defaultdict(ClassObj)
-
-    for cls in base_classes:
-        classes.append(cls)
-
-    for cls in classes:
-        class_name = cls.class_info.name
-        name_to_obj[class_name] = cls
-
-    stk = []
-    for cls in classes:
-        orig_cls = cls.class_info.name
-        stk.append(cls)
-
-        cur = cls.parent
-        while cur:
-            cur = cur.name
-            cur = name_to_obj[cur]
-            stk.append(cur)
-            cur = cur.parent
-
-        # TODO: lol
-        if not cls.parent and orig_cls != "Object":
-            stk.append(name_to_obj["Object"])
-        if orig_cls == "Main":
-            stk.append(name_to_obj["IO"])
-
-
-        while len(stk) != 0:
-            top = stk.pop()
-            cls_name = top.class_info.name
-
-            for feature in top.feature_list:
-                if isinstance(feature, Method):
-                    method_name = feature.identifier.name
-                    config.vtable_map.set_class(orig_cls, method_name, cls_name)
 
 
 def alpha_sort():
