@@ -136,6 +136,14 @@ class Main inherits IO {
 	
 	out_int(fact(15));
 
+	-- TEST let let
+			let y : Int <- 5 in 
+				let x: Int <- 5 + y in x;
+
+		
+			
+			 
+
 
 	}
 	};
