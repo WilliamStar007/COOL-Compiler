@@ -172,8 +172,35 @@ class Main inherits IO {
 			pool;};
 		
 
-			 
-
+			let x  : Int <- 5 in x + 5;
+			let x  : String <- "hELLO" in x.concat("Goodbye");
+			let x  : Int <- 8 in x + 5;
+			let x  : String <- "Hi" in x.concat("Howdy");
+			let x  : Int <- 9 in x + 5;
+			let x  : String <- "Howdy" in x.concat("Matey");
+			let x  : Int <- 10 in x + 5;
+		case someZ of
+			a : TestA => let x  : Int <- 5 in x + 5;
+			b : TestB => let x  : String <- "hELLO" in x.concat("Goodbye");
+			c : TestC => let x  : Int <- 8 in x + 5;
+			d : TestD => let x  : String <- "Hi" in x.concat("Howdy");
+			e : TestE => let x  : Int <- 9 in x + 5;
+			f : TestF => let x  : String <- "Howdy" in x.concat("Matey");
+			g : TestG => let x  : Int <- 10 in x + 5;
+			h : TestH => 4;
+			i : TestJ => 1;
+			k : TestK => 2;
+			l : TestL => 3;
+			m : TestM => 4;
+			n : TestN => 1;
+			o : TestP => 2;
+			q : TestQ => 3;
+			r : TestR => 4;
+			s : TestS => 1;
+			t : TestT => 2;
+			u : TestU => 3;
+			v : TestV => 4;
+			esac;
 
 	}
 	};
