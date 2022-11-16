@@ -3,10 +3,7 @@ This file has all assembly logic
 '''
 
 from collections import defaultdict
-import heapq as hq
-import math
 import config
-from config import SPC
 from memory import RSP, RBP, RSI, RDI, RNum, RXX, EDI, R13D, EAX
 from tree import *
 import built_ins
@@ -710,6 +707,30 @@ def cgen(exp):
 
     return ret
 
+def write_line(line):
+    '''
+    Writes a line
+    '''
+    config.output.append(line)
+
+
+def print_cmd(cmd, lhs, rhs):
+    '''
+    Prints a command
+    '''
+    write_line(cmd)
+    if lhs:
+        write_line(lhs)
+    if rhs:
+        write_line(rhs)
+
+
+def print_assembly():
+    '''
+    Prints all assembly code
+    '''
+    return print_vtables() + print_ctors() + print_methods() + print_cool_globals()
+
 
 def print_vtables():
     '''
@@ -751,12 +772,6 @@ def print_ctors():
     for key, _ in config.class_map.iterables():
         class_names.append(key)
         config.string_tag.add(key)
-
-    config.obj_size.set("String", 2)
-    config.obj_size.set("Bool", 1)
-    config.obj_size.set("IO", 2)
-    config.obj_size.set("Object", 1)
-    config.obj_size.set("Int", 1)
 
     config.class_tags.assemble_dicts(class_names)
 
@@ -810,7 +825,6 @@ def print_ctors():
             r12.update_offset()
 
         cur_size = max(-1 * config.rbp_offset.get_min(), 1)
-        config.obj_size.set(key, cur_size)
 
         ret += f"## stack room for temporaries: {cur_size}\n"
         ret += f"movq ${cur_size * config.OFFSET_AMT}, {r14}\n"
@@ -826,30 +840,25 @@ def print_ctors():
         ret += "## store class tag, object size and vtable pointer\n"
 
         # Class tag
-        r12.update_offset(0)
         ret += f"movq ${config.class_tags.get_tag(key)}, {r14}\n"
-        ret += f"movq {r14}, {r12.pwo()}\n"
-
-        r12.update_offset(8)
+        ret += f"movq {r14}, 0({r12})\n"
 
         # Object size
         ret += f"movq ${3 + len(val)}, {r14}\n"
-        ret += f"movq {r14}, {r12.pwo()}\n"
-        r12.update_offset(16)
+        ret += f"movq {r14}, 8({r12})\n"
 
         # Vtable
         ret += f"movq ${key}..vtable, {r14}\n"
-        ret += f"movq {r14}, {r12.pwo()}\n"
-        r12.update_offset(24)
+        ret += f"movq {r14}, 16({r12})\n"
 
         ret += tmp
 
         ret += f"movq {r12}, {r13}\n"
-        ret += f"## return address handling\n"
+        ret += "## return address handling\n"
         ret += f"movq {rbp}, {rsp}\n"
         ret += f"popq {rbp}\n"
-        ret += f"ret\n"
-        ret += f"## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
+        ret += "ret\n"
+        ret += "## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n"
 
     return ret
 
