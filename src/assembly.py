@@ -1,10 +1,9 @@
 '''
 This file has all assembly logic
 '''
-
 from collections import defaultdict
 import config
-from memory import RSP, RBP, RSI, RDI, RNum, RXX, EDI, R13D, EAX
+from memory import RSP, RBP, RSI, RDI, RNum, RXX, EDI, EAX
 from tree import *
 import built_ins
 
@@ -23,7 +22,6 @@ r15 = RNum(15)
 
 edi = EDI()
 eax = EAX()
-r13d = R13D()
 
 def cgen(exp):
     '''
@@ -191,9 +189,6 @@ def cgen(exp):
     elif isinstance(exp, Assign):
         ret += f"{cgen(exp.rhs)}\n"
 
-        offset = None
-        reg = None
-
         tpl = config.symbol_table.top(exp.in_class, exp.var.name)
         offset = tpl[0] * config.OFFSET_AMT
         reg = tpl[1]
@@ -268,10 +263,10 @@ def cgen(exp):
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {offset}({rbp}), {r14}\n\n"
         ret += f"movq {r14}, {rax}\n"
-        ret += f"imull {r13d}, {eax}\n"
+        ret += f"imull {r13}d, {eax}\n"
         ret += f"shlq $32, {rax}\n"
         ret += f"shrq $32, {rax}\n"
-        ret += f"movl {eax}, {r13d}\n"
+        ret += f"movl {eax}, {r13}d\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
 
         ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
@@ -323,7 +318,7 @@ def cgen(exp):
         ret += f"movq $0, {rdx}\n"
         ret += f"movq {r14}, {rax}\n"
         ret += "cdq\n"
-        ret += f"idivl {r13d}\n" # TODO: do we need this extra reg? Prob an identifier
+        ret += f"idivl {r13}d\n" # TODO: do we need this extra reg? Prob an identifier
         ret += f"movq {rax}, {r13}\n"
 
         ret += f"movq {r13}, {offset}({rbp})\n"
@@ -344,7 +339,6 @@ def cgen(exp):
         
         ret += f"pushq {r13}\n"
         ret += f"pushq {r12}\n"
-
 
         if isinstance(exp, Less):
             ret += "call lt_handler\n"
@@ -417,9 +411,8 @@ def cgen(exp):
         ret += f"{branch_details:24}## while conditional check\n"
 
         # Predicate
-        # TODO: Must be bool or identifier that rets bool
         ret += f"{cgen(exp.predicate)}\n"
-        ret += f"movq 24(%r13), {r13}\n" # TODO Identifiers must be fixed
+        ret += f"movq 24(%r13), {r13}\n"
         ret += f"cmpq $0, {r13}\n"
         ret += f"je l{end_branch}\n"
 
@@ -427,6 +420,7 @@ def cgen(exp):
         ret += f"{cgen(exp.body)}\n"
         ret += f"jmp l{init_branch}\n"
 
+        # End branch
         branch_details = f"l{end_branch}"
         ret += f".globl {branch_details}\n"
         branch_details += ":"
@@ -444,10 +438,10 @@ def cgen(exp):
         ret += "## case expression begins\n"
         ret += f"{cgen(exp.case_exp)}\n"
 
-        ret += f"cmpq $0, {r13}\n" # Check void
+        ret += f"cmpq $0, {r13}\n"
         ret += f"je l{void_branch}\n"
         ret += f"movq {r13}, 0({rbp})\n"
-        ret += f"movq 0({r13}), {r13}\n" # TODO ??
+        ret += f"movq 0({r13}), {r13}\n"
 
         valid_branches = defaultdict(int)
         for i, case_expr in enumerate(exp.exps):
@@ -568,7 +562,6 @@ def cgen(exp):
 
             config.rbp_offset.increment()
 
-
     # ***** EXPRESSION DISPATCHES *****
 
     # Static
@@ -594,9 +587,9 @@ def cgen(exp):
         ret += f"jne {branch_info}\n"
         ret += f"movq ${err_tag}, {r13}\n"
         ret += f"movq {r13}, {rdi}\n"
-        ret += f"call cooloutstr\n"
+        ret += "call cooloutstr\n"
         ret += f"movl $0, {edi}\n"
-        ret += f"call exit\n"
+        ret += "call exit\n"
 
         branch_info = f"l{method_branch}"
         ret += f".globl {branch_info}\n"

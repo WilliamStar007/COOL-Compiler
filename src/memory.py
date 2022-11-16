@@ -106,13 +106,3 @@ class EAX(Register):
 
     def __repr__(self):
         return "%eax"
-
-class R13D(Register):
-    '''
-    R13D register
-    '''
-    def __init__(self, _offset=0):
-        Register.__init__(self, _offset)
-
-    def __repr__(self):
-        return "%r13d"
