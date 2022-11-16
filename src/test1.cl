@@ -225,6 +225,9 @@ class Test4 inherits TestNew {
 	string21 : String <- "Hola a todos ";
 	string22 : String <- "Hola a TODOS";
 	x : Int;
+	shallowCopy : String <- "copy";
+	deepCopy : Copy <- (new Copy).init(1, 2, 3);
+	theDeepCopy : Copy;
 
 	someFunc() :  Object {
 
@@ -248,9 +251,36 @@ class Test4 inherits TestNew {
 	x <- string11.length();
 	string5 <- string11.substr(0, 10).substr(0,9).substr(0, 8).substr(0, 7).substr(0, 6).substr(0, 5).substr(0, 4).substr(0, 3).substr(0, 2).substr(0, 1);
 	x <- string5.length();
+	shallowCopy <- string11.copy().concat((new String)).copy();
+	theDeepCopy <- deepCopy.copy1();
+
+	theDeepCopy.printA();
+	theDeepCopy.printA();
+	deepCopy.printA();
+	
+
 
 
 		}
 	};
+
+};
+
+
+class Copy inherits IO {
+a : Int;
+b : Int;
+c : Int;
+init(valA : Int, valB : Int, valC : Int) : SELF_TYPE {
+	{
+		a <- valA;
+		b <- valB;
+		c <- valC;
+		self;
+	}
+};
+ copy1() : Copy {(new Copy).init(a, b, c)};
+
+ printA() : Object {out_int(a)};
 
 };
