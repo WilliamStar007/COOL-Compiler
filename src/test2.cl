@@ -253,6 +253,11 @@ class TestZ inherits TestY {
 		a : TestA => 4;
 		esac;
 
+		-- TEST attribute formals
+		num2 : Int <- incrementNum(num1);
+
+		incrementNum(num2: Int) : Int {num1 + 1};
+
 
 };
 
