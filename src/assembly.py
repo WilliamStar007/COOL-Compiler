@@ -609,7 +609,6 @@ def cgen(exp):
         ret += f"movq {offset * config.OFFSET_AMT}({r14}), {r14}\n"
         ret += f"call *{r14}\n"
 
-        # TODO Is below correct?
         stk_reset = (len(exp.formals)+1) * config.OFFSET_AMT
         ret += f"addq ${stk_reset}, {rsp}\n"
         ret += f"popq {rbp}\n"
@@ -623,13 +622,11 @@ def cgen(exp):
         ret += f"pushq {r12}\n"
         ret += f"pushq {rbp}\n"
 
-        if config.tagged_methods.exists(exp.in_class, method_name):
-            ret += f"pushq {r12}\n"
-
         for formal in exp.formals:
             ret += f"{cgen(formal)}\n"
             ret += f"pushq {r13}\n"
-            ret += f"pushq {r12}\n"
+
+        ret += f"pushq {r12}\n"
 
         ret += f"## obtain vtable for self object of type {exp.in_class}\n"
 
@@ -1013,47 +1010,6 @@ def alpha_sort():
     return sorted(cls_map, key=lambda x: x[0])
 
 
-def recurse_check(class_name, exp):
-    '''
-    Recursive checker
-    '''
-    if isinstance(exp, Dispatch):
-        for formal in exp.formals:
-            if recurse_check(class_name, formal):
-                return True
-        if isinstance(exp, (DynamicDispatch, StaticDispatch)):
-            if recurse_check(class_name, exp.obj_name):
-                return True
-        return config.tagged_methods.exists(class_name, exp.method_name.name)
-    elif isinstance(exp, Block):
-        for expr in exp.exps:
-            if recurse_check(class_name, expr):
-                return True
-    elif isinstance(exp, IfBlock):
-        return recurse_check(class_name, exp.predicate) or \
-               recurse_check(class_name, exp.then_body) or \
-               recurse_check(class_name, exp.else_body)
-    elif isinstance(exp, LoopBlock):
-        return recurse_check(class_name, exp.predicate) or recurse_check(class_name, exp.body)
-    elif isinstance(exp, Let):
-        for binding in exp.let_list:
-            if recurse_check(class_name, binding[3]):
-                return True
-        return recurse_check(class_name, exp.let_body)
-    elif isinstance(exp, Binary):
-        return recurse_check(class_name, exp.lhs) or recurse_check(class_name, exp.rhs)
-    elif isinstance(exp, Unary):
-        return recurse_check(class_name, exp.rhs)
-    elif isinstance(exp, CaseBlock):
-        if recurse_check(class_name, exp.case_exp):
-            return True
-        for branch in exp.exps:
-            if recurse_check(class_name, branch[2]):
-                return True
-
-    return False
-
-
 def get_ordering():
     '''
     Returns the proper ordering
@@ -1115,9 +1071,6 @@ def get_ordering():
                         res[class_name][method_name] = (cur_class, feature)
                         seen.add((cur_class, method_name))
 
-                    if recurse_check(class_name, method_name):
-                        config.tagged_methods.append_obj(class_name, method_name)
- 
     return res
 
 

@@ -435,15 +435,3 @@ class MinTracker(Tracker):
         '''
         super().reset()
         self.min = self.init
-
-class TaggedMethods(Mapping):
-    '''
-    Mapping of class -> names of methods that are tagged
-    '''
-    def __init__(self):
-        Mapping.__init__(self)
-
-    def exists(self, class_name, method_name):
-        if class_name not in self.dict: # TODO: BROKEN. NEED TO MAKE SURE IT INHERITS
-            self.dict[class_name] = ["abort", "in_int", "in_string", "type_name", "copy", "length"]
-        return class_name in self.dict and method_name in self.dict[class_name]

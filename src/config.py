@@ -13,8 +13,7 @@ from mappings import Tracker, \
                      OffsetMap, \
                      ParentMap, \
                      SymbolTable, \
-                     VTableMap, \
-                     TaggedMethods
+                     VTableMap
 
 # Lines from file
 lines = []
@@ -35,8 +34,6 @@ string_tag = StringTag()
 vtable_map = VTableMap()
 attr_map = OffsetMap()
 symbol_table = SymbolTable()
-
-tagged_methods = TaggedMethods()
 
 # Trackers
 rbp_offset = MinTracker(0)
