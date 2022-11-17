@@ -191,8 +191,6 @@ def cgen(exp):
 
     # Assignment
     elif isinstance(exp, Assign):
-       
-            
         ret += f"{cgen(exp.rhs)}\n"
 
         tpl = config.symbol_table.top(exp.in_class, exp.var.name)
