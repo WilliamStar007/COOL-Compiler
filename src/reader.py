@@ -47,7 +47,7 @@ def read_exp():
         args = [] # list for building up the arguments in the method call
         for _ in range(num_args):
             args.append(read_exp())
-        if str(obj_name.identifier) == "self":
+        if not isinstance(obj_name, NewExp) and str(obj_name.identifier) == "self":
             return SelfDispatch(cur_class, lineno, type_of, method_name, args)
         else:
             return DynamicDispatch(cur_class, lineno, type_of, obj_name, method_name, args)
