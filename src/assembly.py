@@ -347,7 +347,6 @@ def cgen(exp):
         else:
             ret += "call eq_handler\n"
 
-        # Hardcoded 24
         ret += f"addq $24, {rsp}\n"
         ret += f"popq {rbp}\n"
         ret += f"popq {r12}"
@@ -525,11 +524,12 @@ def cgen(exp):
     # Let
     elif isinstance(exp, Let):
         cur_class = exp.in_class
-        cur_offset = config.rbp_offset.get()
         for formal in exp.let_list:
             identifier = formal[1]
             id_type = formal[2]
             expr_type = formal[3]
+
+            cur_offset = config.rbp_offset.get()
 
             ret += f"## fp[{cur_offset}] holds local {identifier} ({id_type})\n"
 
@@ -547,8 +547,7 @@ def cgen(exp):
             if expr_type:
                 ret += f"{cgen(expr_type)}\n"
             ret += f"movq {r13}, {cur_offset * config.OFFSET_AMT}({rbp})\n"
-
-            cur_offset -= 1
+            
             config.rbp_offset.decrement()
 
         ret += cgen(exp.let_body)
@@ -764,6 +763,7 @@ def print_ctors():
 
     ret = ""
     for key, val in config.class_map.iterables():
+        config.rbp_offset.reset()
         ret += f".globl {key}..new\n"
         tmp = f"{key}..new:"
         ret += f"{tmp:24}## constructor for {key}\n"
@@ -923,7 +923,7 @@ def print_methods():
 
                 cur_offset -= 1
 
-            tmp += f"## method body begins\n"
+            tmp += "## method body begins\n"
             tmp += f"{cgen(feature.body)}\n"
 
             offset = max(-1 * config.rbp_offset.get_min(), 1)
@@ -931,14 +931,14 @@ def print_methods():
             ret += f"## stack room for temporaries: {offset}\n"
             ret += f"movq ${offset * config.OFFSET_AMT}, {r14}\n"
             ret += f"subq {r14}, {rsp}\n"
-            ret += f"## return address handling\n"
+            ret += "## return address handling\n"
 
             ret += tmp
 
             ret += f".globl {method_info}.end\n"
             temp = method_info + ".end:"
             ret += f"{temp:24}## method body ends\n"
-            ret += f"## return address handling\n"
+            ret += "## return address handling\n"
 
             ret += f"movq {rbp}, {rsp}\n"
             ret += f"popq {rbp}\n"
