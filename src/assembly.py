@@ -977,11 +977,17 @@ def print_cool_globals():
         elif "\\t" in cur_str[1]:
             tmp_str = cur_str[1][:len(cur_str[1])-2] + "\\\\t"
             ret += f"{temp:24}# \"{tmp_str}\"\n"
+        elif "\"" in cur_str[1]:
+            tmp_str = cur_str[1][:len(cur_str[1])-2] + "\\\\\\\""
+            ret += f"{temp:24}# \"{tmp_str}\"\n"
         else:
             ret += f"{temp:24}# \"{cur_str[1]}\"\n"
+
         for ch in cur_str[1]:
             if ch == "\"":
-                continue
+                ret += f".byte {ord(ch):>3} # '{ch}'\n"
+            elif ch == "'":
+                ret += f".byte {ord(ch):>3} # '\{ch}'\n"
             elif ch == "\\":
                 ret += f".byte {ord(ch):>3} # '{ch}{ch}'\n"
             else:
