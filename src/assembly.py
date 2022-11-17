@@ -191,7 +191,7 @@ def cgen(exp):
 
     # Assignment
     elif isinstance(exp, Assign):
-        # print(type(exp.rhs))
+       
             
         ret += f"{cgen(exp.rhs)}\n"
 
@@ -588,7 +588,7 @@ def cgen(exp):
         config.jump_table.increment()
         branch_info = f"l{method_branch}"
         ret += f"cmpq $0, {r13}\n"
-        #ret += f"jne {branch_info}\n"
+        ret += f"jne {branch_info}\n"
         ret += f"movq ${err_tag}, {r13}\n"
         ret += f"movq {r13}, {rdi}\n"
         ret += "call cooloutstr\n"
