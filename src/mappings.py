@@ -394,11 +394,11 @@ class Tracker(object):
         '''
         self.amt += _amt
 
-    def decrement(self):
+    def decrement(self, _amt=1):
         '''
         Decrement amt
         '''
-        self.amt -= 1
+        self.amt -= _amt
 
     def reset(self):
         '''
@@ -415,11 +415,11 @@ class MinTracker(Tracker):
         Tracker.__init__(self, _amt)
         self.min = _amt
 
-    def decrement(self):
+    def decrement(self, _amt=1):
         '''
         Decrements
         '''
-        super().decrement()
+        super().decrement(_amt)
         self.min = min(self.min, self.amt)
         return self.amt
 

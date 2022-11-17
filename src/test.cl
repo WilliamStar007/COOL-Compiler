@@ -35,5 +35,10 @@ class Main inherits IO {
         let x : Int <- 1, y : Int <- 2 in let x : Int <- 3, z : Int <- 4, abc : Int in let a : A in let b : B in 10; 
         
         10;
+
+        (new SELF_TYPE);
+        
+        10;
+
     }};
 };
