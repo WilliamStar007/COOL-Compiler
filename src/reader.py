@@ -47,7 +47,16 @@ def read_exp():
         args = [] # list for building up the arguments in the method call
         for _ in range(num_args):
             args.append(read_exp())
-        return DynamicDispatch(cur_class, lineno, type_of, obj_name, method_name, args)
+        
+        try:
+            name = str(obj_name.identifier)
+        except:
+            name = ""
+
+        if name == "self":
+            return SelfDispatch(cur_class, lineno, type_of, method_name, args)
+        else:
+            return DynamicDispatch(cur_class, lineno, type_of, obj_name, method_name, args)
 
     elif exp_name == 'static_dispatch':
         obj_name = read_exp()
