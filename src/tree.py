@@ -9,17 +9,12 @@ class ClassObj(object):
     Class object
     '''
     def __init__(self, _class_info, _check_inherits, _parent, _feature_list):
-        # Class info is an Identifier
         self.class_info = _class_info
-        # Contains string 'inherits' or 'no_inherits'
         self.check_inherits = _check_inherits
-        # This class's singular parent
         self.parent = _parent
-        # The list of features contained in this class
         self.feature_list = _feature_list
 
     def __repr__(self):
-        # Printing the class
         ret = f"CLASS: {self.class_info.name}"
         return ret
 
@@ -30,9 +25,7 @@ class Feature(object):
     Base class for Attribute and Method
     '''
     def __init__(self, _in_class, _identifier):
-        # The class the feature is contained in.
         self.in_class = _in_class
-        # Contains the identifier for the feature
         self.identifier = _identifier
 
 
@@ -41,15 +34,11 @@ class Attribute(Feature):
     Attribute class. Inherits from feature
     '''
     def __init__(self, _in_class, _identifier, _typename, _expr=None):
-        # Every Attribute is a feature within a class with a particular identifier
         Feature.__init__(self, _in_class, _identifier)
-        # This is the type associated with the attribute
         self.typename = _typename
-        # The expression that the attribute contains on the rhs
         self.expr = _expr
 
     def __repr__(self):
-        # Printing the attribute
         ret = f"{self.identifier.lineno}\n{self.identifier}\n{self.typename.lineno}\n{self.typename.name}\n"
         return ret
 
@@ -64,17 +53,12 @@ class Method(Feature):
     Method class. Inherits from feature
     '''
     def __init__(self, _in_class, _identifier, _formals_list, _typename, _body):
-        # Every Method is a feature within a class and is represented by an identifier
         Feature.__init__(self, _in_class, _identifier)
-        # Every method has it's list of formals/parameters
         self.formals_list = _formals_list
-        # Method return type
         self.typename = _typename
-        # The expression in body of the method
         self.body = _body
 
     def __repr__(self):
-        # Printing method
         ret = f"{self.identifier}\n{self.formals_list}\n{self.typename}\n{self.body}\n"
         return ret
 
@@ -84,19 +68,13 @@ class Internal(object):
     This includes Bool, Int, IO, Object, and String
     '''
     def __init__(self, _in_class, _lineno, _type_of, _exp_name, _method_name):
-        # The class the Internal cool object is used in
         self.in_class = _in_class
-        # Line number the cool object occurs on
         self.lineno = _lineno
-        # The type of cool object
         self.type_of = _type_of
-        #  The name of expression object is used in
         self.exp_name = _exp_name
-        # The method the object is used in
         self.method_name = _method_name
 
     def __repr__(self):
-        # Printing the cool object
         ret = f"{self.lineno}\n{self.type_of}\n{self.exp_name}\n{self.method_name}"
         return ret
 
@@ -108,11 +86,8 @@ class Expression(object):
     Includes the line number and the type of the node
     '''
     def __init__(self, _in_class, _lineno, _type_of):
-        # The class the expression is in
         self.in_class = _in_class
-        # The line number the expression occurs on
         self.lineno = _lineno
-        # The expression body type
         self.type_of = _type_of
 
 
@@ -121,15 +96,11 @@ class Identifier(object):
     Identifier object
     '''
     def __init__(self, _in_class, _lineno, _name):
-        # The class the identifier is in
         self.in_class = _in_class
-        # The line number the identifier occurs on
         self.lineno = _lineno
-        # The name for the identifier
         self.name = _name
 
     def __repr__(self):
-        # Printing the identifer
         ret = f"{self.name}"
         return ret
 
@@ -145,13 +116,10 @@ class IdentifierExp(Expression):
     Identifier expression object
     '''
     def __init__(self, _in_class, _lineno, _type_of, _identifier):
-        # The Identifier expression is in a class at a particular line number and has a type
         Expression.__init__(self, _in_class, _lineno, _type_of)
-        # The identifier for the expression
         self.identifier = _identifier
 
     def __repr__(self):
-        # Printing the Identifier expression
         ret = f"{self.lineno}\n{self.type_of}\nidentifier\n"
         ret += f"{self.identifier.lineno}\n{self.identifier}"
         return ret
@@ -169,13 +137,10 @@ class Integer(Expression):
     Integer expression object
     '''
     def __init__(self, _in_class, _lineno, _type_of, _value):
-        # Integer expression within a class at a lineno with it's expression type
         Expression.__init__(self, _in_class, _lineno, _type_of)
-        # value the integer contains
         self.value = _value
 
     def __repr__(self):
-        # Printing the integer expression
         ret = f"{self.lineno}\n{self.type_of}\ninteger\n{self.value}"
         return ret
 
@@ -196,7 +161,6 @@ class StringObj(Expression):
         self.value = _value
 
     def __repr__(self):
-        # Printingthe string
         ret = f"{self.lineno}\n{self.type_of}\nstring\n{self.value}"
         return ret
 
@@ -213,13 +177,10 @@ class Bool(Expression):
     Bool base class
     '''
     def __init__(self, _in_class, _lineno, _value):
-        # Bool expression inside class at lineno and type Bool
         Expression.__init__(self, _in_class, _lineno, "Bool")
-        # Bool value: true/false
         self.value = _value
 
     def __repr__(self):
-        # Printing Bool Expression
         ret = f"{self.lineno}\n{self.type_of}\n{self.value}"
         return ret
 
@@ -237,11 +198,8 @@ class Dispatch(Expression):
     Inherited by DynamicDispatch, SelfDispatch, and StaticDispatch
     '''
     def __init__(self, _in_class, _lineno, _type_of, _method_name, _formals):
-        # Dispatch expression inside class at lineno with a type
         Expression.__init__(self, _in_class, _lineno, _type_of)
-        # Name for the dispatch expression
         self.method_name = _method_name
-        # Parameters for the dispatch
         self.formals = _formals
 
 
@@ -251,9 +209,7 @@ class DynamicDispatch(Dispatch):
     Inherits from Dispatch
     '''
     def __init__(self, _in_class, _lineno, _type_of, _obj_name, _method_name, _formals):
-        # Dispatch inside class at lineno with type, method name, and parameters
         Dispatch.__init__(self, _in_class, _lineno, _type_of, _method_name, _formals)
-        # The name of the object that calls the method
         self.obj_name = _obj_name
 
     def __repr__(self):
