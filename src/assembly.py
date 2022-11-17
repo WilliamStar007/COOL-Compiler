@@ -179,7 +179,11 @@ def cgen(exp):
         ret += f"## new {exp.rhs.name}\n"
         ret += f"pushq {rbp}\n"
         ret += f"pushq {r12}\n"
-        ret += f"movq ${exp.rhs.name}..new, {r14}\n"
+
+        ctor_name = exp.rhs.name if exp.rhs.name != "SELF_TYPE" else exp.in_class
+        ret += f"movq ${ctor_name}..new, {r14}\n"
+
+
         ret += f"call *{r14}\n"
         ret += f"popq {r12}\n"
         ret += f"popq {rbp}"
@@ -545,7 +549,7 @@ def cgen(exp):
             if expr_type:
                 ret += f"{cgen(expr_type)}\n"
             ret += f"movq {r13}, {cur_offset * config.OFFSET_AMT}({rbp})\n"
-            
+
             config.symbol_table.add(cur_class, identifier.name, cur_offset, rbp)
             config.rbp_offset.decrement()
 
