@@ -533,8 +533,6 @@ def cgen(exp):
 
             ret += f"## fp[{cur_offset}] holds local {identifier} ({id_type})\n"
 
-            config.symbol_table.add(cur_class, identifier.name, cur_offset, rbp)
-
             if not expr_type:
                 if id_type.name == "Bool":
                     expr_type = Bool(cur_class, 0, None)
@@ -548,6 +546,7 @@ def cgen(exp):
                 ret += f"{cgen(expr_type)}\n"
             ret += f"movq {r13}, {cur_offset * config.OFFSET_AMT}({rbp})\n"
             
+            config.symbol_table.add(cur_class, identifier.name, cur_offset, rbp)
             config.rbp_offset.decrement()
 
         ret += cgen(exp.let_body)
