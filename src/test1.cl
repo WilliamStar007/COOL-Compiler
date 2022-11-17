@@ -1,6 +1,9 @@
 -- Good Tests: Test1.cl
+
 class Main inherits IO {
 	-- TEST ASSIGNMENTS
+
+
 	true_bool : Bool <- true;
 	false_bool : Bool <- false;
 	one : Int <- 1;
@@ -21,6 +24,7 @@ class Main inherits IO {
 	string11 : String <- "Aye";
 	x : Int;
 	test4 : Test4 <- new Test4;
+	someObj : Object <- new Object;
 	getA() : String {theNewTest.getA()};
 	main() : Object {{
 
