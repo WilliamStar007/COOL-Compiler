@@ -67,25 +67,74 @@ class Main inherits IO {
 		out_string("hello : ");
 		out_string(hello);
 		out_string("\n");
-
-		let x  : Int <- 9 in x + 5;
+		let x  : Int <- 9 in temp <- x + 5;
 		let x  : String <- "Howdy" in x.concat("Matey");
-		let x  : Int <- 10 in x + 5;
+		let x  : Int <- 10 in temp <- x + 5;
 		let x  : String <- "Different X" in {
-			 x.concat("And different Y");
-			 let x : Int <- 0 in
-			 		x <- x + 5;
+			 hello.concat("x");
+			 let x : Int <- 0 in {
+			out_string("x : ");
+			out_int(x);
+			out_string("\n");
+			x <- x + 5;
+			out_string("temp : ");
+			out_int(temp);
+			out_string("\n");
+			};
 					 let x : Int <- 7 in
-			 				x <- x + 5;
+					 {
+						out_string("x : ");
+						out_int(x);
+						out_string("\n");
+						x <- x + 5;
+						out_string("x : ");
+						out_int(x);
+						out_string("\n");
+					};
 							let x : Int <- 8 in
-									x <- x + 5;
+									{
+										out_string("x : ");
+										out_int(x);
+										out_string("\n");
+										x <- x + 5;
+										out_string("x : ");
+										out_int(x);
+										out_string("\n");
+									};
 									let x : Int <- 9 in
-			 									x <- x + 5;
+			 									{
+													out_string("x : ");
+													out_int(x);
+													out_string("\n");
+													x <- x + 5;
+													out_string("x : ");
+													out_int(x);
+													out_string("\n");
+												};
 												let x : Int <- 10 in
-															x <- x + 6;
+															{
+																out_string("x : ");
+																out_int(x);
+																out_string("\n");
+																x <- x + 6;
+																out_string("x : ");
+																out_int(x);
+																out_string("\n");
+															};
 															let x : Int <- 15 in
-																		x <- x + 6;
+																		{
+																			out_string("x : ");
+																			out_int(x);
+																			out_string("\n");
+																			x <- x + 6;
+																			out_string("x : ");
+																			out_int(x);
+																			out_string("\n");
+																		};
 			 };
+		out_string("hello : ");
+		out_string(hello);
+		out_string("\n");
 														
 
 
@@ -128,6 +177,9 @@ class Main inherits IO {
 			v : TestV => 4;
       esac;
 			indexI <- indexI + 1;
+			out_string("indexI : ");
+			out_int(indexI);
+			out_string("\n");
 		}
 		
 		pool;
@@ -165,7 +217,7 @@ class Main inherits IO {
 
 	-- TEST: perform factorial
 	
-	out_int(fact(15));
+	fact(15);
 
 	-- TEST let let
 			let y : Int <- 5 in 
@@ -198,8 +250,10 @@ class Main inherits IO {
 				v : TestV => 4;
 				esac;
 				indexK <- indexK + 1;
+				out_string("indexK : ");
+				out_int(indexK);
+				out_string("\n");
 			}
-			
 			pool;};
 		
 
@@ -241,7 +295,7 @@ class One inherits IO{};
 class Two inherits IO{};
 class Three  inherits IO {};
 
-class TestA {
+class TestA inherits IO {
 
 	-- TEST calls with same formal name
 	-- TEST self attributes
@@ -262,8 +316,65 @@ class TestB inherits TestA {
 	eattr5: Int <- 5;
 	
 	same_form_name1(a : Int) : TestA {self};
-	eval_method(a : Int, b : Int, c : Int, d : Int): Int { a + b * c - d};
-	eval_method2(d : Int, c : Int, b : Int,  a : Int): Int {d - c * b + a};
+	eval_method(a : Int, b : Int, c : Int, d : Int): Int {{
+		out_string("TestB a: ");
+		out_int(a);
+		out_string("\n");
+		out_string("TestB b: ");
+		out_int(b);
+		out_string("\n");
+		out_string("TestB c: ");
+		out_int(c);
+		out_string("\n");
+		out_string("TestB d: ");
+		out_int(d);
+		out_string("\n");
+		out_string("TestB iattr9: ");
+		out_int(iattr9);
+		out_string("\n");
+		out_string("TestB hattr8: ");
+		out_int(hattr8);
+		out_string("\n");
+		out_string("TestB gattr7: ");
+		out_int(gattr7);
+		out_string("\n");
+		out_string("TestB fattr6: ");
+		out_int(fattr6);
+		out_string("\n");
+		out_string("TestB eattr5: ");
+		out_int(eattr5);
+		out_string("\n");
+		a + b * c - d;}};
+	eval_method2(d : Int, c : Int, b : Int,  a : Int): Int {{
+
+		out_string("TestB a: ");
+		out_int(a);
+		out_string("\n");
+		out_string("TestB b: ");
+		out_int(b);
+		out_string("\n");
+		out_string("TestB c: ");
+		out_int(c);
+		out_string("\n");
+		out_string("TestB d: ");
+		out_int(d);
+		out_string("\n");
+		out_string("TestB iattr9: ");
+		out_int(iattr9);
+		out_string("\n");
+		out_string("TestB hattr8: ");
+		out_int(hattr8);
+		out_string("\n");
+		out_string("TestB gattr7: ");
+		out_int(gattr7);
+		out_string("\n");
+		out_string("TestB fattr6: ");
+		out_int(fattr6);
+		out_string("\n");
+		out_string("TestB eattr5: ");
+		out_int(eattr5);
+		out_string("\n");
+		d - c * b + a;}};
 
 	};
 
@@ -316,22 +427,64 @@ class TestZ inherits TestY {
 
 		num3 : Int <- let x : Int <- 0 in
 										{
+											out_string("TestZ num1: ");
+											out_int(num1);
+											out_string("\n");
 											x <- x + 5;
+											out_string("TestZ x: ");
+											out_int(x);
+											out_string("\n");
+
 												let y : Int <- 7 in
-														y <- x + 5;
+														{
+															out_string("TestZ y: ");
+															out_int(y);
+															out_string("\n");
+															y <- x + 5;
+														};
 															 let x : Int <- 8 in
-																	 x <- x + 5;
+																	 {
+																		
+																		out_string("TestZ x: ");
+																		out_int(x);
+																		out_string("\n");
+																		x <- x + 5;
+																	};
 																	 let x : Int <- 9 in
+																	 {
+																	 			out_string("TestZ x: ");
+																	 			out_int(x);
+																	 			out_string("\n");
 																				x <- x + 5;
+																			};
 								 														let x : Int <- 10 in
-											 														x <- x + 6;
+											 														{
+																										out_string("TestZ x: ");
+																										out_int(x);
+																										out_string("\n");
+																										x <- x + 6;
+																									};
 											 																let x : Int <- x + 15 + x in
-																															 x;
+																															 {
+																																out_string("TestZ x: ");
+																																	out_int(x);
+																																	out_string("\n");
+																																
+																																
+																																x;};
 										};
 
-		incrementNum(num2: Int) : Int {num1 + 1};
-
-
+		incrementNum(num2: Int) : Int {{
+			out_string("TestZ num1: ");
+			out_int(num1);
+			out_string("\n");
+			out_string("TestZ num2: ");
+			out_int(num2);
+			out_string("\n");
+			out_string("TestZ num3: ");
+			out_int(num3);
+			out_string("\n");
+			num1 + 1;}};
 };
 
 
