@@ -50,7 +50,6 @@ def read_exp():
         
         try:
             name = str(obj_name.identifier)
-            print(name)
         except:
             name = ""
 
