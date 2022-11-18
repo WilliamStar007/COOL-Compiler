@@ -9,7 +9,72 @@ class Main inherits IO {
 	one : Int <- 1;
 	helloThere : String <- "Hello There";
 	theNewTest : TestNew <- (new TestNew).init("Howdy", "Bros");
+	theNewTest2 : TestNew <- (new TestNew).init("Hello", "There");
+	theNewTest3 : TestNew <- (new TestNew).init("Good", "Bye");
+	while1 : Int;
+	while2 : Int;
+	while3 : Int;
+	while4 : Int;
+	while5 : Int;
+	while6 : Int;
+	while7 : Int;
 
+	-- TEST: many parameters
+	func1(a : Int, b : Int, c : Int, d : Int, e : Int, f : Int, g : Int, h : Int,
+	i : Int, j : Int, k : Int, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Int, t : Int, u : Int, v: Int, w : Int, x : Int, y : Int, z : Int) : Int
+	{a};
+	func2(a : Int, b : Int, c : Int, d : Int, e : Int, f : Int, g : Int, h : Int,
+		i : Int, j : Int, k : Int, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Int, t : Int, u : Int, v: Int, w : Int, x : Int, y : Int, z : Int) : Int
+		{func3(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x, y)};
+		func3(a : Int, b : Int, c : Int, d : Int, e : Int, f : Int, g : Int, h : Int,
+			i : Int, j : Int, k : Int, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Int, t : Int, u : Int, v: Int, w : Int, x : Int, y : Int) : Int
+			{func4(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x)};
+	func4(a : Int, b : Int, c : Int, d : Int, e : Int, f : Int, g : Int, h : Int,
+				i : Int, j : Int, k : Int, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Int, t : Int, u : Int, v: Int, w : Int, x : Int) : Int
+				{func5(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w)};
+	func5(a : Int, b : Int, c : Int, d : Int, e : Int, f : Int, g : Int, h : Int,
+					i : Int, j : Int, k : Int, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Int, t : Int, u : Int, v: Int, w : Int) : Int
+					{a};
+
+	funcStr1(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : String, m : String, n : String, o : String, p : String, q : String, r : String, s : String, t : String, u : String, v: String, w : String, x : String, y : String, z : String) : String
+		{a};
+
+		funcStr2(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String,
+			i : String, j : String, k : String, l : String, m : String, n : String, o : String, p : String, q : String, r : String, s : String, t : String, u : String, v: String, w : String, x : String, y : String, z : String) : String
+			{funcStr3(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x, y)};
+			funcStr3(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : String, m : String, n : String, o : String, p : String, q : String, r : String, s : String, t : String, u : String, v: String, w : String, x : String, y : String) : String
+				{funcStr4(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x)};
+		funcStr4(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String,
+					i : String, j : String, k : String, l : String, m : String, n : String, o : String, p : String, q : String, r : String, s : String, t : String, u : String, v: String, w : String, x : String) : String
+					{funcStr5(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w)};
+		funcStr5(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String,
+						i : String, j : String, k : String, l : String, m : String, n : String, o : String, p : String, q : String, r : String, s : String, t : String, u : String, v: String, w : String) : String
+						{a};
+
+
+
+						funcMix1(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Bool, t : Bool, u : Bool, v: TestNew, w : TestNew, x : TestNew, y : TestNew, z : TestNew) : TestNew
+						{v};
+				
+						funcMix2(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Bool, t : Bool, u : Bool, v: TestNew, w : TestNew, x : TestNew, y : TestNew, z : TestNew) : TestNew
+							{funcMix3(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x, y)};
+							funcMix3(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Bool, t : Bool, u : Bool, v: TestNew, w : TestNew, x : TestNew, y : TestNew) : TestNew
+								{funcMix4(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x)};
+						funcMix4(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Bool, t : Bool, u : Bool, v: TestNew, w : TestNew, x : TestNew) : TestNew
+									{funcMix5(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w)};
+						funcMix5(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Bool, t : Bool, u : Bool, v: TestNew, w : TestNew) : TestNew
+										{w};
+
+			funcRecursion(a : Int, b : Int, c : Int, d : Int, e : Int, f : Int, g : Int, h : Int,
+				i : Int, j : Int, k : Int, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Int, t : Int, u : Int, v: Int, w : Int, x : Int, y : Int, z : Int,
+				a1 : Int, b1 : Int, c1 : Int, d1 : Int, e1 : Int, f1 : Int, g1 : Int, h1 : Int,
+				i1 : Int, j1 : Int, k1 : Int, l1 : Int, m1 : Int, n1 : Int, o1 : Int, p1 : Int, q1 : Int, r1 : Int, s1 : Int, t1 : Int, u1 : Int, v1: Int, w1 : Int, x1 : Int, y1 : Int, z1 : Int,
+				a2 : Int, b2 : Int, c2 : Int, d2 : Int, e2 : Int, f2 : Int, g2 : Int, h2 : Int,
+				i2 : Int, j2 : Int, k2 : Int, l2 : Int, m2 : Int, n2 : Int, o2 : Int, p2 : Int, q2 : Int, r2 : Int, s2 : Int, t2 : Int, u2 : Int, v2 : Int, w2 : Int, x2 : Int, y2 : Int, z2 : Int,
+				a3 : Int, b3 : Int, c3 : Int, d3: Int, e3 : Int, f3 : Int, g3 : Int, h3 : Int,
+				i3 : Int, j3 : Int, k3 : Int, l3 : Int, m3 : Int, n3 : Int, o3 : Int, p3 : Int, q3 : Int, r3 : Int, s3 : Int, t3: Int, u3 : Int, v3 : Int, w3 : Int, x3 : Int, y3 : Int, z3 : Int) : Int
+				{if a = 0 then 1 else funcRecursion(a - 1,  1 + 2 ,  2 * 2, 3 + 77,  88 * 7, 7 + 7 , g , h, i, j, k , l , m , n, o , p, q, r, s, t, u, v , w, x, y, z, a1, b1 , c1, d1, e1, f1 , g1 , h1, i1, j1, k1 , l1 , m1 , n1, o1 , p1, q1, r1, s1, t1, u1, v1 , w1, x1, y1, z1, a2, b2 , c2, d2, e2, 5 * 6 * 7 * 8 , g2 , h2, i2, j2, k2 , l2 , m2 , n2, o2 , p2, q2, r2, s2, t2, u2, v2 , 7 * 7 + 7, x2, y2, z2,  a3, b3 , c3, d3, e3, f3 , g3 , h3, i3, j3, k3 , l3 , m3 , 5 * 5 * 5 + 2, o3 , p3, q3, r3, s3, t3, u3, v3 , w3, x3, y3, z3 ) fi};
+			
 	-- TEST STRING INTERNALS
 	string1 : String <- "hello";
 	string2 : String <- "world";
@@ -26,7 +91,80 @@ class Main inherits IO {
 	test4 : Test4 <- new Test4;
 	someObj : Object <- new Object;
 	getA() : String {theNewTest.getA()};
+
+
 	main() : Object {{
+
+
+
+		-- Functions with many parameters
+	func1(88 * 8, 1 + 2, 2 * 3 * 7 + 8,  2 / 2,  1 * 2 * 3 + 4 + 5 / 6, 1 / 2 , 7 * 7, 88 + 8, 7 * 7,3 * 2 + 6, 2 * 3 + 2 * 7 * 8 + 1, 7  * 7 + 2 + 6, 2 * 2 + 9 * 2 + 3, 7 * 7 * 2 + 4 + 3 + 2 + 1, 1 * 2 + (3 + 5 + 1) + 88888, 1 * 2 + 3 * 4 *5 * 6 * 8, 1 + 2, 5 * 5 * 2, 1 * 2 + 2, x, x + 1, x + 3, 77 * 77, 1000 * 3, (1 * 2 * 3 + 4) / 5, x);
+
+	func2(88 * 8, 1 + 2, 2 * 3 * 7 + 8,  2 / 2,  1 * 2 * 3 + 4 + 5 / 6, 1 / 2 , 7 * 7, 88 + 8, 7 * 7,3 * 2 + 6, 2 * 3 + 2 * 7 * 8 + 1, 7  * 7 + 2 + 6, 2 * 2 + 9 * 2 + 3, 7 * 7 * 2 + 4 + 3 + 2 + 1, 1 * 2 + (3 + 5 + 1) + 88888, 1 * 2 + 3 * 4 *5 * 6 * 8, 1 + 2, 5 * 5 * 2, 1 * 2 + 2, x, x + 1, x + 3, 77 * 77, 1000 * 3, (1 * 2 * 3 + 4) / 5, x);
+
+	funcStr1("hello","there", "my friend", "how", "is", "your", "day", "going?", 
+"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "rs");
+
+	funcStr2("hello","there", "my friend", "how", "is", "your", "day", "going?", 
+	"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "rs");
+
+	funcMix1("hello","there", "my friend", "how", "is", "your", "day", "going?", 
+	"a", "b", "c", 88 * 8, 1 + 2, 2 * 3 * 7 + 8,  2 / 2,  1 * 2 * 3 + 4 + 5 / 6, 1 / 2 , 7 * 7,   true_bool, false_bool, false, theNewTest, theNewTest2, theNewTest3, (new TestNew).init("A", "Test"), (new TestNew).init("Some", "Test"));
+	funcMix2("hello","there", "my friend", "how", "is", "your", "day", "going?", 
+	"a", "b", "c", 88 * 8, 1 + 2, 2 * 3 * 7 + 8,  2 / 2,  1 * 2 * 3 + 4 + 5 / 6, 1 / 2 , 7 * 7,   true_bool, false_bool, false, theNewTest, theNewTest2, theNewTest3, (new TestNew).init("A", "Test"), (new TestNew).init("Some", "Test"));
+
+
+	funcRecursion(88 * 8, 1 + 2, 2 * 3 * 7 + 8,  2 / 2,  1 * 2 * 3 + 4 + 5 / 6, 1 / 2 , 7 * 7, 88 + 8, 7 * 7,3 * 2 + 6, 2 * 3 + 2 * 7 * 8 + 1, 7  * 7 + 2 + 6, 2 * 2 + 9 * 2 + 3, 7 * 7 * 2 + 4 + 3 + 2 + 1, 1 * 2 + (3 + 5 + 1) + 88888, 1 * 2 + 3 * 4 *5 * 6 * 8, 1 + 2, 5 * 5 * 2, 1 * 2 + 2, x, x + 1, x + 3, 77 * 77, 1000 * 3, (1 * 2 * 3 + 4) / 5, x,
+	87 * 8, 1 + 3, 2 * 3 * 7 + 8,  2 / 4,  1 * 5 * (3 + 4) + 5 / 6, 1 / 2 , 7 * 7, 88 + 8, 7 * 7,3 * 2 + 6, 2 * (3 + 2 * 7) * 8 + 1, 7  * 7 + 2 + 6, 2 * 2 + 9 * 2 + 3, 7 * 7 * 2 + 4 + 3 + (2 + 1), 1 * 2 + (3 + 5 + 1) + 88888, 1 * (2 + 3) * 4 *5 * 6 * 8, 1 + 2, 5 * 5 * 2, 1 * 2 + 2, x, x + 1, x + 3, 77 * 77, 1000 * 3, (1 * 2 * 3 + 4) / 5, x,
+	88 * 8, 1 + 2, 2 * 3 * 7 + 8,  2 / 2,  1 * 2 * 3 + 4 + 5 / 6, 1 / 2 , 7 * 7, 88 + 8, 7 * 7,3 * 2 + 6, 2 * 3 + 2 * 7 * 8 + 1, 7  * 7 + 2 + 6, 2 * 2 + 9 * 2 + 3, 7 * 7 * 2 + 4 + 3 + 2 + 1, 1 * 2 + (3 + 5 + 1) + 88888, 1 * 2 + 3 * 4 *5 * 6 * 8, 1 + 2, 5 * 5 * 2, 1 * 2 + 2, x, x + 1, x + 3, 77 * 77, 1000 * 3, (1 * 2 * 3 + 4) / 5, x,
+	88 * 8, 1 + 2, 2 * 3 * 7 + 8,  2 / 2,  1 * 2 * 3 + 4 + 5 / 6, 1 / 2 , 7 * 7, 88 + 8, 7 * 7,3 * 2 + 6, 2 * (3 + 2) * 7 * (8 + 1), 7  * (7 + 2 + 6), 2 * 2 + 9 * 2 + 3, 7 * 7 * (2 + 4) + 3 + 2 + 1, 1 * 2 + (3 + 5 + 1) + 88888, 1 * 2 + 3 * 4 *5 * 6 * 8, 1 + 2, 5 * 5 * 2, 1 * 2 + 2, x, x + 1, x + 3, 77 * 77, 1000 * 3, (1 * 2 * 3 + 4) / 5, x);
+	-- Multiple if branches
+	if true_bool then 
+		if false_bool then if true_bool then if false_bool then x <- x * 88 else x <- x * 77 fi else x <- x * 8 fi
+		else x <- x + 9 * 8 * 7 fi
+		else x <- x * 77 * 88 fi;
+
+		if true_bool then 
+		if false_bool then if true_bool then if false_bool then if true_bool then if false_bool then if true_bool then if false_bool then if true_bool
+		then x <- 9 + 9
+		else x <- 10 + 10 fi
+		else x <- 10 + 20 fi
+		else x <- 10 * 20 fi
+		else x <- 10 - 2 * 10 fi
+		else x <- 10 * 2 + 2 fi
+		else x <- x * 77 fi 
+		else x <- x * 8 fi
+		else x <- x + 9 * 8 * 7 fi
+		else x <- x * 77 * 88 fi;
+
+		-- WHILE LOOOPS
+		while while1 < 100 loop {
+					while1 <- while1 + 1;
+					while while2 < 100 loop {
+						while2 <- while2 + 1;
+						while while3 < 100 loop {
+									while3  <- while3 + 1;
+									while while4 < 100 loop {
+										while4 <- while4 + 1;
+										while while5 < 100 loop {
+											while5 <- while5 + 1;
+											while while6 < 100 loop {
+												while6 <- while6 + 1;
+												while while7 < 100 loop {
+													while7 <- while7 + 1;
+												} pool;
+											} pool;
+										} pool;
+									} pool;
+						} pool;
+					} pool ;
+					while2 <- 0;
+					while3 <- 0;
+					while4 <- 0;
+					while5 <- 0;
+					while6 <- 0;
+					while7 <- 0;
+		} pool;
 
 
 	-- TEST STRING INTERNALS
