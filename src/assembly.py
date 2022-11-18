@@ -143,14 +143,16 @@ def cgen(exp):
 
     # Not
     elif isinstance(exp, NotExpr):
+
+        ret += f"{cgen(exp.rhs)}\n"
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"cmpq $0, {r13}\n"
+        
         true_branch = config.jump_table.get()
         false_branch = true_branch + 1
         end_branch = true_branch + 2
         config.jump_table.increment(3)
 
-        ret += f"{cgen(exp.rhs)}\n"
-        ret += f"movq 24({r13}), {r13}\n"
-        ret += f"cmpq $0, {r13}\n"
         ret += f"jne l{true_branch}\n"
 
         # False branch
