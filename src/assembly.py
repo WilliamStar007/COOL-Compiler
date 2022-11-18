@@ -158,7 +158,7 @@ def cgen(exp):
         ret += f".globl {branch_info}\n"
         branch_info += ":"
         ret += f"{branch_info:24}## false branch\n"
-        ret += f"{cgen(exp.rhs)}\n"
+        ret += f"{cgen(Bool(exp.in_class, 0, 'true'))}\n"
         ret += f"jmp l{end_branch}\n"
 
         # True branch
@@ -515,6 +515,7 @@ def cgen(exp):
             ret += f"{branch_info:24}## fp[0] holds case {identifier.name} ({id_type})\n"
 
             cgen(identifier)
+
             ret += f"{cgen(exp_rem)}\n"
             ret += f"jmp l{end_branch}\n"
 
