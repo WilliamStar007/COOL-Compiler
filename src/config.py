@@ -13,7 +13,8 @@ from mappings import Tracker, \
                      OffsetMap, \
                      ParentMap, \
                      SymbolTable, \
-                     VTableMap
+                     VTableMap, \
+                     CurClass
 
 # Lines from file
 lines = []
@@ -38,6 +39,7 @@ symbol_table = SymbolTable()
 # Trackers
 rbp_offset = MinTracker(0)
 jump_table = Tracker(1)
+cur_class = CurClass()
 
 OFFSET_AMT = 8
 SPC = f"{'':24}"

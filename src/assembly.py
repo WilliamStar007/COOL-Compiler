@@ -180,7 +180,7 @@ def cgen(exp):
         ret += f"pushq {rbp}\n"
         ret += f"pushq {r12}\n"
 
-        ctor_name = exp.rhs.name if exp.rhs.name != "SELF_TYPE" else exp.in_class
+        ctor_name = exp.rhs.name if exp.rhs.name != "SELF_TYPE" else config.cur_class.get()
         ret += f"movq ${ctor_name}..new, {r14}\n"
 
 
@@ -266,11 +266,12 @@ def cgen(exp):
 
         ret += f"movq 24({r13}), {r13}\n"
         ret += f"movq {offset}({rbp}), {r14}\n\n"
+
         ret += f"movq {r14}, {rax}\n"
         ret += f"imull {r13}d, {eax}\n"
-        ret += f"shlq $32, {rax}\n"
-        ret += f"shrq $32, {rax}\n"
-        ret += f"movl {eax}, {r13}d\n"
+        ret += f"salq $32, {rax}\n"
+        ret += f"sarq $32, {rax}\n"
+        ret += f"movq {rax}, {r13}\n"
         ret += f"movq {r13}, {offset}({rbp})\n"
 
         ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
@@ -670,7 +671,7 @@ def cgen(exp):
 
         ret += f"movq 16({r13}), {r14}\n"
 
-        tmp = exp.obj_name.type_of if exp.obj_name.type_of != "SELF_TYPE" else exp.in_class
+        tmp = exp.obj_name.type_of if exp.obj_name.type_of != "SELF_TYPE" else config.cur_class.get()
         method_offset = config.vtable_map.get_offset(tmp, exp.method_name.name)
         offset = method_offset * config.OFFSET_AMT
 
@@ -766,6 +767,7 @@ def print_ctors():
 
     ret = ""
     for key, val in config.class_map.iterables():
+        config.cur_class.set(key)
         config.rbp_offset.reset()
         ret += f".globl {key}..new\n"
         tmp = f"{key}..new:"
@@ -857,6 +859,7 @@ def print_methods():
     ret = ""
 
     for class_name, inner_dict in ordering.items():
+        config.cur_class.set(class_name)
         for method_name, tpl in inner_dict.items():
             config.rbp_offset.reset()
             if not tpl:
