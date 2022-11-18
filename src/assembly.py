@@ -136,10 +136,30 @@ def cgen(exp):
 
     # Negate
     elif isinstance(exp, Negate):
+        offset = 0
         lhs = Integer(None, 0, "Int", 0)
-        sub_node = Minus(exp.in_class, 0, "Int", lhs, exp.rhs)
+        #sub_node = Minus(exp.in_class, 0, "Int", lhs, exp.rhs)
 
-        ret += f"{cgen(sub_node)}"
+        ret += f"{cgen(lhs)}\n"
+
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq {r13}, {offset}({rbp})\n"
+
+        #config.rbp_offset.decrement()
+        ret += f"{cgen(exp.rhs)}\n"
+        #config.rbp_offset.increment()
+
+        ret += f"movq 24({r13}), {r13}\n"
+        ret += f"movq {offset}({rbp}), {r14}\n"
+        ret += f"movq {r14}, {rax}\n"
+        ret += f"subq {r13}, {rax}\n"
+        ret += f"movq {rax}, {r13}\n"
+        ret += f"movq {r13}, {offset}({rbp})\n"
+
+        ret += f"{cgen(Integer(exp.in_class, 0, 'Int', None))}\n"
+
+        ret += f"movq {offset}({rbp}), {r14}\n"
+        ret += f"movq {r14}, 24({r13})"
 
     # Not
     elif isinstance(exp, NotExpr):
@@ -184,9 +204,8 @@ def cgen(exp):
 
         ctor_name = exp.rhs.name if exp.rhs.name != "SELF_TYPE" else config.cur_class.get()
         ret += f"movq ${ctor_name}..new, {r14}\n"
-
-
         ret += f"call *{r14}\n"
+
         ret += f"popq {r12}\n"
         ret += f"popq {rbp}"
 
@@ -340,9 +359,7 @@ def cgen(exp):
         ret += f"{cgen(exp.lhs)}\n"
         ret += f"pushq {r13}\n"
 
-        config.rbp_offset.decrement()
         ret += f"{cgen(exp.rhs)}\n"
-        config.rbp_offset.increment()
         
         ret += f"pushq {r13}\n"
         ret += f"pushq {r12}\n"
@@ -444,9 +461,12 @@ def cgen(exp):
         ret += "## case expression begins\n"
         ret += f"{cgen(exp.case_exp)}\n"
 
+        offset = config.rbp_offset.get() * config.OFFSET_AMT
+        config.rbp_offset.decrement()
+
         ret += f"cmpq $0, {r13}\n"
         ret += f"je l{void_branch}\n"
-        ret += f"movq {r13}, 0({rbp})\n"
+        ret += f"movq {r13}, {offset}({rbp})\n"
         ret += f"movq 0({r13}), {r13}\n"
 
         valid_branches = defaultdict(int)
@@ -527,7 +547,7 @@ def cgen(exp):
         ret += f".globl {branch_info}\n"
         branch_info += ":"
         ret += f"{branch_info:24}## case expression ends"
-
+        config.rbp_offset.increment()
 
     # Let
     elif isinstance(exp, Let):

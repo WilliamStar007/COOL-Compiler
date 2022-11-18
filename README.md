@@ -23,10 +23,39 @@ This file has all register classes. This includes all registers used. They do no
 
 assembly.py
 This file contains several components: cgen, print_vtables, print_ctors, print_methods, and print_cool_globals.
-
 `cgen`
 cgen has unique code generate per given Cool expression. I'll now discuss each specific expression inside cgen.
 `Attribute`
-NOT FINISHED
+We separated initialization of a default expression (0 or null for non-built-ins and empty strings) from the actual assignment.
 `Expression Terminals`
-An expression terminal consists of assembling a default value and then information unique to its type. Thus, each expression terminal calls cgen on its base `Expression` class, which calls the constructor for each unique class. Then, each terminal is handled differently. If the `Integer` is not none, its value is stored in a register before being stored at offset 24 relative to r13, which is where each integer value is stored.  If the `StringObj` is None, then it is the default value of `the.empty.string` and is stored at offset 24 from register r13. Otherwise, its unique string tag is mapped to the string and the value of the string is stored atoffset 24 from r13. Lastly, the default Expression 
+An expression terminal consists of assembling a default value and then information unique to its type. Thus, each expression terminal calls cgen on its base `Expression` class, which calls the constructor for each unique class. Then, each terminal is handled differently. If the `Integer` is not none, its value is stored in a register before being stored at offset 24 relative to r13, which is where each integer value is stored.  If the `StringObj` is None, then it is the default value of `the.empty.string` and is stored at offset 24 from register r13. Otherwise, its unique string tag is mapped to the string and the value of the string is stored atoffset 24 from r13. Lastly, the default Expression has common creation for all built-ins. This can most likely be discarded in the future. Identifiers are just a reference so they are skipped.
+`IsVoid`
+Is void generates code for its rhs expression and then compares the result (stored in R13 as per the stack discipline) with 0. If it is true, then the expression is deemed void and a true boolean is returned. Otherwise, a false boolean is returned.
+`Negate`
+We wanted to reuse the `Minus` logic with negate, but we found that it followed a slightly different stack discipline in that the rbp offset was not changing during the construction of the integer, so we copied the code from Minus over. We want to change this in the future to optimize code reuse.
+`NotExpr`
+This functioned similarly to isvoid, where we compared 0 to r13, which stored the result of cgen(r13) (which was a boolean).
+`NewExp`
+New expression was simply a constructor. We stored the current state of the program as per the stack discipline and then called the constructor of the object, before restoring the state of the program.
+`Assign`
+Assign generated a result for rhs, added that result to the symbol table, and then moved r13 (which stored the result of cgen(rhs)) to the offset and register where the identifier is stored.
+`Plus`, `Minus`, `Times`, `Divide`
+These followed the same logic, where the result of lhs was stored in r13 and then moved onto the stack. Due to the fact that we used a temporary, we used a global rbp_offset to track the position that this temporary was stored on the stack as we calculated the value of rhs. Then we generated a new integer object and stored the result of the addition/subtraction to that object. No state was restored in this because the logic was done in the `room for temporaries` space of our call stack.
+`Times` differed slightly in its implementation. We fixed the float error as per Akash's piazza post by doing arithmetic shifts. The size of the register was also expanded in one of the steps to allow for a number that may have overflowed.
+`Divide` also differed slightly in that it ensures that rhs is not 0 before dividing by it. If it is 0, the control flow falls into an error branch. Otherwise it jumps to a successful division.
+`Equality`
+All equality handlers were equivalent to those from the reference compiler. All instances of equality were handled the same. Equality did not make room for temporaries, so the lhs/rhs sides were calculated and the proper equality handler was called.
+`Block`
+Blocks are implemented as a summation of the code gens for all the sub expressions.
+`If`
+If had several components:
+A predicate, which compared the result with 0 and jumped if the result in r13 was not equivalent to 0 (with 0 being defined as false). Otherwise, it fell into the else branch. There was also an end branch that would be jumped to from the else branch so that code in the true branch was skipped.
+`Loop`
+Loops were implemented similarly to if. There is a predicate, which has its code generated and its value is compared with 0, or false. It jumps to the end branch if the predicate resulted in 0. Otherwise, it runs the body and will unconditionally jump back to the predicate branch.
+`Case`
+Case has several components.
+It first generates its case expression and compares the resulting value with null, or 0. If it is 0, it will jump to the void branch. It then gathers all cases and creates valid branches from them. It then iterates through all the branches until it finds branches of a matching class tag. If it is a class with an invalid tag, it jumps to the error branch.
+`Let`
+Lets iterated through the list of formals and constructed default values if the formal was of that type and otherwise moved null into r13 for any classes. It then called cgen on the expr type before moving that number to a given offset from rbp.
+
+`Max number of temporaries`
