@@ -435,3 +435,22 @@ class MinTracker(Tracker):
         '''
         super().reset()
         self.min = self.init
+
+class CurClass(object):
+    '''
+    Tracks the current class
+    '''
+    def __init__(self):
+        self.cur = None
+
+    def set(self, class_name):
+        '''
+        Setter
+        '''
+        self.cur = class_name
+    
+    def get(self):
+        '''
+        Getter
+        '''
+        return self.cur
