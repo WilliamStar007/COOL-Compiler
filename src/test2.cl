@@ -163,7 +163,7 @@ class Main inherits IO {
 		u : TestU => 3;
 		v : TestV => 4;
 		from2 : FromIO2 => 0;
-		from3 : FromIO3 => 0;
+		from3 : FromIO3 => case someB of c : TestC => 0; b : TestB => case someA of a : TestA => case someB of b : TestB => case hello of a : String => 0;
 		from4 : FromIO4 => 0;
 		from5 : FromIO5 => 0;
 		from6 : FromIO6 => 0;

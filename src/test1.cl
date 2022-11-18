@@ -11,6 +11,13 @@ class Main inherits IO {
 	theNewTest : TestNew <- (new TestNew).init("Howdy", "Bros");
 	theNewTest2 : TestNew <- (new TestNew).init("Hello", "There");
 	theNewTest3 : TestNew <- (new TestNew).init("Good", "Bye");
+	while1 : Int;
+	while2 : Int;
+	while3 : Int;
+	while4 : Int;
+	while5 : Int;
+	while6 : Int;
+	while7 : Int;
 
 	-- TEST: many parameters
 	func1(a : Int, b : Int, c : Int, d : Int, e : Int, f : Int, g : Int, h : Int,
@@ -117,7 +124,47 @@ class Main inherits IO {
 		else x <- x + 9 * 8 * 7 fi
 		else x <- x * 77 * 88 fi;
 
+		if true_bool then 
+		if false_bool then if true_bool then if false_bool then if true_bool then if false_bool then if true_bool then if false_bool then if true_bool
+		then x <- 9 + 9
+		else x <- 10 + 10 fi
+		else x <- 10 + 20 fi
+		else x <- 10 * 20 fi
+		else x <- 10 - 2 * 10 fi
+		else x <- 10 * 2 + 2 fi
+		else x <- x * 77 fi 
+		else x <- x * 8 fi
+		else x <- x + 9 * 8 * 7 fi
+		else x <- x * 77 * 88 fi;
 
+		-- WHILE LOOOPS
+		while while1 < 100 loop {
+					while1 <- while1 + 1;
+					while while2 < 100 loop {
+						while2 <- while2 + 1;
+						while while3 < 100 loop {
+									while3  <- while3 + 1;
+									while while4 < 100 loop {
+										while4 <- while4 + 1;
+										while while5 < 100 loop {
+											while5 <- while5 + 1;
+											while while6 < 100 loop {
+												while6 <- while6 + 1;
+												while while7 < 100 loop {
+													while7 <- while7 + 1;
+												} pool;
+											} pool;
+										} pool;
+									} pool;
+						} pool;
+					} pool ;
+					while2 <- 0;
+					while3 <- 0;
+					while4 <- 0;
+					while5 <- 0;
+					while6 <- 0;
+					while7 <- 0;
+		} pool;
 
 
 	-- TEST STRING INTERNALS
