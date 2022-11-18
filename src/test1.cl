@@ -22,48 +22,127 @@ class Main inherits IO {
 	-- TEST: many parameters
 	func1(a : Int, b : Int, c : Int, d : Int, e : Int, f : Int, g : Int, h : Int,
 	i : Int, j : Int, k : Int, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Int, t : Int, u : Int, v: Int, w : Int, x : Int, y : Int, z : Int) : Int
-	{a};
+	{{a <- in_int(); a;}};
 	func2(a : Int, b : Int, c : Int, d : Int, e : Int, f : Int, g : Int, h : Int,
 		i : Int, j : Int, k : Int, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Int, t : Int, u : Int, v: Int, w : Int, x : Int, y : Int, z : Int) : Int
-		{func3(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x, y)};
+		{{
+			a <- in_int();
+			b <- in_int();
+			func3(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x, y);}};
 		func3(a : Int, b : Int, c : Int, d : Int, e : Int, f : Int, g : Int, h : Int,
 			i : Int, j : Int, k : Int, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Int, t : Int, u : Int, v: Int, w : Int, x : Int, y : Int) : Int
-			{func4(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x)};
+			{ {
+				a <- in_int();
+				b <- in_int();
+				c <- in_int();
+				d <- in_int();
+				func4(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w, x);}};
 	func4(a : Int, b : Int, c : Int, d : Int, e : Int, f : Int, g : Int, h : Int,
 				i : Int, j : Int, k : Int, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Int, t : Int, u : Int, v: Int, w : Int, x : Int) : Int
-				{func5(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w)};
+				{{
+					a <- in_int();
+					b <- in_int();
+					c <- in_int();
+					func5(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w);}};
 	func5(a : Int, b : Int, c : Int, d : Int, e : Int, f : Int, g : Int, h : Int,
 					i : Int, j : Int, k : Int, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Int, t : Int, u : Int, v: Int, w : Int) : Int
-					{a};
+					{{
+						a <- in_int();
+						b <- in_int();
+						c <- in_int();
+						d <- in_int();
+						
+						a;}};
 
 	funcStr1(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : String, m : String, n : String, o : String, p : String, q : String, r : String, s : String, t : String, u : String, v: String, w : String, x : String, y : String, z : String) : String
-		{a};
+		{{
+			b <- in_string();
+			c <- in_string();
+			z <- in_string();
+			a;}};
 
 		funcStr2(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String,
 			i : String, j : String, k : String, l : String, m : String, n : String, o : String, p : String, q : String, r : String, s : String, t : String, u : String, v: String, w : String, x : String, y : String, z : String) : String
-			{funcStr3(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x, y)};
+			{{
+				
+				b <- in_string();
+				c <- in_string();
+				z <- in_string();
+				funcStr3(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x, y);}};
 			funcStr3(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : String, m : String, n : String, o : String, p : String, q : String, r : String, s : String, t : String, u : String, v: String, w : String, x : String, y : String) : String
-				{funcStr4(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x)};
+				{{
+					b <- in_string();
+					c <- in_string();
+					y <- in_string();
+					funcStr4(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x);}};
 		funcStr4(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String,
 					i : String, j : String, k : String, l : String, m : String, n : String, o : String, p : String, q : String, r : String, s : String, t : String, u : String, v: String, w : String, x : String) : String
-					{funcStr5(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w)};
+					{{
+						
+						b <- in_string();
+						c <- in_string();
+						x <- in_string();
+						funcStr5(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w);}};
 		funcStr5(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String,
 						i : String, j : String, k : String, l : String, m : String, n : String, o : String, p : String, q : String, r : String, s : String, t : String, u : String, v: String, w : String) : String
-						{a};
+						{{
+
+							b <- in_string();
+							c <- in_string();
+							w <- in_string();
+							a;}};
 
 
 
 						funcMix1(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Bool, t : Bool, u : Bool, v: TestNew, w : TestNew, x : TestNew, y : TestNew, z : TestNew) : TestNew
-						{v};
+						{{
+							
+							a <- in_string();
+							b <- in_string();
+							l <- in_int();
+							r <- in_int();
+							v;}};
 				
 						funcMix2(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Bool, t : Bool, u : Bool, v: TestNew, w : TestNew, x : TestNew, y : TestNew, z : TestNew) : TestNew
-							{funcMix3(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x, y)};
+							{{
+								a <- in_string();
+								b <- in_string();
+								l <- in_int();
+								m <- in_int();
+								n <- in_int();
+								r <- in_int();
+								funcMix3(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x, y);}};
 							funcMix3(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Bool, t : Bool, u : Bool, v: TestNew, w : TestNew, x : TestNew, y : TestNew) : TestNew
-								{funcMix4(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x)};
+								{{
+									
+									a <- in_string();
+								b <- in_string();
+								l <- in_int();
+								m <- in_int();
+								n <- in_int();
+								r <- in_int();
+									funcMix4(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w , x);}};
 						funcMix4(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Bool, t : Bool, u : Bool, v: TestNew, w : TestNew, x : TestNew) : TestNew
-									{funcMix5(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w)};
+									{{
+										
+										
+										a <- in_string();
+										b <- in_string();
+										l <- in_int();
+										m <- in_int();
+										n <- in_int();
+										r <- in_int();
+										funcMix5(a, b, c, d, e, f, g , h, i , j , k , l, m, n, o , p, q , r ,s, t, u , v , w);}};
 						funcMix5(a : String, b : String, c : String, d : String, e : String, f : String, g : String, h : String, i : String, j : String, k : String, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Bool, t : Bool, u : Bool, v: TestNew, w : TestNew) : TestNew
-										{w};
+										{{
+											a <- in_string();
+											b <- in_string();
+											l <- in_int();
+											m <- in_int();
+											n <- in_int();
+											r <- in_int();
+											
+											w;}};
 
 			funcRecursion(a : Int, b : Int, c : Int, d : Int, e : Int, f : Int, g : Int, h : Int,
 				i : Int, j : Int, k : Int, l : Int, m : Int, n : Int, o : Int, p : Int, q : Int, r : Int, s : Int, t : Int, u : Int, v: Int, w : Int, x : Int, y : Int, z : Int,
@@ -73,7 +152,61 @@ class Main inherits IO {
 				i2 : Int, j2 : Int, k2 : Int, l2 : Int, m2 : Int, n2 : Int, o2 : Int, p2 : Int, q2 : Int, r2 : Int, s2 : Int, t2 : Int, u2 : Int, v2 : Int, w2 : Int, x2 : Int, y2 : Int, z2 : Int,
 				a3 : Int, b3 : Int, c3 : Int, d3: Int, e3 : Int, f3 : Int, g3 : Int, h3 : Int,
 				i3 : Int, j3 : Int, k3 : Int, l3 : Int, m3 : Int, n3 : Int, o3 : Int, p3 : Int, q3 : Int, r3 : Int, s3 : Int, t3: Int, u3 : Int, v3 : Int, w3 : Int, x3 : Int, y3 : Int, z3 : Int) : Int
-				{if a = 0 then 1 else funcRecursion(a - 1,  1 + 2 ,  2 * 2, 3 + 77,  88 * 7, 7 + 7 , g , h, i, j, k , l , m , n, o , p, q, r, s, t, u, v , w, x, y, z, a1, b1 , c1, d1, e1, f1 , g1 , h1, i1, j1, k1 , l1 , m1 , n1, o1 , p1, q1, r1, s1, t1, u1, v1 , w1, x1, y1, z1, a2, b2 , c2, d2, e2, 5 * 6 * 7 * 8 , g2 , h2, i2, j2, k2 , l2 , m2 , n2, o2 , p2, q2, r2, s2, t2, u2, v2 , 7 * 7 + 7, x2, y2, z2,  a3, b3 , c3, d3, e3, f3 , g3 , h3, i3, j3, k3 , l3 , m3 , 5 * 5 * 5 + 2, o3 , p3, q3, r3, s3, t3, u3, v3 , w3, x3, y3, z3 ) fi};
+				{{
+					a <- in_int();
+					b <- in_int();
+					c <- in_int();
+					d <- in_int();
+					e <- in_int();
+					f <- in_int();
+					g <- in_int();
+					h <- in_int();
+					i <- in_int();
+					j <- in_int();
+					k <- in_int();
+					l <- in_int();
+					m <- in_int();
+					n <- in_int();
+					o <- in_int();
+					p <- in_int();
+					q <- in_int();
+					r <- in_int();
+					s <- in_int();
+					t <- in_int();
+					u <- in_int();
+					v <- in_int();
+					w <- in_int();
+					x <- in_int();
+					y <- in_int();
+					z <- in_int();
+					a1 <- in_int();
+					b1 <- in_int();
+					c1 <- in_int();
+					d1 <- in_int();
+					e1 <- in_int();
+					f1 <- in_int();
+					g1 <- in_int();
+					h1 <- in_int();
+					i1 <- in_int();
+					j1 <- in_int();
+					k1 <- in_int();
+					l1 <- in_int();
+					m1 <- in_int();
+					n1 <- in_int();
+					o1 <- in_int();
+					p1 <- in_int();
+					q1 <- in_int();
+					r1 <- in_int();
+					s1 <- in_int();
+					t1 <- in_int();
+					u1 <- in_int();
+					v1 <- in_int();
+					w1 <- in_int();
+					x1 <- in_int();
+					y1 <- in_int();
+					z1 <- in_int();
+					
+					if a = 0 then 1 else funcRecursion(a - 1,  1 + 2 ,  2 * 2, 3 + 77,  88 * 7, 7 + 7 , g , h, i, j, k , l , m , n, o , p, q, r, s, t, u, v , w, x, y, z, a1, b1 , c1, d1, e1, f1 , g1 , h1, i1, j1, k1 , l1 , m1 , n1, o1 , p1, q1, r1, s1, t1, u1, v1 , w1, x1, y1, z1, a2, b2 , c2, d2, e2, 5 * 6 * 7 * 8 , g2 , h2, i2, j2, k2 , l2 , m2 , n2, o2 , p2, q2, r2, s2, t2, u2, v2 , 7 * 7 + 7, x2, y2, z2,  a3, b3 , c3, d3, e3, f3 , g3 , h3, i3, j3, k3 , l3 , m3 , 5 * 5 * 5 + 2, o3 , p3, q3, r3, s3, t3, u3, v3 , w3, x3, y3, z3 ) fi;}};
 			
 	-- TEST STRING INTERNALS
 	string1 : String <- "hello";
@@ -96,7 +229,10 @@ class Main inherits IO {
 	main() : Object {{
 
 
-
+	-- in int
+	x <- in_int();
+	string11 <- in_string();
+	
 		-- Functions with many parameters
 	func1(88 * 8, 1 + 2, 2 * 3 * 7 + 8,  2 / 2,  1 * 2 * 3 + 4 + 5 / 6, 1 / 2 , 7 * 7, 88 + 8, 7 * 7,3 * 2 + 6, 2 * 3 + 2 * 7 * 8 + 1, 7  * 7 + 2 + 6, 2 * 2 + 9 * 2 + 3, 7 * 7 * 2 + 4 + 3 + 2 + 1, 1 * 2 + (3 + 5 + 1) + 88888, 1 * 2 + 3 * 4 *5 * 6 * 8, 1 + 2, 5 * 5 * 2, 1 * 2 + 2, x, x + 1, x + 3, 77 * 77, 1000 * 3, (1 * 2 * 3 + 4) / 5, x);
 
@@ -164,6 +300,8 @@ class Main inherits IO {
 					while5 <- 0;
 					while6 <- 0;
 					while7 <- 0;
+					x <- in_int();
+					string11 <- in_string();
 		} pool;
 
 
@@ -173,6 +311,7 @@ class Main inherits IO {
 	string1 <- string2.concat(string3);
 	string1 <- string1.concat("HELLOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
 	x <- string1.length();
+	string1 <- in_string();
 	out_string("x : ");
 	out_int(x);
 	out_string("\n");
@@ -181,6 +320,7 @@ class Main inherits IO {
 	out_string(string11);
 	out_string("\n");
 	x <- string11.length();
+	string11 <- in_string();
 	out_string("x : ");
 	out_int(x);
 	out_string("\n");
@@ -189,6 +329,7 @@ class Main inherits IO {
 	out_string(string5);
 	out_string("\n");
 	x <- string5.length();
+	string5 <- in_string();
 	out_string("x : ");
 	out_int(x);
 	out_string("\n");
@@ -196,89 +337,110 @@ class Main inherits IO {
 		-- big expression
 	x <-	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29;
 	out_int(x);
+	x <- in_int();
 		-- Arithmetic
 		-- Many expressions
 		x <-5 + 5;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <- 7 / 5;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		
 		x <- 6 * 2;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <- 5 - 2;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <- 5 - 2 + 7 * 5;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 	x <-	2 / 7;
 	out_string("x : ");
 	out_int(x);
 	out_string("\n");
+	x <- in_int();
 		x <-1 / 7;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <-2 + 2;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <-7 /2;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <-1 / 8;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <-1 / 9; 
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <-1 / 10;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <- 1 / 11;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <- 1 / 12;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <- 1 / 13;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <- 1/ 14;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <- 1 / 15;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <- 1 / 16;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <- 1 / 17;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x <- 1 / 18;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
+		x <- in_int();
 		x  <- 1 * 19;
 		out_string("x : ");
 		out_int(x);
@@ -315,11 +477,11 @@ class Main inherits IO {
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
-		if true_bool = true then x <- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4  else x <- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4  fi;
+		if true_bool = true then x <- in_int()  else x <- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4  fi;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
-		if false_bool = false then x <- 10 else x <- 77 fi;
+		if false_bool = false then x <- 10 else x <- in_int() fi;
 		out_string("x : ");
 		out_int(x);
 		out_string("\n");
@@ -340,12 +502,14 @@ class Main inherits IO {
 									let e : Bool <- false in
 											let f : Bool <- true in
 													let g : String <- "Hello" in
-														  out_string("Hello");
+														  g <- in_string();
 -- TEST normal methods
 	one.copy();
  helloThere.copy(); 
+ helloThere <- in_string();
  true_bool.copy(); 
 	helloThere.length();
+
 
 	-- TEST NEW and test New self dispatch
 	theNewTest <- new TestNew;
@@ -362,15 +526,15 @@ class Main inherits IO {
 	else out_string("=(\n").out_string((new TestNew).getB())
 	fi;
 
-	if not (not(true_bool = false_bool)) then x <- 10 * 10 * 10 + 5 / 2 else x <- 10 * 10 fi;
+	if not (not(true_bool = false_bool)) then x <- 10 * 10 * 10 + 5 / 2 else x <- in_int() fi;
 	out_string("x : ");
 	out_int(x);
 	out_string("\n");
-	if not(not (not (true_bool = true))) then x <- 1 else x <- 10122432 fi;
+	if not(not (not (true_bool = true))) then x <- in_int() else x <- 10122432 fi;
 	out_string("x : ");
 	out_int(x);
 	out_string("\n");
-	if not(not(not(not (not (false_bool = false))))) then x <- 2 else x <- 4 fi;
+	if not(not(not(not (not (false_bool = false))))) then x <- in_int() else x <- 4 fi;
 	out_string("x : ");
 	out_int(x);
 	out_string("\n");
@@ -392,11 +556,6 @@ class Main inherits IO {
 	out_string("Hello");
 	abort();
 	}
-
-
-
-
-
 	};
 
 };
@@ -404,10 +563,17 @@ class Main inherits IO {
 class Test1 inherits IO {
 
 		-- TEST: new and self type
+		x : Int;
+		someStr : String;
 		some_number: Int <- helloThere(new SELF_TYPE);
 		helloThere(value:Test1):Int { 5000 };
-	other_main(): SELF_TYPE {
- out_string("Hello, World.\n")
+	other_main(): SELF_TYPE {{
+ out_string("Hello, World.\n");
+ x <- in_int();
+ someStr <- in_string();
+ self;
+
+	}
 	};
 };
 
@@ -431,21 +597,31 @@ class TestNew inherits IO{
 		{
 		out_string(a);
 		out_string(b);
-		a = valA;
-		b = valB;
+		
+		a <- valA;
+		b <- valB;
+		out_string(a);
+		out_string(b);
+		a <- in_string();
+		b <- in_string();
 		out_string(a);
 		out_string(b);
 		self;
 		}
 	};
 
-	exihbit(): Object {
-		out_int(1).out_string(a).out_string(b).out_int(1)
+	exihbit(): Object {{
+		a <- in_string();
+		b <- in_string();
+		out_int(1).out_string(a).out_string(b).out_int(1);
+	}
 	};
 	testThis(): TestNew {
 		{
 		out_string(a);
 		a <- "Hi";
+		out_string(a);
+		a <- in_string();
 		out_string(a);
 		self;
 		}
@@ -455,6 +631,8 @@ class TestNew inherits IO{
 		{
 		out_string(b);
 		b <- "Hello";
+		out_string(b);
+		b <- in_string();
 		out_string(b);
 		self;
 		}
@@ -477,7 +655,14 @@ class TestNew inherits IO{
 			out_string("b : ");
 			out_string(b);
 			out_string("\n");
-
+			a <- in_string();
+			b <- in_string();
+			out_string("a : ");
+			out_string(a);
+			out_string("\n");
+			out_string("b : ");
+			out_string(b);
+			out_string("\n");
 			self;
 		}
 	};
@@ -486,9 +671,18 @@ class TestNew inherits IO{
 		out_string("a : ");
 		out_string(a);
 		out_string("\n");
+		a <- in_string();
+		out_string("a : ");
+		out_string(a);
+		out_string("\n");
+
 		a;
 	}};
 	getB() : String { {
+		out_string("b : ");
+		out_string(b);
+		out_string("\n");
+		b <- in_string();
 		out_string("b : ");
 		out_string(b);
 		out_string("\n");
@@ -537,11 +731,14 @@ class Test4 inherits TestNew {
 	out_string("string12 : ");
 	out_string(string12);
 	out_string("\n");
+	string12 <- in_string();
 	string12 <- string12.concat("HELLOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
 	out_string("string12 : ");
 	out_string(string12);
 	out_string("\n");
+	x <- in_int();
 	x <- string12.length();
+	string12 <- in_string();
 	out_string("class Test4 x : ");
 	out_int(x);
 	out_string("\n");
@@ -549,44 +746,57 @@ class Test4 inherits TestNew {
 	out_string("string22 : ");
 	out_string(string22);
 	out_string("\n");
+	
 
 	x <- string22.length();
+	string22 <- in_string();
 	out_string("class Test 4 x: ");
 	out_int(x);
 	out_string("\n");
+	x <- in_int();
 	string16 <- string22.substr(0, 10).substr(0,9).substr(0, 8).substr(0, 7).substr(0, 6).substr(0, 5).substr(0, 4).substr(0, 3).substr(0, 2).substr(0, 1);
 	out_string("string16: ");
 	out_string(string16);
 	out_string("\n");
+	
 
 	x <- string16.length();
+	string16 <- in_string();
 	out_string("class Test 4 x: ");
 	out_int(x);
 	out_string("\n");
 	out_string("TEST 4");
+	x <- in_int();
 
 	string1 <- string2.concat(string3);
 	string1 <- string1.concat("HELLOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+	
 	x <- string1.length();
+	string1 <- in_string();
 	out_string("class Test4 x : ");
 	out_int(x);
 	out_string("\n");
+	x <- in_int();
 	string11 <- string1.concat(string2).concat(string3).concat(string4).concat(string5).concat(string6).concat(string7).concat(string8).concat(string9).concat(string10).concat(string11);
 	out_string("class Test4 string11 : ");
 	out_string(string11);
 	out_string("\n");
 	x <- string11.length();
+	string11 <- in_string();
 	out_string("class Test4 x : ");
 	out_int(x);
 	out_string("\n");
+	x <- in_int();
 	string5 <- string11.substr(0, 10).substr(0,9).substr(0, 8).substr(0, 7).substr(0, 6).substr(0, 5).substr(0, 4).substr(0, 3).substr(0, 2).substr(0, 1);
 	out_string("class Test4 string5 : ");
 	out_string(string5);
 	out_string("\n");
 	x <- string5.length();
+	string5 <- in_string();
 	out_string("class Test4 x : ");
 	out_int(x);
 	out_string("\n");
+	x <- in_int();
 	shallowCopy <- string11.copy().concat((new String)).copy();
 	theDeepCopy <- deepCopy.copy1();
 
@@ -596,7 +806,6 @@ class Test4 inherits TestNew {
 	copy2 <- someCopy.copy1().copy1().copy1().copy1();
 	copy3 <- (new Copy).init(copy2.getA(), deepCopy.copy1().getB(), otherCopy.copy1().getC());
 	copy3.printA();
-
 
 	-- Object comparison
 	if theDeepCopy < someCopy then theDeepCopy.printSomething("Deep Copy less")
@@ -627,10 +836,31 @@ a : Int;
 b : Int;
 c : Int;
 init(valA : Int, valB : Int, valC : Int) : SELF_TYPE {
-	{
+	{ 
+		out_string("a : ");
+		out_int(a);
+		out_string("\n");
+		out_string("b : ");
+		out_int(b);
+		out_string("\n");
+		out_string("c : ");
+		out_int(c);
+		out_string("\n");
 		a <- valA;
 		b <- valB;
 		c <- valC;
+		a <- in_int();
+		b <- in_int();
+		c <- in_int();
+		out_string("a : ");
+		out_int(a);
+		out_string("\n");
+		out_string("b : ");
+		out_int(b);
+		out_string("\n");
+		out_string("c : ");
+		out_int(c);
+		out_string("\n");
 		self;
 	}
 };
@@ -645,6 +875,19 @@ init(valA : Int, valB : Int, valC : Int) : SELF_TYPE {
 	out_string("class Copy c: ");
 	out_int(c);
 	out_string("\n");
+
+		a <- in_int();
+		b <- in_int();
+		c <- in_int();
+		out_string("class Copy a: ");
+		out_int(a);
+		out_string("\n");
+		out_string("class Copy b: ");
+		out_int(b);
+		out_string("\n");
+		out_string("class Copy c: ");
+		out_int(c);
+		out_string("\n");
 	(self).init(a, b, c);
 
 }};
@@ -655,6 +898,10 @@ init(valA : Int, valB : Int, valC : Int) : SELF_TYPE {
 	out_string("class Copy a: ");
 	out_int(a);
 	out_string("\n");
+	a <- in_int();
+	out_string("class Copy a: ");
+	out_int(a);
+	out_string("\n");
 	a;
 
 }};
@@ -662,10 +909,18 @@ init(valA : Int, valB : Int, valC : Int) : SELF_TYPE {
 	out_string("class Copy b: ");
 	out_int(b);
 	out_string("\n");
+	b <- in_int();
+	out_string("class Copy b: ");
+	out_int(b);
+	out_string("\n");
 	b;
 
 }};
  getC() : Int {{
+	out_string("class Copy c: ");
+	out_int(c);
+	out_string("\n");
+	c <- in_int();
 	out_string("class Copy c: ");
 	out_int(c);
 	out_string("\n");
@@ -705,6 +960,14 @@ class Person inherits IO {
 			out_string("class Person age: ");
 		  out_int(age);
 		  out_string("\n");
+			name <- in_string();
+			age <- in_int();
+			out_string("class Person name: ");
+		  out_string(name);
+		  out_string("\n");
+			out_string("class Person age: ");
+		  out_int(age);
+		  out_string("\n");
 			self;
 		}
 	};
@@ -726,9 +989,21 @@ class Employee inherits Person {
 		  out_string("\n");
 
 		name <- nameVal;
-		ageVal <- ageVal;
+		age <- ageVal;
 		salary <- salaryVal;
 
+			out_string("class Person name: ");
+		  out_string(name);
+		  out_string("\n");
+			out_string("class Person age: ");
+		  out_int(age);
+		  out_string("\n");
+			out_string("class Person salary: ");
+		  out_int(salary);
+		  out_string("\n");
+			name <- in_string();
+			age <- in_int();
+			salary <- in_int();
 			out_string("class Person name: ");
 		  out_string(name);
 		  out_string("\n");
