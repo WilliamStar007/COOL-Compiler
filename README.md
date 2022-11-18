@@ -56,6 +56,9 @@ Loops were implemented similarly to if. There is a predicate, which has its code
 Case has several components.
 It first generates its case expression and compares the resulting value with null, or 0. If it is 0, it will jump to the void branch. It then gathers all cases and creates valid branches from them. It then iterates through all the branches until it finds branches of a matching class tag. If it is a class with an invalid tag, it jumps to the error branch.
 `Let`
-Lets iterated through the list of formals and constructed default values if the formal was of that type and otherwise moved null into r13 for any classes. It then called cgen on the expr type before moving that number to a given offset from rbp.
+Lets iterated through the list of formals and constructed default values if the formal was of that type and otherwise moved null into r13 for any classes. It then called cgen on the expr type before moving that number to a given offset from rbp and being pushede to the symbol table. Then cgen is called on the let body before all let bindings are popped from the symbol table and rbp_offset is incremented.
+`Dispatches`
+For all dispatches, the current state is saved and cgen is called on the formals with their result pushed to the stack. If the dispatch has an object type, cgen is called on it. Static and dynamic dispatch both have errors to account for the case where there is dispatch on a void object. This cannot happen in self object because the object must be alive if we are "inside" of it. The method is loaded from the vtable and called. The stack is restored by adding the number of temporaries plus one for the self object to the stack pointer. State is then restored.
 
-`Max number of temporaries`
+`Vtables and constructors`
+The format for these were taken from the cool reference compiler. The stack discipline used for this was inconsistent with other operations relative to the cgen. Space for temporaries was allocated for binary operations.
