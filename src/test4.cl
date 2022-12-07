@@ -1,604 +1,1018 @@
--- Bad Tests: Test4.cl
+-- Good Tests: Test4.cl
 
-(*
-A dispatch (static or dynamic) on void.
-A case on void.
-Execution of a case statement without a matching branch.
-Division by zero.
-Substring out of range. (This error is always reported on line 0, since it occurs inside an "internal" library function.)
-Heap overflow. (You do not need to implement this runtime error.)
-Stack overflow.
-*)
--- Which tests should be conducted here
--- SNEAKY STACK OVERFLOW
-class Parent2 {
-	theChild : Child <- new Child;
 
-};
-
-class Child inherits Parent2 {
-	attr1 : Parent2 <- new Parent2;
-};
 class Main inherits IO {
-	voidClass : VoidClass;
-	stackOver : StackOver <- new StackOver;
-	ctor : CtorOverFlow <- new CtorOverFlow;
-	theChild : Child <- new Child;
-	theParent : Parent2 <- new Parent2;
-	newX : TestX <- new TestX;
-	theInput : IO <- new IO;
-	theNum : Int;
-	theWord : String;
-	theTruth : Bool;
-	someObj : Object <- new Object;
-	x : Int;
-	-- STACK OVERFLOW
-	recursion(n: Int) : Int {n * recursion(n + 1)};
-	fact(n : Int) :  Int {n * recursion(n - 1)};
-	mututalrecursion(n : Int) : Int {{
-		func1(n);
+	testA : TestA <- new TestA;
+	testB : TestB <- new TestB;
+	testC : TestC <- new TestC;
+	testD : TestD <- new TestD;
+	testE : TestE <- new TestE;
+	testF : TestF <- new TestF;
+	testG : TestG <- new TestG;
+	testH : TestH <- new TestH;
+	testI : TestI <- new TestI;
+	testJ : TestJ <- new TestJ;
+	testK : TestK <- new TestK;
+	testL : TestL <- new TestL;
+	testM : TestM <- new  TestM;
+	testN : TestN <- new TestN;
+	testO : TestO <- new TestO;
+	testP : TestP <- new TestP;
+	testQ : TestQ <- new TestQ;
+	testR : TestR <- new TestR;
+	testS : TestS <- new TestS;
+	testT : TestT <- new TestT;
+	testU : TestU <- new TestU;
+	testV : TestV <- new TestV;
+	testW : TestW <- new TestW;
+	testX : TestX <- new TestX;
+	testY : TestY <- new TestY;
+	someIndex : Int <- 0;
+  x : Int <- 0;
+  y : Int <- 1;
+  z : Int <- 2;
+  a : Int <- new Int;
+  b : Int <- 4;
+  c : Int <- new Int;
+  d : Int <- 6;
+  e : Int <- new Int;
+  f : Int <- 8;
+  g : Int <- new Int;
+  h : Int <- 10;
+  i : Int <- new Int;
+  j : Int <- 12;
+  k : Int <- new Int;
+  l : Int <- 14;
+  m : Int <- 15;
+  n : Int <- 16;
+  o : Int <- 17;
+  p : Int <- 18;
+  q : Int <- 19;
+  r : Int <- 20;
+  s : Int <- 21;
+  t : Int <- 22;
+  u : Int <- 23;
+  v : Int <- 24;
+  w : Int <- 25;
+  
+  b1 : Int <- 4;
+  c1 : Int <- new Int;
+  d1 : Int <- 6;
+  e1 : Int <- new Int;
+  f1 : Int <- 8;
+  g1 : Int <- new Int;
+  h1 : Int <- 10;
+  i1 : Int <- new Int;
+  j1 : Int <- 12;
+  k1 : Int <- new Int;
+  l1 : Int <- 14;
+  m1 : Int <- 15;
+  n1 : Int <- 16;
+  o1 : Int <- 17;
+  p1 : Int <- 18;
+  q1 : Int <- 19;
+  r1 : Int <- 20;
+  s1 : Int <- 21;
+  t1 : Int <- 22;
+  u1 : Int <- 23;
+  v1 : Int <- 24;
+  w1 : Int <- 25;
+  
+  b2 : Int <- 4;
+  c2 : Int <- new Int;
+  d2 : Int <- 6;
+  e2 : Int <- new Int;
+  f2 : Int <- 8;
+  g2 : Int <- new Int;
+  h2 : Int <- 10;
+  i2 : Int <- new Int;
+  j2 : Int <- 12;
+  k2 : Int <- new Int;
+  l2 : Int <- 14;
+  m2 : Int <- 15;
+  n2 : Int <- 16;
+  o2 : Int <- 17;
+  p2 : Int <- 18;
+  q2 : Int <- 19;
+  r2 : Int <- 20;
+  s2 : Int <- 21;
+  t2 : Int <- 22;
+  u2 : Int <- 23;
+  v2 : Int <- 24;
+  w2 : Int <- 25;
+  
+  b3 : Int <- 4;
+  c3 : Int <- new Int;
+  d3 : Int <- 6;
+  e3 : Int <- new Int;
+  f3 : Int <- 8;
+  g3 : Int <- new Int;
+  h3 : Int <- 10;
+  i3 : Int <- new Int;
+  j3 : Int <- 12;
+  k3 : Int <- new Int;
+  l3 : Int <- 14;
+  m3 : Int <- 15;
+  n3 : Int <- 16;
+  o3 : Int <- 17;
+  p3 : Int <- 18;
+  q3 : Int <- 19;
+  r3 : Int <- 20;
+  s3 : Int <- 21;
+  t3 : Int <- 22;
+  u3 : Int <- 23;
+  v3 : Int <- 24;
+  w3 : Int <- 25;
+  
+  
+  b4 : Int <- 4;
+  c4 : Int <- new Int;
+  d4 : Int <- 6;
+  e4 : Int <- new Int;
+  f4 : Int <- 8;
+  g4 : Int <- new Int;
+  h4 : Int <- 10;
+  i4 : Int <- new Int;
+  j4 : Int <- 12;
+  k4 : Int <- new Int;
+  l4 : Int <- 14;
+  m4 : Int <- 15;
+  n4 : Int <- 16;
+  o4 : Int <- 17;
+  p4 : Int <- 18;
+  q4 : Int <- 19;
+  r4 : Int <- 20;
+  s4 : Int <- 21;
+  t4 : Int <- 22;
+  u4 : Int <- 23;
+  v4 : Int <- 24;
+  w4 : Int <- 25;
+  
+  b5 : Int <- 4;
+  c5 : Int <- new Int;
+  d5 : Int <- 6;
+  e5 : Int <- new Int;
+  f5 : Int <- 8;
+  g5 : Int <- new Int;
+  h5 : Int <- 10;
+  i5 : Int <- new Int;
+  j5 : Int <- 12;
+  k5 : Int <- new Int;
+  l5 : Int <- 14;
+  m5 : Int <- 15;
+  n5 : Int <- 16;
+  o5 : Int <- 17;
+  p5 : Int <- 18;
+  q5 : Int <- 19;
+  r5 : Int <- 20;
+  s5 : Int <- 21;
+  t5 : Int <- 22;
+  u5 : Int <- 23;
+  v5 : Int <- 24;
+  w5 : Int <- 25;
+  
+  
+  commonExpr: Int <- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+  * (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+  / (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+  + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+  - (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29);
+  
+  someTruth : Bool <- new Bool;
+  otherTruth : Bool <- new Bool;
+  someTruth1 : Bool <- true;
+  otherTruth1 : Bool <- false;
+  someTruth2 : Bool <- new Bool;
+  otherTruth2 : Bool <- new Bool;
+  someTruth3 : Bool <- true;
+  otherTruth3 : Bool <- false;
+  someTruth4 : Bool <- new Bool;
+  otherTruth4 : Bool <- new Bool;
+  someTruth5 : Bool <- true;
+  otherTruth5 : Bool <- false;
+  someTruth6 : Bool <- new Bool;
+  otherTruth6 : Bool <- new Bool;
+  someTruth7 : Bool <- true;
+  otherTruth7 : Bool <- false;
+  someTruth8 : Bool <- new Bool;
+  otherTruth8 : Bool <- true;
+  someTruth9 : Bool <- false;
+  otherTruth9 : Bool <- new Bool;
+  someTruth10 : Bool <- true;
+  otherTruth10 : Bool <- false;
+  someTruth11 : Bool <- new Bool;
+  otherTruth11 : Bool <- new Bool;
+  someTruth12 : Bool <- true;
+  otherTruth12 : Bool <- false;
+  someTruth13 : Bool <- new Bool;
+  otherTruth13 : Bool <- new Bool;
+  someTruth14 : Bool <- true;
+  otherTruth14 : Bool <- false;
+  someTruth15 : Bool <- new Bool;
+  otherTruth15 : Bool <- new Bool;
+  someTruth16 : Bool <- true;
+  otherTruth16 : Bool <- false;
+  someTruth17 : Bool <- new Bool;
+  otherTruth17 : Bool <- new Bool;
+  someTruth18 : Bool <- true;
+  otherTruth18 : Bool <- false;
+  someTruth19 : Bool <- new Bool;
+  otherTruth19 : Bool <- new Bool;
+  someTruth20 : Bool <- true;
+  otherTruth20 : Bool <- false;
+  
+  
+  someTruth21 : Bool <- true;
+  otherTruth21 : Bool <- false;
+  someTruth22 : Bool <- new Bool;
+  otherTruth22 : Bool <- new Bool;
+  someTruth23 : Bool <- true;
+  otherTruth23 : Bool <- false;
+  someTruth24 : Bool <- new Bool;
+  otherTruth24 : Bool <- new Bool;
+  someTruth25 : Bool <- true;
+  otherTruth25 : Bool <- false;
+  someTruth26 : Bool <- new Bool;
+  otherTruth26 : Bool <- new Bool;
+  someTruth27 : Bool <- true;
+  otherTruth27 : Bool <- false;
+  someTruth28 : Bool <- new Bool;
+  otherTruth28 : Bool <- new Bool;
+  someTruth29 : Bool <- true;
+  otherTruth29 : Bool <- false;
+  someTruth30 : Bool <- new Bool;
+  otherTruth30 : Bool <- new Bool;
+  someTruth31 : Bool <- true;
+  otherTruth31 : Bool <- false;
+  someTruth32 : Bool <- new Bool;
+  otherTruth32 : Bool <- new Bool;
+  someTruth33 : Bool <- true;
+  otherTruth33 : Bool <- false;
+  someTruth34 : Bool <- new Bool;
+  otherTruth34 : Bool <- new Bool;
+  someTruth35 : Bool <- true;
+  otherTruth35 : Bool <- false;
+  someTruth36 : Bool <- new Bool;
+  otherTruth36 : Bool <- new Bool;
+  someTruth37 : Bool <- true;
+  otherTruth37 : Bool <- false;
+  someTruth38 : Bool <- new Bool;
+  otherTruth38 : Bool <- new Bool;
+  someTruth39 : Bool <- true;
+  otherTruth39 : Bool <- false;
+  someTruth40 : Bool <- new Bool;
+  otherTruth40 : Bool <- new Bool;
+  
+  
+  f( a : Int, b : Int, c : Int) : Int {
+    a + b + c
+  };
+
+	main(): Object {{
+
+		out_string("Hello World!!!!!!!!!!!!!");
+		while someIndex < 1000000000 loop
+		{
+		b1 <- 1 + f(someIndex, someIndex, someIndex);
+		c1 <- new Int;
+		d1 <- 1 + f(someIndex, someIndex, someIndex);
+		e1 <- new Int;
+		f1 <- 1 + f(someIndex, someIndex, someIndex);
+		g1 <- new Int;
+		h1 <- 1 + f(someIndex, someIndex, someIndex);
+		i1 <- new Int;
+		j1 <- 1 + f(someIndex, someIndex, someIndex);
+		k1 <- new Int;
+		l1  <- 1 + f(someIndex, someIndex, someIndex);
+		m1  <- 1 + f(someIndex, someIndex, someIndex);
+		n1 <- 1 + f(someIndex, someIndex, someIndex);
+		o1 <- 1 + f(someIndex, someIndex, someIndex);
+		p1 <- 1 + f(someIndex, someIndex, someIndex);
+		q1 <- 1 + f(someIndex, someIndex, someIndex);
+		r1 <- 2 + f(someIndex, someIndex, someIndex);
+		s1 <- 2 + f(someIndex, someIndex, someIndex);
+		t1 <- 2 + f(someIndex, someIndex, someIndex);
+		u1 <- 2 + f(someIndex, someIndex, someIndex);
+		v1 <- 2 + f(someIndex, someIndex, someIndex);
+		w1 <- 2 + f(someIndex, someIndex, someIndex);
+		
+		b2 <- 41 + f(someIndex, someIndex, someIndex);
+		c2 <- new Int;
+		d2 <- 61 + f(someIndex, someIndex, someIndex);
+		e2 <- new Int;
+		f2 <- 81 + f(someIndex, someIndex, someIndex);
+		g2 <- new Int;
+		h2 <- 101 + f(someIndex, someIndex, someIndex);
+		i2  <- new Int;
+		j2  <- 121 + f(someIndex, someIndex, someIndex);
+		k2  <- new Int;
+		l2  <- 141 + f(someIndex, someIndex, someIndex);
+		m2  <- 151 + f(someIndex, someIndex, someIndex);
+		n2  <- 161 + f(someIndex, someIndex, someIndex);
+		o2  <- 171 + f(someIndex, someIndex, someIndex);
+		p2  <- 181 + f(someIndex, someIndex, someIndex);
+		q2  <- 191 + f(someIndex, someIndex, someIndex);
+		r2  <- 201 + f(someIndex, someIndex, someIndex);
+		s2  <- 211 + f(someIndex, someIndex, someIndex);
+		t2  <- 221 + f(someIndex, someIndex, someIndex);
+		u2  <- 231 + f(someIndex, someIndex, someIndex);
+		v2  <- 241 + f(someIndex, someIndex, someIndex);
+		w2  <- 251 + f(someIndex, someIndex, someIndex);
+		
+		b3  <- 41 + f(someIndex, someIndex, someIndex);
+		c3  <- new Int;
+		d3  <- 61 + f(someIndex, someIndex, someIndex);
+		e3  <- new Int;
+		f3  <- 81 + f(someIndex, someIndex, someIndex);
+		g3  <- new Int;
+		h3  <- 101 + f(someIndex, someIndex, someIndex);
+		i3  <- new Int;
+		j3  <- 121 + f(someIndex, someIndex, someIndex);
+		k3  <- new Int;
+		l3  <- 141 + f(someIndex, someIndex, someIndex);
+		m3  <- 151 + f(someIndex, someIndex, someIndex);
+		n3  <- 161 + f(someIndex, someIndex, someIndex);
+		o3  <- 171 + f(someIndex, someIndex, someIndex);
+		p3  <- 181 + f(someIndex, someIndex, someIndex);
+		q3  <- 191 + f(someIndex, someIndex, someIndex);
+		r3  <- 201 + f(someIndex, someIndex, someIndex);
+		s3  <- 211 + f(someIndex, someIndex, someIndex);
+		t3  <- 221 + f(someIndex, someIndex, someIndex);
+		u3  <- 231 + f(someIndex, someIndex, someIndex);
+		v3  <- 241 + f(someIndex, someIndex, someIndex);
+		w3  <- 251 + f(someIndex, someIndex, someIndex);
+		
+		
+		b4 <- 41 + f(someIndex, someIndex, someIndex);
+		c4 <- new Int;
+		d4 <- 61 + f(someIndex, someIndex, someIndex);
+		e4 <- new Int;
+		f4 <- 81 + f(someIndex, someIndex, someIndex);
+		g4 <- new Int;
+		h4 <- 101 + f(someIndex, someIndex, someIndex);
+		i4  <- new Int;
+		j4 <- 112 + f(someIndex, someIndex, someIndex);
+		k4 <- new Int;
+		l4 <- 141 + f(someIndex, someIndex, someIndex);
+		m4 <- 151 + f(someIndex, someIndex, someIndex);
+		n4 <- 161 + f(someIndex, someIndex, someIndex);
+		o4 <- 171 + f(someIndex, someIndex, someIndex);
+		p4 <- 181 + f(someIndex, someIndex, someIndex);
+		q4 <- 191 + f(someIndex, someIndex, someIndex);
+		r4 <- 201 + f(someIndex, someIndex, someIndex);
+		s4 <- 211 + f(someIndex, someIndex, someIndex);
+		t4 <- 221 + f(someIndex, someIndex, someIndex);
+		u4 <- 231 + f(someIndex, someIndex, someIndex);
+		v4  <- 241 + f(someIndex, someIndex, someIndex);
+		w4 <- 251 + f(someIndex, someIndex, someIndex);
+		
+		b5 <- 41 + f(someIndex, someIndex, someIndex);
+		c5 <- new Int;
+		d5 <- 61 + f(someIndex, someIndex, someIndex);
+		e5 <- new Int;
+		f5 <- 81 + f(someIndex, someIndex, someIndex);
+		g5 <- new Int;
+		h5 <- 101 + f(someIndex, someIndex, someIndex);
+		i5 <- new Int;
+		j5 <- 121 + f(someIndex, someIndex, someIndex);
+		k5 <- new Int;
+		l5 <- 141 + f(someIndex, someIndex, someIndex);
+		m5 <- 151 + f(someIndex, someIndex, someIndex);
+		n5 <- 161 + f(someIndex, someIndex, someIndex);
+		o5 <- 171 + f(someIndex, someIndex, someIndex);
+		p5 <- 181 + f(someIndex, someIndex, someIndex);
+		q5 <- 191 + f(someIndex, someIndex, someIndex);
+		r5 <- 201 + f(someIndex, someIndex, someIndex);
+		s5 <- 211 + f(someIndex, someIndex, someIndex);
+		t5 <- 221 + f(someIndex, someIndex, someIndex);
+		u5 <- 231 + f(someIndex, someIndex, someIndex);
+		v5 <- 241 + f(someIndex, someIndex, someIndex);
+		w5 <- 251 + f(someIndex, someIndex, someIndex);
+
+	someIndex <- (someIndex  + 1) / 1000000000;
+	x <- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) +5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) + 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) + 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) + 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) + 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)  + 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) - 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) - 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) -  5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) + 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) + 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) - 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)  + 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)  - 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)  + 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
+	- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) + f(someIndex, someIndex, someIndex) + f(someIndex, someIndex, someIndex) + f(someIndex, someIndex, someIndex) + f(someIndex, someIndex, someIndex) + f(someIndex, someIndex, someIndex) + f(someIndex, someIndex, someIndex) + f(someIndex, someIndex, someIndex) + f(someIndex, someIndex, someIndex) + f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex) + f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex)+ f(someIndex, someIndex, someIndex);
+
+	}pool;
+
+	someIndex <- 0;
+	while someIndex < 1000000000 loop
+	{
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+		someIndex <- (someIndex + 1) / 1000000000;
+		testA.copy();
+		testC.copy();
+		testE.copy();
+		testG.copy();
+		testI.copy();
+		testK.copy();
+		testM.copy();
+		testO.copy();
+		testQ.copy();
+		testT.copy();
+		testV.copy();
+		testX.copy();
+
+		testA.type_name();
+		testC.type_name();
+		testE.type_name();
+		testG.type_name();
+		testI.type_name();
+		testK.type_name();
+		testM.type_name();
+		testO.type_name();
+		testQ.type_name();
+		testT.type_name();
+		testV.type_name();
+		testX.type_name();
+	} pool; 
+
+
+	
 	}};
-	func1(n : Int) : Int {func2(n - 1)};
-	func2(n : Int) : Int {func1(n + 1)};
-	main() : Object {{
-    
-		-- Division by zero
-		x <- 7 / 0;
-		x <- 0 / 0;
-		x <- 1 / 0;
-		x <- 2 / 0;
-		x <- 3 / 0;
-		x <- 4 / 0;
-		x <- 5 / 0;
-		x <- 100 / 0;
-		x <- 10 + 10 / 0 + 2;
-		x <- 10 / ( 5- 5);
-		x <- 10 / ( 5 * 0);
-		x <- 5 * 5 + 7 / 0 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 0 + 22 - 23 * 24 / 0 + 26 - 27  * 28 / 29 +	5 * 5 + 7 / 0 - 5 * 1 - 2 + 3 / 0 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 0 + 22 - 23 * 24 / 0 + 26 - 27  * 28 / 29
-		* 5 * 5 + 7 / 0 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 0 + 26 - 27  * 28 / 29
-		/ 	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 0 * 5 + 6 - 7 * 8 / 0 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 0 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 0 + 26 - 27  * 28 / 29
-		+ 	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 0 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 0 + 26 - 27  * 28 / 29
-		- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 0 + 18 - 19 * 20 / 0 + 22 - 23 * 24 / 0 + 26 - 27  * 28 / 29+ 10 / 0;
-		x <-  (5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) / 0;
-		x <- 5;
-		x <-  x / 0;
-		x <- 0;
-		x <- x / x;
-		x <- (5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29) /
-		(5 - 5 + 5 -5 + 5 -5 + 5 -5 + 5 -5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 -5 - 5 + 5 - 5 +
-		5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5)
-		/ (5 - 5 + 5 -5 + 5 -5 + 5 -5 + 5 -5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 -5 - 5 + 5 - 5 +
-		5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5)
-		/ (5 - 5 + 5 -5 + 5 -5 + 5 -5 + 5 -5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 -5 - 5 + 5 - 5 +
-		5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 ) /
-		(5 - 5 + 5 -5 + 5 -5 + 5 -5 + 5 -5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 -5 - 5 + 5 - 5 +
-			5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 ) /
-			(5 - 5 + 5 -5 + 5 -5 + 5 -5 + 5 -5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 -5 - 5 + 5 - 5 +
-				5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 ) /
-				(5 - 5 + 5 -5 + 5 -5 + 5 -5 + 5 -5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 -5 - 5 + 5 - 5 +
-					5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 ) /
-					(5 - 5 + 5 -5 + 5 -5 + 5 -5 + 5 -5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 -5 - 5 + 5 - 5 +
-						5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 + 5 - 5 );
-		x <- 1 / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0 / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0  / 0 / 0 / 0 / 0 / 0;
-
-		x <- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
-		* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + (3 / 0) * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
-		/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
-		+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
-		- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29);
-
-		x <- 5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29 + (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
-		* (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
-		/ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
-		+ (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 29)
-		- (	5 * 5 + 7 / 2 - 5 * 1 - 2 + 3 / 4 * 5 + 6 - 7 * 8 / 9 + 10 - 11 * 12 / 13 + 14 - 15 * 16 / 17 + 18 - 19 * 20 / 21 + 22 - 23 * 24 / 25 + 26 - 27  * 28 / 0);
-		
-		voidClass@Object.copy();
-		voidClass@Object.type_name();
-		voidClass.someMethod();
-
-		case newX of 
-		a : TestA => 0 / 0;
-		b : TestB => 1 / 0;
-		c : TestC => 2 /0 ;
-		d : TestD => 3 / 0;
-		e : TestE => let x  : Int <- 9 in x + 5;
-		f : TestF => let x  : String <- "Howdy" in x.concat("Matey");
-		g : TestG => let x  : Int <- 10 in x + 5;
-		h : TestH => 4 / 0;
-		i : TestJ => 1 / 0;
-		k : TestK => 2 / 0;
-		l : TestL => 3 /0 ;
-		m : TestM => 4 / 0;
-		n : TestN => 1 / 0;
-		o : TestP => 2 / 0;
-		q : TestQ => 3;
-		r : TestR => 4;
-		s : TestS => 1;
-		t : TestT => 2;
-		u : TestU => 3;
-		v : TestV => 4;
-		esac;
-
-		case voidClass of 
-		a : TestA => 0;
-		b : TestB => 1;
-		c : TestC => 2;
-		d : TestD => 3;
-		e : TestE => let x  : Int <- 9 in x + 5;
-		f : TestF => let x  : String <- "Howdy" in x.concat("Matey");
-		g : TestG => let x  : Int <- 10 in x + 5;
-		h : TestH => 4;
-		i : TestJ => 1;
-		k : TestK => 2;
-		l : TestL => 3;
-		m : TestM => 4;
-		n : TestN => 1;
-		o : TestP => 2;
-		q : TestQ => 3;
-		r : TestR => 4;
-		s : TestS => 1;
-		t : TestT => 2;
-		u : TestU => 3;
-		v : TestV => 4;
-		esac;
-
-
-	case someObj of 
-		a : TestA => 0;
-		b : TestB => 1;
-		c : TestC => 2;
-		d : TestD => 3;
-		e : TestE => let x  : Int <- 9 in x + 5;
-		f : TestF => let x  : String <- "Howdy" in x.concat("Matey");
-		g : TestG => let x  : Int <- 10 in x + 5;
-		h : TestH => 4;
-		i : TestJ => 1;
-		k : TestK => 2;
-		l : TestL => 3;
-		m : TestM => 4;
-		n : TestN => 1;
-		o : TestP => 2;
-		q : TestQ => 3;
-		r : TestR => 4;
-		s : TestS => 1;
-		t : TestT => 2;
-		u : TestU => 3;
-		v : TestV => 4;
-		esac;
-
-
-		case someObj of 
-		a : TestA => 0;
-		b : TestB => 1;
-		c : TestC => 2;
-		d : TestD => 3;
-		e : TestE => let x  : Int <- 9 in x + 5;
-		f : TestF => let x  : String <- "Howdy" in x.concat("Matey");
-		g : TestG => let x  : Int <- 10 in x + 5;
-		h : TestH => 4;
-		i : TestJ => 1;
-		k : TestK => 2;
-		l : TestL => 3;
-		m : TestM => 4;
-		n : TestN => 1;
-		o : TestP => 2;
-		q : TestQ => 3;
-		r : TestR => 4;
-		s : TestS => 1;
-		t : TestT => 2;
-		u : TestU => 3;
-		v : TestV => 4;
-		something : String => 0;
-		something2 : Bool => 0;
-		something3 : Int => 0;
-		something4 : IO => 0;
-		esac;
-
-		case someObj of 
-		a : TestA => 0;
-		b : TestB => 1;
-		c : TestC => 2;
-		d : TestD => 3;
-		e : TestE => let x  : Int <- 9 in x + 5;
-		f : TestF => let x  : String <- "Howdy" in x.concat("Matey");
-		g : TestG => let x  : Int <- 10 in x + 5;
-		h : TestH => 4;
-		i : TestJ => 1;
-		k : TestK => 2;
-		l : TestL => 3;
-		m : TestM => 4;
-		n : TestN => 1;
-		o : TestP => 2;
-		q : TestQ => 3;
-		r : TestR => 4;
-		s : TestS => 1;
-		t : TestT => 2;
-		u : TestU => 3;
-		v : TestV => 4;
-		something : String => 0;
-		something2 : Bool => 0;
-		something3 : Int => 0;
-		something4 : IO => 0;
-		from1 : FromIO1 => 0;
-		from2 : FromIO2 => 0;
-		from3 : FromIO3 => 0;
-		from4 : FromIO4 => 0;
-		from5 : FromIO5 => 0;
-		from6 : FromIO6 => 0;
-		from7 : FromIO7 => 0;
-		from8 : FromIO8 => 0;
-		from9 : FromIO9 => 0;
-		from10 : FromIO10 => 0;
-		from11 : FromIO11 => 0;
-		from12 : FromIO12 => 0;
-		from13 : FromIO13 => 0;
-		from14 : FromIO14 => 0;
-		from15 : FromIO15 => 0;
-		from16 : FromIO16 => 0;
-		from17 : FromIO17 => 0;
-		from18 : FromIO18 => 0;
-		from19 : FromIO19 => 0;
-		from20 : FromIO20 => 0;
-		from21 : FromIO21 => 0;
-		from22 : FromIO22 => 0;
-		from23 : FromIO23 => 0;
-		from24 : FromIO24 => 0;
-		from25 : FromIO25 => 0;
-		esac;
-						(* theInput : IO <- new IO;
-	theNum : Int;
-	theWord : String;
-	theTruth : Bool;*)
-		case theInput of 
-		a : TestA => 0;
-		b : TestB => 1;
-		c : TestC => 2;
-		d : TestD => 3;
-		e : TestE => let x  : Int <- 9 in x + 5;
-		f : TestF => let x  : String <- "Howdy" in x.concat("Matey");
-		g : TestG => let x  : Int <- 10 in x + 5;
-		h : TestH => 4;
-		i : TestJ => 1;
-		k : TestK => 2;
-		l : TestL => 3;
-		m : TestM => 4;
-		n : TestN => 1;
-		o : TestP => 2;
-		q : TestQ => 3;
-		r : TestR => 4;
-		s : TestS => 1;
-		t : TestT => 2;
-		u : TestU => 3;
-		v : TestV => 4;
-		something : String => 0;
-		something2 : Bool => 0;
-		something3 : Int => 0;
-		from1 : FromIO1 => 0;
-		from2 : FromIO2 => 0;
-		from3 : FromIO3 => 0;
-		from4 : FromIO4 => 0;
-		from5 : FromIO5 => 0;
-		from6 : FromIO6 => 0;
-		from7 : FromIO7 => 0;
-		from8 : FromIO8 => 0;
-		from9 : FromIO9 => 0;
-		from10 : FromIO10 => 0;
-		from11 : FromIO11 => 0;
-		from12 : FromIO12 => 0;
-		from13 : FromIO13 => 0;
-		from14 : FromIO14 => 0;
-		from15 : FromIO15 => 0;
-		from16 : FromIO16 => 0;
-		from17 : FromIO17 => 0;
-		from18 : FromIO18 => 0;
-		from19 : FromIO19 => 0;
-		from20 : FromIO20 => 0;
-		from21 : FromIO21 => 0;
-		from22 : FromIO22 => 0;
-		from23 : FromIO23 => 0;
-		from24 : FromIO24 => 0;
-		from25 : FromIO25 => 0;
-		esac;
-
-
-		case theNum of 
-		a : TestA => 0;
-		b : TestB => 1;
-		c : TestC => 2;
-		d : TestD => 3;
-		e : TestE => let x  : Int <- 9 in x + 5;
-		f : TestF => let x  : String <- "Howdy" in x.concat("Matey");
-		g : TestG => let x  : Int <- 10 in x + 5;
-		h : TestH => 4;
-		i : TestJ => 1;
-		k : TestK => 2;
-		l : TestL => 3;
-		m : TestM => 4;
-		n : TestN => 1;
-		o : TestP => 2;
-		q : TestQ => 3;
-		r : TestR => 4;
-		s : TestS => 1;
-		t : TestT => 2;
-		u : TestU => 3;
-		v : TestV => 4;
-		something : String => 0;
-		something2 : Bool => 0;
-		something3 : IO => 0;
-		from1 : FromIO1 => 0;
-		from2 : FromIO2 => 0;
-		from3 : FromIO3 => 0;
-		from4 : FromIO4 => 0;
-		from5 : FromIO5 => 0;
-		from6 : FromIO6 => 0;
-		from7 : FromIO7 => 0;
-		from8 : FromIO8 => 0;
-		from9 : FromIO9 => 0;
-		from10 : FromIO10 => 0;
-		from11 : FromIO11 => 0;
-		from12 : FromIO12 => 0;
-		from13 : FromIO13 => 0;
-		from14 : FromIO14 => 0;
-		from15 : FromIO15 => 0;
-		from16 : FromIO16 => 0;
-		from17 : FromIO17 => 0;
-		from18 : FromIO18 => 0;
-		from19 : FromIO19 => 0;
-		from20 : FromIO20 => 0;
-		from21 : FromIO21 => 0;
-		from22 : FromIO22 => 0;
-		from23 : FromIO23 => 0;
-		from24 : FromIO24 => 0;
-		from25 : FromIO25 => 0;
-		esac;
-		case theTruth of 
-		a : TestA => 0;
-		b : TestB => 1;
-		c : TestC => 2;
-		d : TestD => 3;
-		e : TestE => let x  : Int <- 9 in x + 5;
-		f : TestF => let x  : String <- "Howdy" in x.concat("Matey");
-		g : TestG => let x  : Int <- 10 in x + 5;
-		h : TestH => 4;
-		i : TestJ => 1;
-		k : TestK => 2;
-		l : TestL => 3;
-		m : TestM => 4;
-		n : TestN => 1;
-		o : TestP => 2;
-		q : TestQ => 3;
-		r : TestR => 4;
-		s : TestS => 1;
-		t : TestT => 2;
-		u : TestU => 3;
-		v : TestV => 4;
-		something : String => 0;
-		something2 : IO => 0;
-		something3 : Int => 0;
-		from1 : FromIO1 => 0;
-		from2 : FromIO2 => 0;
-		from3 : FromIO3 => 0;
-		from4 : FromIO4 => 0;
-		from5 : FromIO5 => 0;
-		from6 : FromIO6 => 0;
-		from7 : FromIO7 => 0;
-		from8 : FromIO8 => 0;
-		from9 : FromIO9 => 0;
-		from10 : FromIO10 => 0;
-		from11 : FromIO11 => 0;
-		from12 : FromIO12 => 0;
-		from13 : FromIO13 => 0;
-		from14 : FromIO14 => 0;
-		from15 : FromIO15 => 0;
-		from16 : FromIO16 => 0;
-		from17 : FromIO17 => 0;
-		from18 : FromIO18 => 0;
-		from19 : FromIO19 => 0;
-		from20 : FromIO20 => 0;
-		from21 : FromIO21 => 0;
-		from22 : FromIO22 => 0;
-		from23 : FromIO23 => 0;
-		from24 : FromIO24 => 0;
-		from25 : FromIO25 => 0;
-		esac;
-		
-		case theWord of 
-		a : TestA => 0;
-		b : TestB => 1;
-		c : TestC => 2;
-		d : TestD => 3;
-		e : TestE => let x  : Int <- 9 in x + 5;
-		f : TestF => let x  : String <- "Howdy" in x.concat("Matey");
-		g : TestG => let x  : Int <- 10 in x + 5;
-		h : TestH => 4;
-		i : TestJ => 1;
-		k : TestK => 2;
-		l : TestL => 3;
-		m : TestM => 4;
-		n : TestN => 1;
-		o : TestP => 2;
-		q : TestQ => 3;
-		r : TestR => 4;
-		s : TestS => 1;
-		t : TestT => 2;
-		u : TestU => 3;
-		v : TestV => 4;
-		something : IO => 0;
-		something2 : Bool => 0;
-		something3 : Int => 0;
-		from1 : FromIO1 => 0;
-		from2 : FromIO2 => 0;
-		from3 : FromIO3 => 0;
-		from4 : FromIO4 => 0;
-		from5 : FromIO5 => 0;
-		from6 : FromIO6 => 0;
-		from7 : FromIO7 => 0;
-		from8 : FromIO8 => 0;
-		from9 : FromIO9 => 0;
-		from10 : FromIO10 => 0;
-		from11 : FromIO11 => 0;
-		from12 : FromIO12 => 0;
-		from13 : FromIO13 => 0;
-		from14 : FromIO14 => 0;
-		from15 : FromIO15 => 0;
-		from16 : FromIO16 => 0;
-		from17 : FromIO17 => 0;
-		from18 : FromIO18 => 0;
-		from19 : FromIO19 => 0;
-		from20 : FromIO20 => 0;
-		from21 : FromIO21 => 0;
-		from22 : FromIO22 => 0;
-		from23 : FromIO23 => 0;
-		from24 : FromIO24 => 0;
-		from25 : FromIO25 => 0;
-		esac;
-
-		case someObj of 
-		a : TestA => 0;
-		b : TestB => 1;
-		c : TestC => 2;
-		d : TestD => 3;
-		e : TestE => let x  : Int <- 9 in x + 5;
-		f : TestF => let x  : String <- "Howdy" in x.concat("Matey");
-		g : TestG => let x  : Int <- 10 in x + 5;
-		h : TestH => 4;
-		i : TestJ => 1;
-		k : TestK => 2;
-		l : TestL => 3;
-		m : TestM => 4;
-		n : TestN => 1;
-		o : TestP => 2;
-		q : TestQ => 3;
-		r : TestR => 4;
-		s : TestS => 1;
-		t : TestT => 2;
-		u : TestU => 3;
-		v : TestV => 4;
-		from2 : FromIO2 => 0;
-		from3 : FromIO3 => 0;
-		from4 : FromIO4 => 0;
-		from5 : FromIO5 => 0;
-		from6 : FromIO6 => 0;
-		from7 : FromIO7 => 0;
-		from8 : FromIO8 => 0;
-		from9 : FromIO9 => 0;
-		from10 : FromIO10 => 0;
-		from11 : FromIO11 => 0;
-		from12 : FromIO12 => 0;
-		from13 : FromIO13 => 0;
-		from14 : FromIO14 => 0;
-		from15 : FromIO15 => 0;
-		from16 : FromIO16 => 0;
-		from17 : FromIO17 => 0;
-		from18 : FromIO18 => 0;
-		from19 : FromIO19 => 0;
-		from20 : FromIO20 => 0;
-		from21 : FromIO21 => 0;
-		from22 : FromIO22 => 0;
-		from23 : FromIO23 => 0;
-		from24 : FromIO24 => 0;
-		from25 : FromIO25 => 0;
-		from26 : FromIO26 => 0;
-		from27 : FromIO27 => 0;
-		from28 : FromIO28 => 0;
-		from29 : FromIO29 => 0;
-		from30 : FromIO30 => 0;
-		from31 : FromIO31 => 0;
-		from32 : FromIO32 => 0;
-		from33 : FromIO33 => 0;
-		from34 : FromIO34 => 0;
-		from35 : FromIO35 => 0;
-		from36 : FromIO36 => 0;
-		from37 : FromIO37 => 0;
-		from38 : FromIO38 => 0;
-		from39 : FromIO39 => 0;
-		from40 : FromIO40 => 0;
-		from41 : FromIO41 => 0;
-		from42 : FromIO42 => 0;
-		from43 : FromIO43 => 0;
-		from44 : FromIO45=> 0;
-		from46 : FromIO46 => 0;
-		from47 : FromIO47 => 0;
-		from48 : FromIO48 => 0;
-		from49 : FromIO49 => 0;
-		from50 : FromIO50 => 0;
-		from51 : FromIO51 => 0;
-		from52 : FromIO52 => 0;
-		from53 : FromIO53 => 0;
-		from54 : FromIO54 => 0;
-		from55 : FromIO55 => 0;
-		from56 : FromIO56 => 0;
-		from57 : FromIO57 => 0;
-		from58 : FromIO58 => 0;
-		from59 : FromIO59 => 0;
-		from60 : FromIO60 => 0;
-		from61 : FromIO61 => 0;
-		from62 : FromIO62 => 0;
-		from63 : FromIO63 => 0;
-		from64 : FromIO64 => 0;
-		from65 : FromIO65 => 0;
-		from66 : FromIO66 => 0;
-		from67 : FromIO67 => 0;
-		from68 : FromIO68 => 0;
-		from69 : FromIO69 => 0;
-		from70 : FromIO70 => 0;
-		from71 : FromIO71 => 0;
-		from72 : FromIO72 => 0;
-		from73 : FromIO73 => 0;
-		from74 : FromIO74 => 0;
-		from75 : FromIO75 => 0;
-		from76 : FromIO76 => 0;
-		from77 : FromIO77 => 0;
-		from78 : FromIO78 => 0;
-		from79 : FromIO79 => 0;
-		from80 : FromIO80 => 0;
-		from81 : FromIO81 => 0;
-		from82 : FromIO82 => 0;
-		from83 : FromIO84 => 0;
-		esac;
-
-		-- TEST: subtring out of range. DONE
-		"testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".substr(0,1000);
-		out_string("testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		"testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".substr(0, 10).substr(0, 1);
-		out_string("testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		"testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".substr(50, 9);
-		out_string("testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		"test".substr(4, 5);
-		out_string("test");
-		"testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".substr(0, 10).substr(1, 10).substr(2, 10).substr(3, 10).substr(4, 10).substr(9, 12);
-		"".substr(1,10);
-		"".substr(0, 1000000);
-		"testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".substr(0, 10).substr(1, 10).substr(2, 10).substr(3, 10).substr(0, 11);
-		"testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".substr(0, 10).substr(1, 10).substr(2, 10).substr(3, 12);
-
-		"testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".substr(0, 10).substr(1, 10).substr(2, 11);
-
-
-		"testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".substr(0, 10).substr(1, 12);
-
-
-    
-	}
-	};
-};
-
-class Parent {
- someMethod() : Int {5};
-};
-class VoidClass inherits Parent {
-
-};
--- STACK OVERFLOW
-class StackOver {
-	flow : StackOver <- new StackOver;
-};
-
--- STACK OVERFLOW
-class CtorOverFlow {
-	init(a : Int, b : Int, c : Int) : SELF_TYPE {init(a, b, c)};
-
 };
 class TestA inherits IO {};
 class TestB inherits TestA {};
