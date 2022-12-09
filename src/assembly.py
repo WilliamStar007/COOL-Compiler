@@ -7,6 +7,7 @@ from memory import RSP, RBP, RSI, RDI, RNum, RXX, EDI, EAX
 from tree import *
 import built_ins
 
+# Registers
 rsp = RSP()
 rbp = RBP()
 rsi = RSI()
@@ -31,7 +32,7 @@ def cgen(exp):
     ret = ""
 
     # ***** ATTRIBUTES *****
-    if isinstance(exp, Attribute): # TODO: Def a better way to do this
+    if isinstance(exp, Attribute):
         if exp.identifier.name == "(raw content)":
             obj = "0" if exp.typename.name == "Int" else "the.empty.string"
             ret += f"movq ${obj}, {r13}"
@@ -62,6 +63,7 @@ def cgen(exp):
 
             return ret
 
+        # checkout if a global 
         if exp.value not in config.string_tag.vals():
             config.string_tag.add(exp.value)
 
@@ -91,7 +93,7 @@ def cgen(exp):
         offset = tpl[0]
         reg = tpl[1]
 
-        ret += f"movq {offset * config.OFFSET_AMT}({reg}), {r13}" # TODO: DIFF FOR EACH EXPR TYPE
+        ret += f"movq {offset * config.OFFSET_AMT}({reg}), {r13}"
 
 
     # Identifier
@@ -325,7 +327,7 @@ def cgen(exp):
         ret += f"movq $0, {rdx}\n"
         ret += f"movq {r14}, {rax}\n"
         ret += "cdq\n"
-        ret += f"idivl {r13}d\n" # TODO: do we need this extra reg? Prob an identifier
+        ret += f"idivl {r13}d\n"
         ret += f"movq {rax}, {r13}\n"
 
         ret += f"movq {r13}, {offset}({rbp})\n"
@@ -568,8 +570,8 @@ def cgen(exp):
 
             config.rbp_offset.increment()
 
-    # ***** EXPRESSION DISPATCHES *****
 
+    # ***** EXPRESSION DISPATCHES *****
     # Static
     elif isinstance(exp, StaticDispatch):
         config.string_tag.add(built_ins.static_dispatch_error(exp.lineno))
@@ -703,6 +705,7 @@ def cgen(exp):
 
     return ret
 
+# Writing helpers
 def write_line(line):
     '''
     Writes a line
@@ -720,11 +723,18 @@ def print_cmd(cmd, lhs, rhs):
     if rhs:
         write_line(rhs)
 
+def pre_assemble():
+    '''
+    Done before assembly is printed
+    '''
+    get_working_set()
 
 def print_assembly():
     '''
     Prints all assembly code
     '''
+    pre_assemble()
+
     return print_vtables() + print_ctors() + print_methods() + print_cool_globals()
 
 
@@ -795,6 +805,7 @@ def print_ctors():
                 r12.update_offset(r12.offset + 8)
                 cur_offset += 1
 
+        # Attributes
         self_offset = 3
         for attr in val:
             tmp += f"## self[{self_offset}] {attr.identifier} initializer "
@@ -843,6 +854,7 @@ def print_ctors():
 
         ret += tmp
 
+        # Return address handling
         ret += f"movq {r12}, {r13}\n"
         ret += "## return address handling\n"
         ret += f"movq {rbp}, {rsp}\n"
@@ -1017,6 +1029,23 @@ def alpha_sort():
 
     return sorted(cls_map, key=lambda x: x[0])
 
+def get_working_set():
+    '''
+    Gets working set for classes
+    '''
+    base_classes = get_base_classes()
+
+    name_to_obj = defaultdict(ClassObj)
+
+    for cls in config.aast:
+        if isinstance(cls, ClassObj):
+            class_name = cls.class_info.name
+            name_to_obj[class_name] = cls
+
+    for cls in base_classes:
+        class_name = cls.class_info.name
+        name_to_obj[class_name] = cls
+
 
 def get_ordering():
     '''
@@ -1039,7 +1068,7 @@ def get_ordering():
     seen = set()
 
     for class_name in config.class_map.keys():
-        if class_name in ["Bool", "Int"]:
+        if class_name in ["Bool", "Int"]: # or class_name not in config.working_set:
             continue
         cur_class = name_to_obj[class_name]
         stk = []

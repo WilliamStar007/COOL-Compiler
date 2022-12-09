@@ -41,5 +41,10 @@ rbp_offset = MinTracker(0)
 jump_table = Tracker(1)
 cur_class = CurClass()
 
+working_set = set()
+
+# Output
+output = []
+
 OFFSET_AMT = 8
 SPC = f"{'':24}"
