@@ -194,7 +194,11 @@ IO.in_int:              ## method definition
 			pushq %rax
 			movq %rsp, %rdx
 			movq $percent.ld, %rsi
+                        pushq %rsp
+                        pushq (%rsp)
+                        andq $-0x10, %rsp
 			call sscanf
+                        movq 8(%rsp), %rsp
 			popq %rax
 			movq $0, %rsi 
 			cmpq $2147483647, %rax 
@@ -213,6 +217,14 @@ IO.in_int.end:          ## method body ends
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
         
         return ret
+'''
+pushq %rsp
+pushq (%rsp)
+andq $-0x10, %rsp
+call whatever_broken_stdlib_function
+movq 8(%rsp), %rsp
+'''
+
 
 def io_in_string():
         '''
@@ -273,7 +285,11 @@ IO.out_int:             ## method definition
 		cdqe
 		movq %rax, %rsi
 			movl $0, %eax
+                        pushq %rsp
+                        pushq (%rsp)
+                        andq $-0x10, %rsp
 			call printf
+                        movq 8(%rsp), %rsp
                         movq %r12, %r13
 .globl IO.out_int.end
 IO.out_int.end:         ## method body ends
@@ -284,6 +300,15 @@ IO.out_int.end:         ## method body ends
                         ## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
 
         return ret
+
+'''
+pushq %rsp
+pushq (%rsp)
+andq $-0x10, %rsp
+call whatever_broken_stdlib_function
+movq 8(%rsp), %rsp
+'''
+
 
 def io_out_string():
         '''
@@ -963,7 +988,11 @@ coolstrcat:
 	movq	%rbx, %rsi
 	movq	%rax, %rdi
 	movl	$0, %eax
+        pushq %rsp
+        pushq (%rsp)
+        andq $-0x10, %rsp
 	call	snprintf
+        movq 8(%rsp), %rsp
 	movq	-32(%rbp), %rax
 .L11:
 	addq	$40, %rsp
